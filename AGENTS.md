@@ -29,6 +29,12 @@ sdk-typescript/
 │   │   └── streaming.ts          # Streaming event types
 │   │
 │   ├── tools/                    # Tool definitions and types
+│   │   ├── __tests__/            # Unit tests for tools
+│   │   │   ├── registry.test.ts  # Tests for ToolRegistry
+│   │   │   └── tool.test.ts      # Tests for FunctionTool
+│   │   ├── function-tool.ts      # FunctionTool implementation
+│   │   ├── registry.ts           # ToolRegistry implementation
+│   │   ├── tool.ts               # Tool interface
 │   │   └── types.ts              # Tool-related type definitions
 │   │
 │   ├── types/                    # Core type definitions
@@ -39,7 +45,8 @@ sdk-typescript/
 │   └── index.ts                  # Main SDK entry point (single export point)
 │
 ├── tests_integ/                  # Integration tests (separate from source)
-│   └── bedrock.test.ts           # Bedrock integration tests (requires AWS credentials)
+│   ├── bedrock.test.ts           # Bedrock integration tests (requires AWS credentials)
+│   └── registry.test.ts          # ToolRegistry integration tests
 │
 ├── .github/                      # GitHub Actions workflows
 │   ├── workflows/                # CI/CD workflows
