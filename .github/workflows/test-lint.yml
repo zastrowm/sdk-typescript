@@ -54,3 +54,12 @@ jobs:
 
       - name: Test packaging
         run: npm run test:package
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: test-artifacts
+          path: ./test/.artifacts/
+          retention-days: 4
+          if-no-files-found: ignore
