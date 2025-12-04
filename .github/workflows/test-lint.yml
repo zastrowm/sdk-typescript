@@ -55,6 +55,14 @@ jobs:
       - name: Test packaging
         run: npm run test:package
 
+      - name: List directory contents
+        if: always()
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Directory contents:"
+          ls -R
+
       - name: Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v5
