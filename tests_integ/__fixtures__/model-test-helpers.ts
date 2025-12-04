@@ -133,6 +133,6 @@ export function createOpenAIModel(config: OpenAIModelOptions = {}) {
       },
     })
   } else {
-    return new OpenAIModel()
+    return new OpenAIModel(config)
   }
 }
