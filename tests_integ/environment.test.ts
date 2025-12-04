@@ -19,7 +19,7 @@ describe('environment', () => {
 
     it('correctly identifies browser environment', () => {
       expect(isBrowser).toBe(false)
-      expect(typeof window).toBe(undefined)
+      expect(typeof window).toBe('undefined')
     })
   })
 

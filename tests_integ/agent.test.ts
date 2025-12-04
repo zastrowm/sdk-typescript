@@ -54,7 +54,7 @@ const providers = [
 }>
 
 describe.each(providers)('Agent with $name', async ({ name, skip, createModel }) => {
-  describe.skipIf(await skip())(`${name} Integration Tests`, () => {
+  describe(`${name} Integration Tests`, { skip: await skip(), timeout: 60000 }, () => {
     describe('Basic Functionality', () => {
       it('handles invocation, streaming, system prompts, and tool use', async () => {
         // Test basic invocation with system prompt and tool
