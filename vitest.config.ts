@@ -23,6 +23,11 @@ const getOpenAIAPIKey: BrowserCommand<[], string | undefined> = async ({ testPat
 export default defineConfig({
   test: {
     unstubEnvs: true,
+    reporters: [
+      'default',
+      ['junit', { outputFile: 'test/.artifacts/test-report/junit/report.xml' }],
+      ['json', { outputFile: 'test/.artifacts/test-report/json/report.json' }],
+    ],
     projects: [
       {
         test: {
@@ -43,6 +48,7 @@ export default defineConfig({
           browser: {
             enabled: true,
             provider: playwright(),
+            screenshotDirectory: 'test/.artifacts/browser-screenshots/',
             instances: [
               {
                 browser: 'chromium',
@@ -72,6 +78,7 @@ export default defineConfig({
           browser: {
             enabled: true,
             provider: playwright(),
+            screenshotDirectory: 'test/.artifacts/browser-screenshots/',
             instances: [
               {
                 browser: 'chromium',
