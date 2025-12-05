@@ -65,7 +65,7 @@ export default [
       'no-restricted-imports': ['error', {
         patterns: [{
           group: ['../src', '../src/**'],
-          message: 'Integration tests should import from @strands-agent/sdk instead of ../src'
+          message: 'Integration tests should use @/sdk/* path aliases instead of ../src. Test fixtures can import from @/sdk/*.'
         }]
       }]
     }

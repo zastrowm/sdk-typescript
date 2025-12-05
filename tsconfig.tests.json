@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "$sdk/*": ["./src/*"],
+      "$vended/*": ["./vended_tools/*"]
+    }
+  },
+  "include": [
+    "tests_integ/**/*",
+    "vended_tools/**/__tests__/**/*"
+  ]
+}

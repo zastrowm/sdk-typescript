@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { notebook } from '../notebook.js'
 import type { NotebookState } from '../types.js'
-import type { ToolContext } from '../../../src/tools/tool.js'
-import { AgentState } from '../../../src/agent/state.js'
+import type { ToolContext } from '$sdk/tools/tool.js'
+import { AgentState } from '$sdk/agent/state.js'
 
 describe('notebook tool', () => {
   // Helper to create fresh state and context for each test

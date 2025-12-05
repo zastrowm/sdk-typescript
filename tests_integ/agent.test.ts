@@ -6,8 +6,7 @@ import { httpRequest } from '@strands-agents/sdk/vended_tools/http_request'
 import { OpenAIModel } from '@strands-agents/sdk/openai'
 import { z } from 'zod'
 
-// eslint-disable-next-line no-restricted-imports
-import { collectGenerator } from '../src/__fixtures__/model-test-helpers.js'
+import { collectGenerator } from '$sdk/__fixtures__/model-test-helpers.js'
 import { shouldRunTests } from './__fixtures__/model-test-helpers.js'
 import { loadFixture, shouldSkipOpenAITests } from './__fixtures__/test-helpers.js'
 

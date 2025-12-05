@@ -3,6 +3,10 @@ import { playwright } from '@vitest/browser-playwright'
 import { AwsCredentialIdentity } from '@aws-sdk/types'
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 import { BrowserCommand } from 'vitest/node'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Conditionally exclude bash tool from coverage on Windows
 // since tests are skipped on Windows (bash not available)
@@ -21,6 +25,12 @@ const getOpenAIAPIKey: BrowserCommand<[], string | undefined> = async ({ testPat
 }
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '$sdk': path.resolve(__dirname, './src'),
+      '$vended': path.resolve(__dirname, './vended_tools'),
+    },
+  },
   test: {
     unstubEnvs: true,
     projects: [
