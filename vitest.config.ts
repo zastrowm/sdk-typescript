@@ -25,12 +25,6 @@ const getOpenAIAPIKey: BrowserCommand<[], string | undefined> = async ({ testPat
 }
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '$/sdk': path.resolve(__dirname, './src'),
-      '$/vended': path.resolve(__dirname, './vended_tools'),
-    },
-  },
   test: {
     unstubEnvs: true,
     projects: [
@@ -64,6 +58,10 @@ export default defineConfig({
       },
       {
         test: {
+          alias: {
+            '$/sdk': path.resolve(__dirname, './src'),
+            '$/vended': path.resolve(__dirname, './vended_tools'),
+          },
           include: ['tests_integ/**/*.test.ts'],
           exclude: ['tests_integ/**/*.browser.test.ts'],
           name: { label: 'integ-node', color: 'magenta' },
@@ -77,6 +75,10 @@ export default defineConfig({
       },
       {
         test: {
+          alias: {
+            '$/sdk': path.resolve(__dirname, './src'),
+            '$/vended': path.resolve(__dirname, './vended_tools'),
+          },
           include: ['tests_integ/**/*.browser.test.ts'],
           name: { label: 'integ-browser', color: 'yellow' },
           testTimeout: 30000,
