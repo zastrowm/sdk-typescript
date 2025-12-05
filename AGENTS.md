@@ -162,8 +162,21 @@ See [CONTRIBUTING.md - Development Environment](CONTRIBUTING.md#development-envi
 3. **Run quality checks** before committing (pre-commit hooks will run automatically)
 4. **Commit with conventional commits**: `feat:`, `fix:`, `refactor:`, `docs:`, etc.
 5. **Push to remote**: `git push origin agent-tasks/{ISSUE_NUMBER}`
+6. **Create pull request** following [PR.md](PR.md) guidelines
 
-### 3. Quality Gates
+### 3. Pull Request Guidelines
+
+When creating pull requests, you **MUST** follow the guidelines in [PR.md](PR.md). Key principles:
+
+- **Focus on WHY**: Explain motivation and user impact, not implementation details
+- **Document public API changes**: Show before/after code examples
+- **Be concise**: Use prose over bullet lists; avoid exhaustive checklists
+- **Target senior engineers**: Assume familiarity with the SDK
+- **Exclude implementation details**: Leave these to code comments and diffs
+
+See [PR.md](PR.md) for the complete RFC-style guidance and template.
+
+### 4. Quality Gates
 
 Pre-commit hooks automatically run:
 - Unit tests (via npm test)
