@@ -99,6 +99,7 @@ module.exports = async (context, github, core, inputs) => {
 
     core.setOutput('branch_name', branchName);
     core.setOutput('session_id', sessionId);
+    core.setOutput('session_prefix', process.env.GITHUB_REPOSITORY);
     core.setOutput('system_prompt', systemPrompt);
     core.setOutput('prompt', prompt);
 
