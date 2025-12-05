@@ -98,7 +98,7 @@ npm run test:all:coverage
 - **Integration Tests**: Test complete workflows in `tests_integ/` directory
 - **TSDoc Coverage**: All exported functions must have complete documentation
 
-For detailed testing patterns and examples, see [AGENTS.md - Testing Patterns](AGENTS.md#testing-patterns).
+For detailed testing patterns and guidelines, see [Testing Guidelines](docs/TESTING.md).
 
 ### Documentation Updates
 
