@@ -13,7 +13,7 @@ import {
 } from '../events.js'
 import { Agent } from '../../agent/agent.js'
 import { Message, TextBlock, ToolResultBlock } from '../../types/messages.js'
-import { FunctionTool } from '../../tools/function-tool.js'
+import { createMockTool } from '../../__fixtures__/tool-helpers.js'
 
 describe('BeforeInvocationEvent', () => {
   it('creates instance with correct properties', () => {
@@ -83,12 +83,15 @@ describe('MessageAddedEvent', () => {
 describe('BeforeToolCallEvent', () => {
   it('creates instance with correct properties when tool is found', () => {
     const agent = new Agent()
-    const tool = new FunctionTool({
-      name: 'testTool',
-      description: 'Test tool',
-      inputSchema: {},
-      callback: () => 'result',
-    })
+    const tool = createMockTool(
+      'testTool',
+      () =>
+        new ToolResultBlock({
+          toolUseId: 'test-id',
+          status: 'success',
+          content: [],
+        })
+    )
     const toolUse = {
       name: 'testTool',
       toolUseId: 'test-id',
@@ -101,9 +104,12 @@ describe('BeforeToolCallEvent', () => {
       agent: agent,
       toolUse: toolUse,
       tool: tool,
+      toolInput: { arg: 'value' },
     })
     // @ts-expect-error verifying that property is readonly
     event.agent = new Agent()
+    // @ts-expect-error verifying that property is readonly
+    event.toolUse = toolUse
   })
 
   it('creates instance with undefined tool when tool is not found', () => {
@@ -120,6 +126,7 @@ describe('BeforeToolCallEvent', () => {
       agent: agent,
       toolUse: toolUse,
       tool: undefined,
+      toolInput: {},
     })
   })
 
@@ -132,18 +139,24 @@ describe('BeforeToolCallEvent', () => {
 
   it('allows modifying tool property', () => {
     const agent = new Agent()
-    const tool1 = new FunctionTool({
-      name: 'tool1',
-      description: 'First tool',
-      inputSchema: {},
-      callback: () => 'result1',
-    })
-    const tool2 = new FunctionTool({
-      name: 'tool2',
-      description: 'Second tool',
-      inputSchema: {},
-      callback: () => 'result2',
-    })
+    const tool1 = createMockTool(
+      'tool1',
+      () =>
+        new ToolResultBlock({
+          toolUseId: 'id',
+          status: 'success',
+          content: [],
+        })
+    )
+    const tool2 = createMockTool(
+      'tool2',
+      () =>
+        new ToolResultBlock({
+          toolUseId: 'id',
+          status: 'success',
+          content: [],
+        })
+    )
     const toolUse = { name: 'tool1', toolUseId: 'id', input: {} }
     const event = new BeforeToolCallEvent({ agent, toolUse, tool: tool1 })
 
@@ -152,30 +165,29 @@ describe('BeforeToolCallEvent', () => {
     expect(event.tool).toBe(tool2)
   })
 
-  it('allows modifying toolUse property', () => {
+  it('allows modifying toolInput property', () => {
     const agent = new Agent()
     const toolUse = { name: 'test', toolUseId: 'id', input: { original: true } }
     const event = new BeforeToolCallEvent({ agent, toolUse, tool: undefined })
 
-    expect(event.toolUse.name).toBe('test')
-    event.toolUse.name = 'modified'
-    expect(event.toolUse.name).toBe('modified')
-
-    expect(event.toolUse.input).toEqual({ original: true })
-    event.toolUse.input = { modified: true }
-    expect(event.toolUse.input).toEqual({ modified: true })
+    expect(event.toolInput).toEqual({ original: true })
+    event.toolInput = { modified: true }
+    expect(event.toolInput).toEqual({ modified: true })
   })
 })
 
 describe('AfterToolCallEvent', () => {
   it('creates instance with correct properties on success', () => {
     const agent = new Agent()
-    const tool = new FunctionTool({
-      name: 'testTool',
-      description: 'Test tool',
-      inputSchema: {},
-      callback: () => 'result',
-    })
+    const tool = createMockTool(
+      'testTool',
+      () =>
+        new ToolResultBlock({
+          toolUseId: 'test-id',
+          status: 'success',
+          content: [new TextBlock('Success')],
+        })
+    )
     const toolUse = {
       name: 'testTool',
       toolUseId: 'test-id',
@@ -255,6 +267,24 @@ describe('AfterToolCallEvent', () => {
     expect(event.result).toBe(result1)
     event.result = result2
     expect(event.result).toBe(result2)
+  })
+
+  it('allows modifying error property', () => {
+    const agent = new Agent()
+    const toolUse = { name: 'test', toolUseId: 'id', input: {} }
+    const result = new ToolResultBlock({
+      toolUseId: 'id',
+      status: 'error',
+      content: [new TextBlock('Error')],
+    })
+    const error1 = new Error('Original error')
+    const event = new AfterToolCallEvent({ agent, toolUse, tool: undefined, result, error: error1 })
+
+    expect(event.error).toBe(error1)
+
+    const error2 = new Error('Modified error')
+    event.error = error2
+    expect(event.error).toBe(error2)
   })
 })
 

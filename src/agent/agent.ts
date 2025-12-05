@@ -571,26 +571,21 @@ export class Agent implements AgentData {
     const beforeEvent = new BeforeToolCallEvent({ agent: this, toolUse, tool })
     yield beforeEvent
 
-    // Use potentially modified tool and toolUse from hook
-    let actualTool = beforeEvent.tool
-    const actualToolUse = beforeEvent.toolUse
-
-    // If toolUse.name was modified, re-lookup the tool
-    if (actualToolUse.name !== toolUseBlock.name) {
-      actualTool = toolRegistry.find((t) => t.name === actualToolUse.name)
-    }
+    // Use potentially modified tool and toolInput from hook
+    const actualTool = beforeEvent.tool
+    const actualToolInput = beforeEvent.toolInput
 
     if (!actualTool) {
       // Tool not found - return error result instead of throwing
       const errorResult = new ToolResultBlock({
-        toolUseId: actualToolUse.toolUseId,
+        toolUseId: toolUse.toolUseId,
         status: 'error',
-        content: [new TextBlock(`Tool '${actualToolUse.name}' not found in registry`)],
+        content: [new TextBlock(`Tool '${toolUse.name}' not found in registry`)],
       })
 
       const afterEvent = new AfterToolCallEvent({
         agent: this,
-        toolUse: actualToolUse,
+        toolUse,
         tool: actualTool,
         result: errorResult,
       })
@@ -602,9 +597,9 @@ export class Agent implements AgentData {
     // Execute tool and collect result
     const toolContext: ToolContext = {
       toolUse: {
-        name: actualToolUse.name,
-        toolUseId: actualToolUse.toolUseId,
-        input: actualToolUse.input,
+        name: toolUse.name,
+        toolUseId: toolUse.toolUseId,
+        input: actualToolInput,
       },
       agent: this,
     }
@@ -618,14 +613,14 @@ export class Agent implements AgentData {
       if (!toolResult) {
         // Tool didn't return a result - return error result instead of throwing
         const errorResult = new ToolResultBlock({
-          toolUseId: actualToolUse.toolUseId,
+          toolUseId: toolUse.toolUseId,
           status: 'error',
-          content: [new TextBlock(`Tool '${actualToolUse.name}' did not return a result`)],
+          content: [new TextBlock(`Tool '${toolUse.name}' did not return a result`)],
         })
 
         const afterEvent = new AfterToolCallEvent({
           agent: this,
-          toolUse: actualToolUse,
+          toolUse,
           tool: actualTool,
           result: errorResult,
         })
@@ -636,7 +631,7 @@ export class Agent implements AgentData {
 
       const afterEvent = new AfterToolCallEvent({
         agent: this,
-        toolUse: actualToolUse,
+        toolUse,
         tool: actualTool,
         result: toolResult,
       })
@@ -648,7 +643,7 @@ export class Agent implements AgentData {
       // Tool execution failed with error
       const toolError = normalizeError(error)
       const errorResult = new ToolResultBlock({
-        toolUseId: actualToolUse.toolUseId,
+        toolUseId: toolUse.toolUseId,
         status: 'error',
         content: [new TextBlock(toolError.message)],
         error: toolError,
@@ -656,7 +651,7 @@ export class Agent implements AgentData {
 
       const afterEvent = new AfterToolCallEvent({
         agent: this,
-        toolUse: actualToolUse,
+        toolUse,
         tool: actualTool,
         result: errorResult,
         error: toolError,
