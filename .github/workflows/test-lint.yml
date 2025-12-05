@@ -47,6 +47,7 @@ jobs:
           name: test-artifacts
           path: ./test/.artifacts/
           retention-days: 4
+          include-hidden-files: true
           if-no-files-found: ignore
 
       - name: Run linting
