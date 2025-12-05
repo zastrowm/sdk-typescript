@@ -44,7 +44,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-artifacts
+          name: test-artifacts-${{ matrix.node-version }}-${{ matrix.os }}
           path: ./test/.artifacts/
           retention-days: 4
           include-hidden-files: true
