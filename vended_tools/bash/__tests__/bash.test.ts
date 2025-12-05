@@ -27,6 +27,8 @@ describe.skipIf(!isNode || process.platform === 'win32')('bash tool', () => {
 
   describe('input validation', () => {
     it('accepts valid execute command', async () => {
+      console.log('LOL HERE WE GO')
+
       const { context } = createFreshContext()
       const result = await bash.invoke({ mode: 'execute', command: 'echo "test"' }, context)
 
