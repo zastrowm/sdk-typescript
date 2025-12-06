@@ -582,7 +582,12 @@ export class Agent implements AgentData {
         content: [new TextBlock(`Tool '${effectiveToolUse.name}' not found in registry`)],
       })
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: effectiveToolUse, tool: effectiveTool, result: errorResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: effectiveToolUse,
+        tool: effectiveTool,
+        result: errorResult,
+      })
       yield afterEvent
 
       return afterEvent.result
@@ -612,13 +617,23 @@ export class Agent implements AgentData {
           content: [new TextBlock(`Tool '${effectiveToolUse.name}' did not return a result`)],
         })
 
-        const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: effectiveToolUse, tool: effectiveTool, result: errorResult })
+        const afterEvent = new AfterToolCallEvent({
+          agent: this,
+          toolUse: effectiveToolUse,
+          tool: effectiveTool,
+          result: errorResult,
+        })
         yield afterEvent
 
         return afterEvent.result
       }
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: effectiveToolUse, tool: effectiveTool, result: toolResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: effectiveToolUse,
+        tool: effectiveTool,
+        result: toolResult,
+      })
       yield afterEvent
 
       // Return potentially modified result
@@ -633,7 +648,13 @@ export class Agent implements AgentData {
         error: toolError,
       })
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: effectiveToolUse, tool: effectiveTool, result: errorResult, error: toolError })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: effectiveToolUse,
+        tool: effectiveTool,
+        result: errorResult,
+        error: toolError,
+      })
       yield afterEvent
 
       return afterEvent.result
