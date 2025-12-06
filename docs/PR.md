@@ -193,3 +193,9 @@ showing when developers would use this feature. Skip for trivial changes.]
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Google's Code Review Guidelines](https://google.github.io/eng-practices/review/)
 ```
+
+## Checklist Items
+
+ - [ ] Does the PR description target a Senior Engineer familiar with the project?
+ - [ ] Does the PR contain the motivation or use-cases behind the change?
+ - [ ] Does the PR omit irrelevent details not needed for historical reference?
