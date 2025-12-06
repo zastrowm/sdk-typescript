@@ -197,5 +197,7 @@ showing when developers would use this feature. Skip for trivial changes.]
 ## Checklist Items
 
  - [ ] Does the PR description target a Senior Engineer familiar with the project?
+ - [ ] Does the PR description give an overview of the feature being implemented, including any notes on key implemention decisions
+ - [ ] Does the PR include a "Resolves #<ISSUE NUMBER>" in the body and is not bolded?
  - [ ] Does the PR contain the motivation or use-cases behind the change?
  - [ ] Does the PR omit irrelevent details not needed for historical reference?
