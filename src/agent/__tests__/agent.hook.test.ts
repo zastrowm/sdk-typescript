@@ -10,6 +10,7 @@ import {
   MessageAddedEvent,
   ModelStreamEventHook,
   type HookRegistry,
+  type HookProvider,
 } from '../../hooks/index.js'
 import { MockMessageModel } from '../../__fixtures__/mock-message-model.js'
 import { MockHookProvider } from '../../__fixtures__/mock-hook-provider.js'
@@ -238,6 +239,231 @@ describe('Agent Hooks Integration', () => {
           }),
         })
       )
+    })
+  })
+
+  describe('writable hook properties', () => {
+    it('allows hook to modify tool in BeforeToolCallEvent', async () => {
+      const toolA = new FunctionTool({
+        name: 'toolA',
+        description: 'Tool A',
+        inputSchema: {},
+        callback: () => 'Tool A result',
+      })
+
+      const toolB = new FunctionTool({
+        name: 'toolB',
+        description: 'Tool B',
+        inputSchema: {},
+        callback: () => 'Tool B result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'toolA', toolUseId: 'tool-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Final response' })
+
+      // Hook provider that modifies the tool
+      class ToolModifyingHooks implements HookProvider {
+        registerCallbacks(registry: HookRegistry): void {
+          registry.addCallback(BeforeToolCallEvent, (event) => {
+            if (event.tool?.name === 'toolA') {
+              event.tool = toolB
+            }
+          })
+        }
+      }
+
+      const agent = new Agent({
+        model,
+        tools: [toolA, toolB],
+        hooks: [new ToolModifyingHooks(), mockProvider],
+      })
+
+      await agent.invoke('Test')
+
+      // Find AfterToolCallEvent to verify toolB was executed
+      const afterToolCallEvents = mockProvider.invocations.filter((e) => e instanceof AfterToolCallEvent)
+      expect(afterToolCallEvents.length).toBe(1)
+
+      const afterToolCall = afterToolCallEvents[0] as AfterToolCallEvent
+      expect(afterToolCall.result.content).toEqual([new TextBlock('Tool B result')])
+    })
+
+    it('allows hook to modify toolUse in BeforeToolCallEvent', async () => {
+      const tool = new FunctionTool({
+        name: 'echoTool',
+        description: 'Echoes the input',
+        inputSchema: {},
+        callback: (input, _context) => {
+          return `Input: ${JSON.stringify(input)}`
+        },
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'echoTool', toolUseId: 'tool-1', input: { x: 1 } })
+        .addTurn({ type: 'textBlock', text: 'Final response' })
+
+      // Hook provider that modifies the toolUse
+      class ToolUseModifyingHooks implements HookProvider {
+        registerCallbacks(registry: HookRegistry): void {
+          registry.addCallback(BeforeToolCallEvent, (event) => {
+            event.toolUse = {
+              name: event.toolUse.name,
+              toolUseId: event.toolUse.toolUseId,
+              input: { x: 2 },
+            }
+          })
+        }
+      }
+
+      const agent = new Agent({
+        model,
+        tools: [tool],
+        hooks: [new ToolUseModifyingHooks(), mockProvider],
+      })
+
+      await agent.invoke('Test')
+
+      // Find AfterToolCallEvent to verify modified input was used
+      const afterToolCallEvents = mockProvider.invocations.filter((e) => e instanceof AfterToolCallEvent)
+      expect(afterToolCallEvents.length).toBe(1)
+
+      const afterToolCall = afterToolCallEvents[0] as AfterToolCallEvent
+      expect(afterToolCall.result.content).toEqual([new TextBlock('Input: {"x":2}')])
+    })
+
+    it('allows hook to set tool to undefined in BeforeToolCallEvent', async () => {
+      const tool = new FunctionTool({
+        name: 'testTool',
+        description: 'Test tool',
+        inputSchema: {},
+        callback: () => 'Tool result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'testTool', toolUseId: 'tool-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Final response' })
+
+      // Hook provider that sets tool to undefined
+      class ToolNullifyingHooks implements HookProvider {
+        registerCallbacks(registry: HookRegistry): void {
+          registry.addCallback(BeforeToolCallEvent, (event) => {
+            event.tool = undefined
+          })
+        }
+      }
+
+      const agent = new Agent({
+        model,
+        tools: [tool],
+        hooks: [new ToolNullifyingHooks(), mockProvider],
+      })
+
+      await agent.invoke('Test')
+
+      // Find AfterToolCallEvent to verify error result was returned
+      const afterToolCallEvents = mockProvider.invocations.filter((e) => e instanceof AfterToolCallEvent)
+      expect(afterToolCallEvents.length).toBe(1)
+
+      const afterToolCall = afterToolCallEvents[0] as AfterToolCallEvent
+      expect(afterToolCall.result.status).toBe('error')
+      expect(afterToolCall.result.content).toEqual([new TextBlock("Tool 'testTool' not found in registry")])
+    })
+
+    it('allows hook to modify result in AfterToolCallEvent', async () => {
+      const tool = new FunctionTool({
+        name: 'testTool',
+        description: 'Test tool',
+        inputSchema: {},
+        callback: () => 'Original result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'testTool', toolUseId: 'tool-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Final response' })
+
+      // Hook provider that modifies the result
+      class ResultModifyingHooks implements HookProvider {
+        registerCallbacks(registry: HookRegistry): void {
+          registry.addCallback(AfterToolCallEvent, (event) => {
+            event.result = new ToolResultBlock({
+              toolUseId: event.result.toolUseId,
+              status: 'success',
+              content: [new TextBlock('Modified result')],
+            })
+          })
+        }
+      }
+
+      const agent = new Agent({
+        model,
+        tools: [tool],
+        hooks: [new ResultModifyingHooks()],
+      })
+
+      await agent.invoke('Test')
+
+      // Check the conversation history to verify modified result was used
+      const messages = agent.messages
+      const toolResultMessage = messages.find(
+        (m) => m.role === 'user' && m.content.some((c) => c.type === 'toolResultBlock')
+      )
+      expect(toolResultMessage).toBeDefined()
+
+      const toolResultBlock = toolResultMessage!.content.find((c) => c.type === 'toolResultBlock') as ToolResultBlock
+      expect(toolResultBlock.content).toEqual([new TextBlock('Modified result')])
+    })
+
+    it('allows hook to change result status from success to error', async () => {
+      const tool = new FunctionTool({
+        name: 'testTool',
+        description: 'Test tool',
+        inputSchema: {},
+        callback: () => 'Success result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'testTool', toolUseId: 'tool-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Final response' })
+
+      // Hook provider that changes result to error
+      class ErrorConvertingHooks implements HookProvider {
+        registerCallbacks(registry: HookRegistry): void {
+          registry.addCallback(AfterToolCallEvent, (event) => {
+            event.result = new ToolResultBlock({
+              toolUseId: event.result.toolUseId,
+              status: 'error',
+              content: [new TextBlock('Converted to error')],
+            })
+          })
+        }
+      }
+
+      const agent = new Agent({
+        model,
+        tools: [tool],
+        hooks: [new ErrorConvertingHooks(), mockProvider],
+      })
+
+      await agent.invoke('Test')
+
+      // Find AfterToolCallEvent to verify result was changed to error
+      const afterToolCallEvents = mockProvider.invocations.filter((e) => e instanceof AfterToolCallEvent)
+      expect(afterToolCallEvents.length).toBe(1)
+
+      const afterToolCall = afterToolCallEvents[0] as AfterToolCallEvent
+      expect(afterToolCall.result.status).toBe('error')
+      expect(afterToolCall.result.content).toEqual([new TextBlock('Converted to error')])
+
+      // Verify error result was sent to the model
+      const messages = agent.messages
+      const toolResultMessage = messages.find(
+        (m) => m.role === 'user' && m.content.some((c) => c.type === 'toolResultBlock')
+      )
+      expect(toolResultMessage).toBeDefined()
+
+      const toolResultBlock = toolResultMessage!.content.find((c) => c.type === 'toolResultBlock') as ToolResultBlock
+      expect(toolResultBlock.status).toBe('error')
     })
   })
 
