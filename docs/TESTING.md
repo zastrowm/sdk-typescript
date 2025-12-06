@@ -296,6 +296,36 @@ const provider = new MockMessageModel()
   .addTurn(new Error('Model failed'))
 ```
 
+## Testing Hooks
+
+When testing hook behavior with an Agent, you **SHOULD** register callbacks directly on the agent's `hooks` property rather than creating an inline `HookProvider` object.
+
+```typescript
+// ✅ CORRECT - Register callbacks directly on agent.hooks
+const agent = new Agent({ model, tools: [tool] })
+
+agent.hooks.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
+  event.toolUse = {
+    ...event.toolUse,
+    input: { value: 42 },
+  }
+})
+
+// ❌ WRONG - Do not create HookProvider objects for tests
+const modifyInputHook = {
+  registerCallbacks: (registry: HookRegistry) => {
+    registry.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
+      event.toolUse = {
+        ...event.toolUse,
+        input: { value: 42 },
+      }
+    })
+  },
+}
+```
+
+Tests should use the simpler, direct approach via `agent.hooks.addCallback()`
+
 ## Multi-Environment Testing
 
 The SDK is designed to work seamlessly in both Node.js and browser environments. Our test suite validates this by running tests in both environments using Vitest's browser mode with Playwright.
@@ -341,8 +371,8 @@ For detailed command usage, see [CONTRIBUTING.md - Testing Instructions](../CONT
 
 ## Checklist Items
 
- - [ ] Do the test use relevent helpers from __fixtures__ (`MockMessageModel`, `createMockTool`, `createMockAgent` etc.)
- - [ ] Are reoccuring code or patterns extracted to functions for better usability/readability
- - [ ] Are tests focused on verifying one or two things only?
- - [ ] Are tests written concisely enough that the bulk of each test is important to the test instead of boilerplate code?
- - [ ] Are tests asserting on the entire object instead of specific fields?
+- [ ] Do the test use relevent helpers from `__fixtures__` (`MockMessageModel`, `createMockTool`, `createMockAgent` etc.)
+- [ ] Are reoccuring code or patterns extracted to functions for better usability/readability
+- [ ] Are tests focused on verifying one or two things only?
+- [ ] Are tests written concisely enough that the bulk of each test is important to the test instead of boilerplate code?
+- [ ] Are tests asserting on the entire object instead of specific fields?

@@ -204,26 +204,42 @@ Write implementation code to pass the tests, focusing on simplicity and correctn
 - You MUST otherwise continue automatically after verifying test results
 - You MUST follow the Build Output Management practices defined in the Best Practices section
 
-#### 4.3 Review, Refactor, and Optimize
+#### 4.3 Review and Refactor Implementation
 
-If the implementation is complete, proceed with review of the implementation to identify opportunities for simplification or improvement.
+If the implementation is complete, proceed with a self-review of the implementation code to identify opportunities for simplification or improvement.
 
 **Constraints:**
 
-- You SHOULD review your own code according to the checklist items in [docs/TESTING.md](../../docs/TESTING.md).
-- You MAY reply to user review threads with a concise response
-  - You MUST keep your response to less than 3 sentences
 - You MUST check that all tasks are complete before proceeding
-  - if tests fail, you MUST identify the issue and implement a fix
-  - if builds fail, you MUST identify the issue implement a fix
-- You MUST prioritize readability and maintainability over clever optimizations
+  - If tests fail, you MUST identify the issue and implement a fix
+  - If builds fail, you MUST identify the issue and implement a fix
+- You MUST prioritize readability and maintainability
 - You MUST maintain test passing status throughout refactoring
-- You SHOULD make note of simplification in your progress notes
+- You MUST look for opportunities to:
+  - Reduce code duplication
+  - Simplify complex logic
+  - Improve naming and clarity
+  - Remove unnecessary abstractions
+- You SHOULD make note of simplifications in your progress notes
 - You SHOULD record significant refactorings in your progress notes
+- You MUST return to step 4.2 if refactoring reveals additional implementation needs
 
-#### 4.4 Validate Implementation
+#### 4.4 Review and Refactor Tests
 
-If the implementation meets all requirements and follows established patterns, proceed with this step. Otherwise, return to step 4.2 to fix any issues.
+After reviewing the implementation, review the test code to ensure it follows established patterns and provides adequate coverage.
+
+**Constraints:**
+
+- You MUST review your test code according to the guidelines in [docs/TESTING.md](../../docs/TESTING.md).
+  - You SHOULD add a task to validate it conforms to that documents
+- You MUST verify tests conform to the testing documentation standards
+- You MUST verify tests are readable and maintainable
+- You SHOULD refactor tests that are overly complex or duplicative
+- You MUST return to step 4.1 if tests need significant restructuring
+
+#### 4.5 Validate Implementation
+
+If the implementation meets all requirements and follows established patterns, proceed with this step. Otherwise, return to step 4.2, 4.3, or 4.4 to fix any issues.
 
 **Constraints:**
 
@@ -240,6 +256,24 @@ If the implementation meets all requirements and follows established patterns, p
 - You MUST run appropriate build commands based on the guidance in the repository
 - You MUST verify that all dependencies are satisfied
 - You MUST follow the Build Output Management practices defined in the Best Practices section
+
+#### 4.6 Respond to Review Feedback
+
+If you have received feedback from user reviews or PR comments, address them before proceeding to the commit phase.
+
+**Constraints:**
+
+- You MAY skip this step if no user feedback has been received yet
+- You MUST reply to user review threads with a concise response
+  - You MUST keep your response to less than 3 sentences
+- You MUST categorize each piece of feedback as:
+  - Actionable code changes that can be implemented immediately
+  - Clarifying questions that require user input
+  - Suggestions to consider for future iterations
+- You MUST implement actionable code changes before proceeding
+- You MUST re-run tests after addressing feedback to ensure nothing is broken
+- You MUST return to step 4.3 after implementing changes to review the updated code
+- You MUST use the handoff_to_user tool if clarification is needed before you can proceed
 
 ### 5. Commit and Pull Request Phase
 
