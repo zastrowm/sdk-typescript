@@ -567,33 +567,45 @@ export class Agent implements AgentData {
       input: toolUseBlock.input,
     }
 
-    yield new BeforeToolCallEvent({ agent: this, toolUse, tool })
+    // Yield BeforeToolCallEvent and capture potentially modified values
+    const beforeEvent = new BeforeToolCallEvent({ agent: this, toolUse, tool })
+    yield beforeEvent
 
-    if (!tool) {
+    // Use potentially modified tool and toolInput from hook
+    const actualTool = beforeEvent.tool
+    const actualToolInput = beforeEvent.toolInput
+
+    if (!actualTool) {
       // Tool not found - return error result instead of throwing
       const errorResult = new ToolResultBlock({
-        toolUseId: toolUseBlock.toolUseId,
+        toolUseId: toolUse.toolUseId,
         status: 'error',
-        content: [new TextBlock(`Tool '${toolUseBlock.name}' not found in registry`)],
+        content: [new TextBlock(`Tool '${toolUse.name}' not found in registry`)],
       })
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse,
+        tool: actualTool,
+        result: errorResult,
+      })
+      yield afterEvent
 
-      return errorResult
+      return afterEvent.result
     }
 
     // Execute tool and collect result
     const toolContext: ToolContext = {
       toolUse: {
-        name: toolUseBlock.name,
-        toolUseId: toolUseBlock.toolUseId,
-        input: toolUseBlock.input,
+        name: toolUse.name,
+        toolUseId: toolUse.toolUseId,
+        input: actualToolInput,
       },
       agent: this,
     }
 
     try {
-      const toolGenerator = tool.stream(toolContext)
+      const toolGenerator = actualTool.stream(toolContext)
 
       // Use yield* to delegate to the tool generator and capture the return value
       const toolResult = yield* toolGenerator
@@ -601,33 +613,52 @@ export class Agent implements AgentData {
       if (!toolResult) {
         // Tool didn't return a result - return error result instead of throwing
         const errorResult = new ToolResultBlock({
-          toolUseId: toolUseBlock.toolUseId,
+          toolUseId: toolUse.toolUseId,
           status: 'error',
-          content: [new TextBlock(`Tool '${toolUseBlock.name}' did not return a result`)],
+          content: [new TextBlock(`Tool '${toolUse.name}' did not return a result`)],
         })
 
-        yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult })
+        const afterEvent = new AfterToolCallEvent({
+          agent: this,
+          toolUse,
+          tool: actualTool,
+          result: errorResult,
+        })
+        yield afterEvent
 
-        return errorResult
+        return afterEvent.result
       }
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: toolResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse,
+        tool: actualTool,
+        result: toolResult,
+      })
+      yield afterEvent
 
-      // Tool already returns ToolResultBlock directly
-      return toolResult
+      // Return potentially modified result
+      return afterEvent.result
     } catch (error) {
       // Tool execution failed with error
       const toolError = normalizeError(error)
       const errorResult = new ToolResultBlock({
-        toolUseId: toolUseBlock.toolUseId,
+        toolUseId: toolUse.toolUseId,
         status: 'error',
         content: [new TextBlock(toolError.message)],
         error: toolError,
       })
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult, error: toolError })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse,
+        tool: actualTool,
+        result: errorResult,
+        error: toolError,
+      })
+      yield afterEvent
 
-      return errorResult
+      return afterEvent.result
     }
   }
 

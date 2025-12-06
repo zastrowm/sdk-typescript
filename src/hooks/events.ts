@@ -81,7 +81,8 @@ export class BeforeToolCallEvent extends HookEvent {
     toolUseId: string
     input: JSONValue
   }
-  readonly tool: Tool | undefined
+  tool: Tool | undefined
+  toolInput: JSONValue
 
   constructor(data: {
     agent: AgentData
@@ -92,6 +93,7 @@ export class BeforeToolCallEvent extends HookEvent {
     this.agent = data.agent
     this.toolUse = data.toolUse
     this.tool = data.tool
+    this.toolInput = data.toolUse.input
   }
 }
 
@@ -109,8 +111,8 @@ export class AfterToolCallEvent extends HookEvent {
     input: JSONValue
   }
   readonly tool: Tool | undefined
-  readonly result: ToolResultBlock
-  readonly error?: Error
+  result: ToolResultBlock
+  error?: Error
 
   constructor(data: {
     agent: AgentData
