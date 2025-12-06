@@ -338,3 +338,11 @@ npm run test:coverage # Run tests with coverage report
 ```
 
 For detailed command usage, see [CONTRIBUTING.md - Testing Instructions](../CONTRIBUTING.md#testing-instructions-and-best-practices).
+
+## Checklist Items
+
+ - [ ] Do the test use relevent helpers from __fixtures__ (`MockMessageModel`, `createMockTool`, `createMockAgent` etc.)
+ - [ ] Are reoccuring code or patterns extracted to functions for better usability/readability
+ - [ ] Are tests focused on verifying one or two things only?
+ - [ ] Are tests written concisely enough that the bulk of each test is important to the test instead of boilerplate code?
+ - [ ] Are tests asserting on the entire object instead of specific fields?
