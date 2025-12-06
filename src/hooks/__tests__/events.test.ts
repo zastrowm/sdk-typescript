@@ -104,10 +104,44 @@ describe('BeforeToolCallEvent', () => {
     })
     // @ts-expect-error verifying that property is readonly
     event.agent = new Agent()
-    // @ts-expect-error verifying that property is readonly
-    event.toolUse = toolUse
-    // @ts-expect-error verifying that property is readonly
-    event.tool = tool
+  })
+
+  it('allows tool property to be modified', () => {
+    const agent = new Agent()
+    const tool1 = new FunctionTool({
+      name: 'tool1',
+      description: 'First tool',
+      inputSchema: {},
+      callback: () => 'result1',
+    })
+    const tool2 = new FunctionTool({
+      name: 'tool2',
+      description: 'Second tool',
+      inputSchema: {},
+      callback: () => 'result2',
+    })
+    const toolUse = { name: 'tool1', toolUseId: 'test-id', input: {} }
+    const event = new BeforeToolCallEvent({ agent, toolUse, tool: tool1 })
+
+    expect(event.tool).toBe(tool1)
+
+    event.tool = tool2
+    expect(event.tool).toBe(tool2)
+
+    event.tool = undefined
+    expect(event.tool).toBeUndefined()
+  })
+
+  it('allows toolUse property to be modified', () => {
+    const agent = new Agent()
+    const toolUse1 = { name: 'tool1', toolUseId: 'id-1', input: { x: 1 } }
+    const toolUse2 = { name: 'tool2', toolUseId: 'id-2', input: { x: 2 } }
+    const event = new BeforeToolCallEvent({ agent, toolUse: toolUse1, tool: undefined })
+
+    expect(event.toolUse).toEqual(toolUse1)
+
+    event.toolUse = toolUse2
+    expect(event.toolUse).toEqual(toolUse2)
   })
 
   it('creates instance with undefined tool when tool is not found', () => {
@@ -170,8 +204,27 @@ describe('AfterToolCallEvent', () => {
     event.toolUse = toolUse
     // @ts-expect-error verifying that property is readonly
     event.tool = tool
-    // @ts-expect-error verifying that property is readonly
-    event.result = result
+  })
+
+  it('allows result property to be modified', () => {
+    const agent = new Agent()
+    const toolUse = { name: 'test', toolUseId: 'id', input: {} }
+    const result1 = new ToolResultBlock({
+      toolUseId: 'id',
+      status: 'success',
+      content: [new TextBlock('Original result')],
+    })
+    const result2 = new ToolResultBlock({
+      toolUseId: 'id',
+      status: 'error',
+      content: [new TextBlock('Modified result')],
+    })
+    const event = new AfterToolCallEvent({ agent, toolUse, tool: undefined, result: result1 })
+
+    expect(event.result).toEqual(result1)
+
+    event.result = result2
+    expect(event.result).toEqual(result2)
   })
 
   it('creates instance with error property when tool execution fails', () => {

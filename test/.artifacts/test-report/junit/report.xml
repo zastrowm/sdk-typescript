@@ -1,0 +1,1612 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="727" failures="0" errors="0" time="1.237200729">
+    <testsuite name="src/__tests__/errors.test.ts" timestamp="2025-12-06T01:34:01.286Z" hostname="runnervmoqczp" tests="9" failures="0" errors="0" skipped="0" time="0.004776445">
+        <testcase classname="src/__tests__/errors.test.ts" name="ContextWindowOverflowError &gt; when instantiated with a message &gt; creates an error with the correct message" time="0.001468297">
+        </testcase>
+        <testcase classname="src/__tests__/errors.test.ts" name="ContextWindowOverflowError &gt; when instantiated with a message &gt; has the correct error name" time="0.000168554">
+        </testcase>
+        <testcase classname="src/__tests__/errors.test.ts" name="ContextWindowOverflowError &gt; when instantiated with a message &gt; is an instance of Error" time="0.000265345">
+        </testcase>
+        <testcase classname="src/__tests__/errors.test.ts" name="normalizeError &gt; when given an Error instance &gt; returns the same Error instance" time="0.000165839">
+        </testcase>
+        <testcase classname="src/__tests__/errors.test.ts" name="normalizeError &gt; when given a string &gt; wraps it in an Error" time="0.000156392">
+        </testcase>
+        <testcase classname="src/__tests__/errors.test.ts" name="normalizeError &gt; when given a number &gt; converts it to string and wraps in Error" time="0.000143978">
+        </testcase>
+        <testcase classname="src/__tests__/errors.test.ts" name="normalizeError &gt; when given an object &gt; converts it to string and wraps in Error" time="0.000170538">
+        </testcase>
+        <testcase classname="src/__tests__/errors.test.ts" name="normalizeError &gt; when given null &gt; converts it to string and wraps in Error" time="0.000138789">
+        </testcase>
+        <testcase classname="src/__tests__/errors.test.ts" name="normalizeError &gt; when given undefined &gt; converts it to string and wraps in Error" time="0.000139289">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/index.test.ts" timestamp="2025-12-06T01:34:01.289Z" hostname="runnervmoqczp" tests="4" failures="0" errors="0" skipped="0" time="0.010793403">
+        <testcase classname="src/__tests__/index.test.ts" name="index &gt; when importing from main entry point &gt; exports error classes" time="0.001422512">
+        </testcase>
+        <testcase classname="src/__tests__/index.test.ts" name="index &gt; when importing from main entry point &gt; exports BedrockModel" time="0.000184515">
+        </testcase>
+        <testcase classname="src/__tests__/index.test.ts" name="index &gt; when importing from main entry point &gt; can instantiate BedrockModel" time="0.007040416">
+        </testcase>
+        <testcase classname="src/__tests__/index.test.ts" name="index &gt; when importing from main entry point &gt; exports all required types" time="0.00015552">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/__tests__/mcp.test.ts" timestamp="2025-12-06T01:34:01.290Z" hostname="runnervmoqczp" tests="13" failures="0" errors="0" skipped="0" time="0.018601351">
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpClient &gt; initializes SDK client with correct configuration" time="0.005408764">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpClient &gt; manages connection state lazily" time="0.000692311">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpClient &gt; supports forced reconnection" time="0.000503068">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpClient &gt; converts SDK tool specs to McpTool instances" time="0.001778385">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpClient &gt; delegates invocation to SDK client" time="0.000746001">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpClient &gt; validates tool arguments" time="0.002221191">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpClient &gt; cleans up resources" time="0.000539846">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpTool &gt; returns text results on success" time="0.00087969">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpTool &gt; returns structured data results on success" time="0.000898215">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpTool &gt; provides default message for empty output" time="0.00064918">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpTool &gt; handles protocol-level errors" time="0.00049883">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpTool &gt; catches and wraps client exceptions" time="0.000705515">
+        </testcase>
+        <testcase classname="src/__tests__/mcp.test.ts" name="MCP Integration &gt; McpTool &gt; validates SDK response format" time="0.000355472">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/agent/__tests__/agent.hook.test.ts" timestamp="2025-12-06T01:34:01.292Z" hostname="runnervmoqczp" tests="17" failures="0" errors="0" skipped="0" time="0.038757292">
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; invocation lifecycle &gt; fires hooks during invoke" time="0.011052746">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; invocation lifecycle &gt; fires hooks during stream" time="0.001438191">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; runtime hook registration &gt; allows adding hooks after agent creation" time="0.000807746">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; multi-turn conversations &gt; fires hooks for each invoke call" time="0.001105831">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; tool execution hooks &gt; fires tool hooks during tool execution" time="0.00352807">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; tool execution hooks &gt; fires AfterToolCallEvent with error when tool fails" time="0.00170023">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; ModelStreamEventHook &gt; fires for each streaming event from the model" time="0.002745309">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; MessageAddedEvent &gt; fires for initial user input" time="0.001136539">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; AfterModelCallEvent retryModelCall &gt; retries model call when hook sets retryModelCall" time="0.000988844">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; AfterModelCallEvent retryModelCall &gt; does not retry when retryModelCall is not set" time="0.002045284">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; BeforeToolCallEvent writable properties &gt; allows hook to modify tool property to switch tools" time="0.002688513">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; BeforeToolCallEvent writable properties &gt; allows hook to set tool to undefined" time="0.001063372">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; BeforeToolCallEvent writable properties &gt; allows hook to modify toolUse input parameters" time="0.001047362">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; BeforeToolCallEvent writable properties &gt; allows hook to modify toolUse toolUseId" time="0.000803919">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; AfterToolCallEvent writable properties &gt; allows hook to modify result content" time="0.000957816">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; AfterToolCallEvent writable properties &gt; allows hook to change result status from success to error" time="0.00128717">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.hook.test.ts" name="Agent Hooks Integration &gt; AfterToolCallEvent writable properties &gt; allows hook to change result status from error to success" time="0.001369403">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/agent/__tests__/agent.test.ts" timestamp="2025-12-06T01:34:01.295Z" hostname="runnervmoqczp" tests="59" failures="0" errors="0" skipped="0" time="0.082063763">
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; stream &gt; basic streaming &gt; returns AsyncGenerator" time="0.003817196">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; stream &gt; basic streaming &gt; returns AsyncGenerator that can be iterated without type errors" time="0.004640102">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; stream &gt; basic streaming &gt; yields AgentStreamEvent objects" time="0.0017431">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; stream &gt; basic streaming &gt; returns AgentResult as generator return value" time="0.001173107">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; stream &gt; with tool use &gt; handles tool execution flow" time="0.002496565">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; stream &gt; with tool use &gt; yields tool-related events" time="0.003248597">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; stream &gt; error handling &gt; throws MaxTokensError when model hits token limit" time="0.002271124">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; invoke &gt; basic invocation &gt; returns Promise&lt;AgentResult&gt;" time="0.000768292">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; invoke &gt; basic invocation &gt; returns correct stopReason and lastMessage" time="0.000517866">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; invoke &gt; basic invocation &gt; consumes stream events internally" time="0.000514629">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; invoke &gt; with tool use &gt; executes tools and returns final result" time="0.000839405">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; invoke &gt; error handling &gt; propagates maxTokens error" time="0.0014879">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; API consistency &gt; invoke() and stream() produce same final result" time="0.0007509">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; API consistency &gt; both methods produce same result with tool use" time="0.001467086">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; messages &gt; returns array of messages" time="0.001451116">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; messages &gt; reflects conversation history after invoke" time="0.000884038">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; printer configuration &gt; validates output when printer is enabled" time="0.000585982">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; printer configuration &gt; does not create printer when printer is false" time="0.000371072">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; printer configuration &gt; defaults to printer=true when not specified" time="0.000270495">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; printer configuration &gt; agent works correctly with printer disabled" time="0.00050455">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; concurrency guards &gt; prevents parallel invocations" time="0.001132512">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; concurrency guards &gt; allows sequential invocations after lock is released" time="0.001101323">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; concurrency guards &gt; releases lock after errors and abandoned streams" time="0.001217588">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; flattens nested arrays at any depth &gt; NaN" time="0.009412229">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; flattens nested arrays at any depth &gt; NaN" time="0.000683876">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; flattens nested arrays at any depth &gt; NaN" time="0.000564622">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; flattens nested arrays at any depth &gt; NaN" time="0.00058462">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; flattens nested arrays at any depth &gt; NaN" time="0.00056293">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; flattens nested arrays at any depth &gt; NaN" time="0.000569982">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; flattens nested arrays at any depth &gt; NaN" time="0.000664799">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; flattens nested arrays at any depth &gt; NaN" time="0.000586323">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; accepts undefined tools" time="0.00064895">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; nested tool arrays &gt; catches duplicate tool names across nested arrays" time="0.001698266">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; systemPrompt configuration &gt; when provided as string SystemPromptData &gt; accepts and stores string system prompt" time="0.000699323">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; systemPrompt configuration &gt; when provided as array SystemPromptData &gt; converts TextBlockData to TextBlock" time="0.00069769">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; systemPrompt configuration &gt; when provided as array SystemPromptData &gt; converts mixed block data types" time="0.000731333">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; systemPrompt configuration &gt; when provided as SystemPrompt (class instances) &gt; accepts array of class instances" time="0.000649401">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; systemPrompt configuration &gt; when modifying systemPrompt &gt; allows systemPrompt to be set after initialization" time="0.00068637">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; systemPrompt configuration &gt; when modifying systemPrompt &gt; allows systemPrompt to be changed between turns" time="0.006127765">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model property &gt; when accessing the model field &gt; returns the configured model instance" time="0.000247151">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model property &gt; when accessing the model field &gt; returns default BedrockModel when no model provided" time="0.000647568">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model property &gt; when modifying the model field &gt; updates the model instance" time="0.00065992">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model property &gt; when modifying the model field &gt; allows model change to persist across invocations" time="0.001193896">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model property &gt; when modifying the model field &gt; successfully switches between different model providers" time="0.001320692">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with string input &gt; creates user message with single TextBlock" time="0.001343365">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with ContentBlock[] input &gt; creates single user message with single TextBlock" time="0.000961252">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with ContentBlock[] input &gt; creates single user message with multiple blocks" time="0.000829506">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with ContentBlock[] input &gt; supports all ContentBlock types" time="0.001699729">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with ContentBlock[] input &gt; handles empty ContentBlock array" time="0.00064403">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with ContentBlock[] input &gt; accepts ContentBlockData[] and converts to ContentBlock[]" time="0.001403957">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with Message[] input &gt; appends single message to conversation" time="0.000599368">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with Message[] input &gt; appends multiple messages in order" time="0.001223522">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with Message[] input &gt; handles empty Message array" time="0.000534506">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; multimodal input &gt; with Message[] input &gt; accepts MessageData[] and converts to Message[]" time="0.001709828">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model initialization &gt; when model is a string &gt; creates BedrockModel with specified modelId" time="0.000754667">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model initialization &gt; when model is a string &gt; creates BedrockModel with custom model ID" time="0.000559243">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model initialization &gt; when model is explicit BedrockModel &gt; uses provided BedrockModel instance" time="0.000647607">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model initialization &gt; when no model is provided &gt; creates default BedrockModel" time="0.000690177">
+        </testcase>
+        <testcase classname="src/agent/__tests__/agent.test.ts" name="Agent &gt; model initialization &gt; behavior parity &gt; string model behaves identically to explicit BedrockModel with same modelId" time="0.001045159">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/agent/__tests__/printer.test.ts" timestamp="2025-12-06T01:34:01.303Z" hostname="runnervmoqczp" tests="7" failures="0" errors="0" skipped="0" time="0.016055123">
+        <testcase classname="src/agent/__tests__/printer.test.ts" name="AgentPrinter &gt; end-to-end scenarios &gt; prints simple text output" time="0.007125886">
+        </testcase>
+        <testcase classname="src/agent/__tests__/printer.test.ts" name="AgentPrinter &gt; end-to-end scenarios &gt; prints reasoning content wrapped in tags" time="0.000854683">
+        </testcase>
+        <testcase classname="src/agent/__tests__/printer.test.ts" name="AgentPrinter &gt; end-to-end scenarios &gt; prints text and reasoning together" time="0.000586192">
+        </testcase>
+        <testcase classname="src/agent/__tests__/printer.test.ts" name="AgentPrinter &gt; end-to-end scenarios &gt; handles newlines in reasoning content" time="0.000443987">
+        </testcase>
+        <testcase classname="src/agent/__tests__/printer.test.ts" name="AgentPrinter &gt; end-to-end scenarios &gt; prints tool execution" time="0.002311219">
+        </testcase>
+        <testcase classname="src/agent/__tests__/printer.test.ts" name="AgentPrinter &gt; end-to-end scenarios &gt; prints tool error" time="0.00080442">
+        </testcase>
+        <testcase classname="src/agent/__tests__/printer.test.ts" name="AgentPrinter &gt; end-to-end scenarios &gt; prints comprehensive scenario with all output types" time="0.001270509">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/agent/__tests__/state.test.ts" timestamp="2025-12-06T01:34:01.304Z" hostname="runnervmoqczp" tests="39" failures="0" errors="0" skipped="0" time="0.014292657">
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; constructor &gt; creates empty state when no initial state provided" time="0.00191467">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; constructor &gt; creates state with initial values" time="0.000639262">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; constructor &gt; stores deep copy of initial state" time="0.000248162">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; constructor &gt; throws error for function in initial state" time="0.001081726">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; constructor &gt; throws error for symbol in initial state" time="0.000328212">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; constructor &gt; throws error for undefined in initial state" time="0.000275865">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; constructor &gt; throws error for nested function in initial state" time="0.000234807">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; constructor &gt; throws error for function in array in initial state" time="0.000234418">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; get &gt; throws error when key is null or undefined" time="0.000321189">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; get &gt; returns undefined when key does not exist" time="0.00014997">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; get &gt; returns value when key exists" time="0.000131405">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; get &gt; returns deep copy that cannot mutate stored state" time="0.000149098">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; get &gt; infers correct type with generic state interface" time="0.000290301">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; get &gt; returns undefined for non-existent key with typed interface" time="0.000189924">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; sets string value successfully" time="0.000159307">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; sets number value successfully" time="0.000135052">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; sets boolean value successfully" time="0.000126586">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; sets null value successfully" time="0.000148928">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; sets object value successfully" time="0.000191106">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; sets array value successfully" time="0.000167262">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; overwrites existing value" time="0.000147585">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; stores deep copy that cannot mutate stored state" time="0.000168835">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; throws error for function in value" time="0.000251729">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; throws error for symbol in value" time="0.000263572">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; throws error for nested function in value" time="0.000236551">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; throws error for function in array" time="0.000234347">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; throws error for top-level symbol values" time="0.00027389">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; throws error for top-level undefined values" time="0.000220862">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; set &gt; accepts typed value with generic state interface" time="0.000215862">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; delete &gt; removes existing key" time="0.000194182">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; delete &gt; does not throw error for non-existent key" time="0.000226452">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; delete &gt; supports typed usage with generic state interface" time="0.000212707">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; clear &gt; removes all values" time="0.000293698">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; clear &gt; works on empty state" time="0.000324756">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; getAll &gt; returns object with all state" time="0.000312693">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; getAll &gt; returns empty object for empty state" time="0.000229889">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; keys &gt; returns array of all keys" time="0.000231492">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; keys &gt; returns empty array for empty state" time="0.000181217">
+        </testcase>
+        <testcase classname="src/agent/__tests__/state.test.ts" name="AgentState &gt; keys &gt; returns new array each time" time="0.000531441">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/conversation-manager/__tests__/null-conversation-manager.test.ts" timestamp="2025-12-06T01:34:01.310Z" hostname="runnervmoqczp" tests="2" failures="0" errors="0" skipped="0" time="0.005499163">
+        <testcase classname="src/conversation-manager/__tests__/null-conversation-manager.test.ts" name="NullConversationManager &gt; behavior &gt; does not modify conversation history" time="0.003441777">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/null-conversation-manager.test.ts" name="NullConversationManager &gt; behavior &gt; does not set retryModelCall on context overflow" time="0.000378997">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" timestamp="2025-12-06T01:34:01.310Z" hostname="runnervmoqczp" tests="29" failures="0" errors="0" skipped="0" time="0.023727659">
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; constructor &gt; sets default windowSize to 40" time="0.002241559">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; constructor &gt; sets default shouldTruncateResults to true" time="0.00024679">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; constructor &gt; accepts custom windowSize" time="0.000203059">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; constructor &gt; accepts custom shouldTruncateResults" time="0.000222545">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; applyManagement &gt; skips reduction when message count is less than window size" time="0.002393883">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; applyManagement &gt; skips reduction when message count equals window size" time="0.000399205">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; applyManagement &gt; calls reduceContext when message count exceeds window size" time="0.000629433">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool result truncation &gt; truncates tool results when shouldTruncateResults is true" time="0.001803813">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool result truncation &gt; finds last message with tool results" time="0.000631548">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool result truncation &gt; returns after successful truncation without trimming messages" time="0.000447956">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool result truncation &gt; skips truncation when shouldTruncateResults is false" time="0.000502116">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool result truncation &gt; does not truncate already-truncated results" time="0.000538775">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool result truncation &gt; does not call truncateToolResults unless an error is passed in" time="0.002435571">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - message trimming &gt; trims oldest messages when tool results cannot be truncated" time="0.000517585">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - message trimming &gt; calculates correct trim index (messages.length - windowSize)" time="0.000467993">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - message trimming &gt; uses default trim index of 2 when messages &lt;= windowSize" time="0.000426155">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - message trimming &gt; removes messages from start of array using splice" time="0.000557579">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool pair validation &gt; does not trim at index where oldest message is toolResult" time="0.000563821">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool pair validation &gt; does not trim at index where oldest message is toolUse without following toolResult" time="0.00050947">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool pair validation &gt; allows trim when oldest message is toolUse with following toolResult" time="0.000614065">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool pair validation &gt; allows trim at toolUse when toolResult immediately follows" time="0.000731624">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool pair validation &gt; allows trim when oldest message is text or other non-tool content" time="0.000479334">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; reduceContext - tool pair validation &gt; throws ContextWindowOverflowError when no valid trim point exists" time="0.001554378">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; helper methods &gt; findLastMessageWithToolResults &gt; returns correct index when tool results exist" time="0.000259814">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; helper methods &gt; findLastMessageWithToolResults &gt; returns undefined when no tool results exist" time="0.000285723">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; helper methods &gt; findLastMessageWithToolResults &gt; iterates backwards from end" time="0.000299108">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; helper methods &gt; truncateToolResults &gt; returns true when changes are made" time="0.000242412">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; helper methods &gt; truncateToolResults &gt; returns false when already truncated" time="0.000215802">
+        </testcase>
+        <testcase classname="src/conversation-manager/__tests__/sliding-window-conversation-manager.test.ts" name="SlidingWindowConversationManager &gt; helper methods &gt; truncateToolResults &gt; returns false when no tool results found" time="0.000192399">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/hooks/__tests__/events.test.ts" timestamp="2025-12-06T01:34:01.314Z" hostname="runnervmoqczp" tests="28" failures="0" errors="0" skipped="0" time="0.038053868">
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeInvocationEvent &gt; creates instance with correct properties" time="0.013527321">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeInvocationEvent &gt; returns false for _shouldReverseCallbacks" time="0.000776779">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterInvocationEvent &gt; creates instance with correct properties" time="0.000989284">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterInvocationEvent &gt; returns true for _shouldReverseCallbacks" time="0.000539677">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="MessageAddedEvent &gt; creates instance with correct properties" time="0.001087478">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="MessageAddedEvent &gt; returns false for _shouldReverseCallbacks" time="0.000551047">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeToolCallEvent &gt; creates instance with correct properties when tool is found" time="0.001115851">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeToolCallEvent &gt; allows tool property to be modified" time="0.000690236">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeToolCallEvent &gt; allows toolUse property to be modified" time="0.000592104">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeToolCallEvent &gt; creates instance with undefined tool when tool is not found" time="0.000560004">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeToolCallEvent &gt; returns false for _shouldReverseCallbacks" time="0.000542261">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterToolCallEvent &gt; creates instance with correct properties on success" time="0.001152219">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterToolCallEvent &gt; allows result property to be modified" time="0.000669708">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterToolCallEvent &gt; creates instance with error property when tool execution fails" time="0.000652987">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterToolCallEvent &gt; returns true for _shouldReverseCallbacks" time="0.00058457">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeModelCallEvent &gt; creates instance with correct properties" time="0.000980769">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeModelCallEvent &gt; returns false for _shouldReverseCallbacks" time="0.000609446">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterModelCallEvent &gt; creates instance with correct properties on success" time="0.001139825">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterModelCallEvent &gt; creates instance with error property when model invocation fails" time="0.000706878">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterModelCallEvent &gt; returns true for _shouldReverseCallbacks" time="0.000632349">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterModelCallEvent &gt; allows retryModelCall to be set when error is present" time="0.00079378">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterModelCallEvent &gt; retryModelCall is optional and defaults to undefined" time="0.000624765">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="ModelStreamEventHook &gt; creates instance with correct properties" time="0.001142811">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="ModelStreamEventHook &gt; returns false for _shouldReverseCallbacks" time="0.000605899">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeToolsEvent &gt; creates instance with correct properties" time="0.001185751">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="BeforeToolsEvent &gt; returns false for _shouldReverseCallbacks" time="0.000637529">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterToolsEvent &gt; creates instance with correct properties" time="0.001077799">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/events.test.ts" name="AfterToolsEvent &gt; returns true for _shouldReverseCallbacks" time="0.000648029">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/hooks/__tests__/registry.test.ts" timestamp="2025-12-06T01:34:01.319Z" hostname="runnervmoqczp" tests="23" failures="0" errors="0" skipped="0" time="0.050585622">
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addCallback &gt; registers callback for event type" time="0.010977797">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addCallback &gt; registers multiple callbacks for same event type" time="0.000623022">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addCallback &gt; registers callbacks for different event types separately" time="0.000869932">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addHook &gt; registers all callbacks from provider" time="0.000543834">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addHook &gt; clears current provider even if registerCallbacks throws" time="0.001375876">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; invokeCallbacks &gt; calls registered callbacks in order" time="0.001287641">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; invokeCallbacks &gt; reverses callback order for After events" time="0.000528435">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; invokeCallbacks &gt; awaits async callbacks" time="0.01151575">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; invokeCallbacks &gt; propagates callback errors" time="0.001272272">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; invokeCallbacks &gt; stops execution on first error" time="0.000688133">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; invokeCallbacks &gt; handles mixed sync and async callbacks" time="0.010727359">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; invokeCallbacks &gt; returns the event after invocation" time="0.000580362">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addCallback cleanup function &gt; returns cleanup function that removes the callback" time="0.000654661">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addCallback cleanup function &gt; cleanup function is idempotent" time="0.000571045">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addCallback cleanup function &gt; cleanup function does not affect other callbacks" time="0.00057397">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; addCallback cleanup function &gt; cleanup function works with callbacks registered via provider" time="0.000575603">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; removeHook &gt; removes all callbacks registered by provider" time="0.000529617">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; removeHook &gt; removes all instances when provider registered multiple times" time="0.00050962">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; removeHook &gt; is no-op when called with non-existent provider" time="0.000453947">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; removeHook &gt; does not affect callbacks from other providers" time="0.00062796">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; removeHook &gt; does not affect callbacks registered without provider" time="0.000723369">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; removeHook &gt; allows provider to be added and removed multiple times" time="0.000872567">
+        </testcase>
+        <testcase classname="src/hooks/__tests__/registry.test.ts" name="HookRegistryImplementation &gt; cleanup function and removeHook work independently &gt; cleanup function works after removeHook called" time="0.000709953">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/logging/__tests__/logger.test.ts" timestamp="2025-12-06T01:34:01.322Z" hostname="runnervmoqczp" tests="6" failures="0" errors="0" skipped="0" time="0.013695363">
+        <testcase classname="src/logging/__tests__/logger.test.ts" name="configureLogging &gt; allows custom logger injection" time="0.005527225">
+        </testcase>
+        <testcase classname="src/logging/__tests__/logger.test.ts" name="configureLogging &gt; passes multiple arguments to logger" time="0.000899708">
+        </testcase>
+        <testcase classname="src/logging/__tests__/logger.test.ts" name="default logger &gt; logs warnings to console.warn" time="0.003429324">
+            <system-err>
+Warning message arg1 arg2
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/logging/__tests__/logger.test.ts" name="default logger &gt; logs errors to console.error" time="0.000666683">
+            <system-err>
+Error message arg1 arg2
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/logging/__tests__/logger.test.ts" name="default logger &gt; does not log debug messages" time="0.000486707">
+        </testcase>
+        <testcase classname="src/logging/__tests__/logger.test.ts" name="default logger &gt; does not log info messages" time="0.000281855">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/models/__tests__/bedrock.test.ts" timestamp="2025-12-06T01:34:01.323Z" hostname="runnervmoqczp" tests="59" failures="0" errors="0" skipped="0" time="0.065040332">
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; constructor &gt; creates an instance with default configuration" time="0.002470616">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; constructor &gt; uses provided model ID " time="0.001039549">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; constructor &gt; uses provided region" time="0.001996409">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; constructor &gt; extends custom user agent if provided" time="0.00050397">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; constructor &gt; passes custom endpoint to client" time="0.000514189">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; constructor &gt; passes custom credentials to client" time="0.000464276">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; updateConfig &gt; merges new config with existing config" time="0.000472371">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; updateConfig &gt; preserves fields not included in the update" time="0.000427086">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; getConfig &gt; returns the current configuration" time="0.000363668">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; format_message &gt; formats the request to bedrock properly" time="0.002223145">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; format_message &gt; formats tool use messages" time="0.001189307">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; format_message &gt; formats tool result messages" time="0.000959038">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; format_message &gt; formats reasoning messages properly" time="0.000881483">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; format_message &gt; formats cache point blocks in messages" time="0.000539566">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;streaming&apos; mode &gt; yields and validates text events correctly" time="0.001433523">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;streaming&apos; mode &gt; yields and validates toolUse events correctly" time="0.001369513">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;streaming&apos; mode &gt; yields and validates reasoningText events correctly" time="0.001098858">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;streaming&apos; mode &gt; yields and validates redactedContent events correctly" time="0.001042303">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;streaming&apos; mode &gt; error handling &gt; throws &apos;ContextWindowOverflowError for contex…&apos;" time="0.001801619">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;streaming&apos; mode &gt; error handling &gt; throws &apos;ValidationException for invalid input&apos;" time="0.000538615">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;non-streaming&apos; mode &gt; yields and validates text events correctly" time="0.001302478">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;non-streaming&apos; mode &gt; yields and validates toolUse events correctly" time="0.001011045">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;non-streaming&apos; mode &gt; yields and validates reasoningText events correctly" time="0.000990076">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;non-streaming&apos; mode &gt; yields and validates redactedContent events correctly" time="0.000763824">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;non-streaming&apos; mode &gt; error handling &gt; throws &apos;ContextWindowOverflowError for contex…&apos;" time="0.000494632">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; BedrockModel in &apos;non-streaming&apos; mode &gt; error handling &gt; throws &apos;ValidationException for invalid input&apos;" time="0.000535078">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles tool use input delta" time="0.000861406">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles reasoning content delta with both text and signature, as well as redactedContent" time="0.000908263">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles reasoning content delta with only text, skips unsupported types" time="0.004228377">
+            <system-err>
+delta_key=&lt;unknown&gt; | skipping unsupported delta key
+
+event_type=&lt;unknown&gt; | unsupported bedrock event type
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles reasoning content delta with only signature" time="0.000956283">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles cache usage metrics" time="0.00099761">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles trace in metadata" time="0.001020052">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles additionalModelResponseFields" time="0.000971912">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles all stop reason types &gt; handles end_turn stop reason types" time="0.000856668">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles all stop reason types &gt; handles tool_use stop reason types" time="0.000651084">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles all stop reason types &gt; handles max_tokens stop reason types" time="0.000573639">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles all stop reason types &gt; handles stop_sequence stop reason types" time="0.001389801">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles all stop reason types &gt; handles content_filtered stop reason types" time="0.000559374">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles all stop reason types &gt; handles guardrail_intervened stop reason types" time="0.000585171">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles all stop reason types &gt; handles model_context_window_exceeded stop reason types" time="0.000837722">
+            <system-err>
+stop_reason=&lt;model_context_window_exceeded&gt;, fallback=&lt;modelContextWindowExceeded&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; stream &gt; handles all stop reason types &gt; handles new_stop_reason stop reason types" time="0.000689877">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; formats string system prompt with cachePrompt config" time="0.00091146">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; formats array system prompt with text blocks only" time="0.00095992">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; formats array system prompt with cache points" time="0.00060577">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; warns when both array system prompt and cachePrompt config are provided" time="0.001374663">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; handles empty array system prompt" time="0.000776017">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; formats array system prompt with guard content" time="0.000992911">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; formats mixed system prompt with text, guard content, and cache points" time="0.000998221">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; formats guard content with all qualifier types" time="0.000839736">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; system prompt formatting &gt; formats guard content with image in system prompt" time="0.001140616">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; guard content in messages &gt; formats guard content with text in message" time="0.000939161">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; guard content in messages &gt; formats guard content with image in message" time="0.001131339">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; includeToolResultStatus configuration &gt; when includeToolResultStatus is true &gt; always includes status field in tool results" time="0.000860173">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; includeToolResultStatus configuration &gt; when includeToolResultStatus is false &gt; never includes status field in tool results" time="0.002852618">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; includeToolResultStatus configuration &gt; when includeToolResultStatus is auto &gt; includes status field for Claude models" time="0.000636988">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; includeToolResultStatus configuration &gt; when includeToolResultStatus is undefined (default) &gt; follows auto logic for non-Claude models" time="0.000527965">
+            <system-err>
+stop_reason=&lt;new_stop_reason&gt;, fallback=&lt;newStopReason&gt; | unknown stop reason, converting to camelCase
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; region configuration &gt; uses explicit region when provided" time="0.00043932">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; region configuration &gt; defaults to us-west-2 when region is missing" time="0.000589669">
+        </testcase>
+        <testcase classname="src/models/__tests__/bedrock.test.ts" name="BedrockModel &gt; region configuration &gt; rethrows other region errors" time="0.001451065">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/models/__tests__/model.test.ts" timestamp="2025-12-06T01:34:01.337Z" hostname="runnervmoqczp" tests="12" failures="0" errors="0" skipped="0" time="0.018368437">
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming a simple text message &gt; yields original events plus aggregated content block and returns final message" time="0.003431869">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming a simple text message &gt; throws MaxTokenError when stopReason is MaxTokenError" time="0.00275687">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming multiple text blocks &gt; yields all blocks in order" time="0.001059565">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming tool use &gt; yields complete tool use block" time="0.000940904">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming tool use &gt; yields complete tool use block with empty input" time="0.000780946">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming tool use &gt; throws MaxTokenError when stopReason is MaxTokenError and toolUse is partial" time="0.000551558">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming reasoning content &gt; yields complete reasoning block" time="0.001016185">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming reasoning content &gt; yields redacted content reasoning block" time="0.001011957">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming reasoning content &gt; omits signature if not present" time="0.000731424">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when streaming mixed content blocks &gt; yields all blocks in correct order" time="0.001178136">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when multiple metadata events are emitted &gt; yields all metadata events but keeps only the last one in return value" time="0.00082066">
+        </testcase>
+        <testcase classname="src/models/__tests__/model.test.ts" name="Model &gt; streamAggregated &gt; when no metadata events are emitted &gt; returns result with undefined metadata" time="0.001613578">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/models/__tests__/openai.test.ts" timestamp="2025-12-06T01:34:01.339Z" hostname="runnervmoqczp" tests="48" failures="0" errors="0" skipped="0" time="0.057628425">
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; creates an instance with required modelId" time="0.003806575">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; uses custom model ID" time="0.001371096">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; uses API key from constructor parameter" time="0.003183686">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; uses API key from environment variable" time="0.000421856">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; explicit API key takes precedence over environment variable" time="0.000458715">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; throws error when no API key is available" time="0.001605984">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; uses custom client configuration" time="0.00048231">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; uses provided client instance" time="0.000428459">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; provided client takes precedence over apiKey and clientConfig" time="0.00027898">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; constructor &gt; does not require API key when client is provided" time="0.000410395">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; updateConfig &gt; merges new config with existing config" time="0.000401208">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; updateConfig &gt; preserves fields not included in the update" time="0.000344623">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; getConfig &gt; returns the current configuration" time="0.00031661">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; validation &gt; throws error when messages array is empty" time="0.003484416">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; validation &gt; validates system prompt is not empty" time="0.001760583">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; validation &gt; throws error for streaming with n &gt; 1" time="0.000711376">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; validation &gt; throws error for tool spec without name or description" time="0.000673957">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; validation &gt; throws error for empty tool result content" time="0.000574741">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; validation &gt; handles tool result with error status" time="0.000808698">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; validation &gt; throws error for circular reference in tool input" time="0.000646365">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; basic streaming &gt; yields correct event sequence for simple text response" time="0.001923817">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; emits modelMetadataEvent with usage information" time="0.000757642">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; handles usage with undefined properties" time="0.000670691">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; filters out empty string content deltas" time="0.000796345">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stream &gt; prevents duplicate message start events" time="0.001066869">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; tool calling &gt; handles tool use request with contentBlockStart and contentBlockStop events" time="0.003549558">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; tool calling &gt; handles multiple tool calls" time="0.000925566">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; tool calling &gt; skips tool calls with invalid index" time="0.000869751">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; tool calling &gt; tool argument deltas can be reassembled into valid JSON" time="0.000935674">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; tool calling &gt; handles messages with both text and tool calls" time="0.000981209">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stop reasons &gt; maps OpenAI stop reasons to SDK stop reasons" time="0.001250302">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; stop reasons &gt; handles unknown stop reasons with warning" time="0.003485531">
+            <system-err>
+finish_reason=&lt;new_unknown_reason&gt;, fallback=&lt;newUnknownReason&gt; | unknown openai stop reason, using camelCase conversion as fallback
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; API request formatting &gt; formats API request correctly with all options" time="0.000967764">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; systemPrompt handling &gt; formats array system prompt with text blocks only" time="0.000768322">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; systemPrompt handling &gt; formats array system prompt with cache points" time="0.000981069">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; systemPrompt handling &gt; handles empty array system prompt" time="0.000585792">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; systemPrompt handling &gt; formats array system prompt with single text block" time="0.000553592">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; systemPrompt handling &gt; warns and filters guard content from system prompt" time="0.000776878">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; systemPrompt handling &gt; preserves text blocks when filtering guard content" time="0.000769004">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; systemPrompt handling &gt; handles system prompt with only guard content" time="0.00078323">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; guard content in messages &gt; warns and filters guard content from user messages" time="0.00107304">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; guard content in messages &gt; warns and filters guard content with image from user messages" time="0.000841949">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; guard content in messages &gt; handles message with only guard content" time="0.000698061">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; error handling &gt; throws ContextWindowOverflowError for structured error with code" time="0.000839755">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; error handling &gt; throws ContextWindowOverflowError for error with message pattern" time="0.000668466">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; error handling &gt; throws ContextWindowOverflowError for APIError instance" time="0.000687802">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; error handling &gt; passes through other errors unchanged" time="0.000715354">
+        </testcase>
+        <testcase classname="src/models/__tests__/openai.test.ts" name="OpenAIModel &gt; error handling &gt; handles stream interruption errors" time="0.000727606">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/tools/__tests__/tool.test.ts" timestamp="2025-12-06T01:34:01.348Z" hostname="runnervmoqczp" tests="43" failures="0" errors="0" skipped="0" time="0.04245953">
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; properties &gt; has a non-empty toolName" time="0.002889608">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; properties &gt; has a non-empty description" time="0.000467552">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; properties &gt; has a valid toolSpec" time="0.001103758">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; properties &gt; has matching toolName and toolSpec.name" time="0.000230099">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; properties &gt; has matching description and toolSpec.description" time="0.000213668">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; wraps return value in ToolResult" time="0.001438381">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; handles string return values" time="0.000444669">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; handles object return values" time="0.000581304">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; passes input to callback exactly as provided to stream" time="0.000296943">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; handles null return values correctly" time="0.000351795">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; handles undefined return values correctly" time="0.000356264">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; handles boolean return values as text content" time="0.000578658">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; handles number return values as text content" time="0.000572267">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; handles array return values as wrapped JSON content" time="0.000442536">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; deep copies objects to prevent mutation" time="0.000418891">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with synchronous callback &gt; deep copies arrays to prevent mutation" time="0.000403011">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with promise callback &gt; wraps resolved value in ToolResult" time="0.000535919">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with promise callback &gt; can access ToolContext in promise" time="0.000683975">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with async generator callback &gt; yields ToolStreamEvents then final ToolResult" time="0.000711135">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; with async generator callback &gt; can yield objects as ToolStreamEvents" time="0.00243264">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; catches synchronous errors" time="0.000678545">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; catches promise rejections" time="0.000642317">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; captures Error object in ToolResult when callback throws Error" time="0.000408121">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; wraps non-Error thrown values into Error object" time="0.000695757">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; preserves custom Error subclass instances" time="0.000576435">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; preserves error stack traces" time="0.013323904">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; captures errors thrown in async generator callbacks" time="0.000594018">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; catches errors in async generators" time="0.000451161">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; handles non-Error thrown values" time="0.000325587">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; returns error for circular references" time="0.000659891">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="FunctionTool &gt; stream method &gt; error handling &gt; silently drops non-serializable values (functions)" time="0.000373226">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="Tool interface backwards compatibility &gt; maintains stable interface signature" time="0.001074584">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="Tool interface backwards compatibility &gt; stream method accepts correct parameter types" time="0.000496867">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="ToolStreamEvent &gt; instantiation &gt; creates instance with data" time="0.000228005">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="ToolStreamEvent &gt; instantiation &gt; creates instance without data" time="0.000248463">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="ToolStreamEvent &gt; instantiation &gt; creates instance with structured data" time="0.000242732">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="instanceof checks &gt; FunctionTool &gt; passes instanceof Tool check" time="0.000203509">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="instanceof checks &gt; FunctionTool &gt; can be used as type guard" time="0.000345524">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="optional inputSchema &gt; when inputSchema is undefined &gt; creates tool with default empty object schema" time="0.000351665">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="optional inputSchema &gt; when inputSchema is undefined &gt; executes successfully with empty input" time="0.00035399">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="optional inputSchema &gt; when inputSchema is undefined &gt; callback receives empty object when no schema provided" time="0.000297294">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="optional inputSchema &gt; when inputSchema is undefined &gt; works with async callback" time="0.00032181">
+        </testcase>
+        <testcase classname="src/tools/__tests__/tool.test.ts" name="optional inputSchema &gt; when inputSchema is undefined &gt; works with async generator callback" time="0.00065426">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/tools/__tests__/zod-tool.test.ts" timestamp="2025-12-06T01:34:01.353Z" hostname="runnervmoqczp" tests="32" failures="0" errors="0" skipped="0" time="0.046514966">
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; tool creation and properties &gt; creates tool with correct properties" time="0.008745385">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; tool creation and properties &gt; handles optional description" time="0.000678625">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; invoke() method &gt; basic return types &gt; handles synchronous callback" time="0.002415253">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; invoke() method &gt; basic return types &gt; handles promise callback" time="0.000723058">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; invoke() method &gt; basic return types &gt; handles async generator callback" time="0.000672814">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; invoke() method &gt; validation &gt; throws on invalid input" time="0.005110298">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; invoke() method &gt; validation &gt; validates required fields" time="0.002298335">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; invoke() method &gt; context handling &gt; passes context to callback" time="0.002111827">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; stream() method &gt; basic return types &gt; streams synchronous callback result" time="0.002580591">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; stream() method &gt; basic return types &gt; streams promise callback result" time="0.000848843">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; stream() method &gt; basic return types &gt; streams async generator callback results" time="0.000901952">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; stream() method &gt; validation &gt; returns error result on validation failure" time="0.001304242">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; stream() method &gt; validation &gt; returns error result on missing required fields" time="0.00090106">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; stream() method &gt; error handling &gt; catches callback errors and returns error result" time="0.000805872">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; stream() method &gt; error handling &gt; catches async callback errors" time="0.000738397">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; complex scenarios &gt; handles nested object schemas" time="0.001186683">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; complex scenarios &gt; handles enum schemas" time="0.001680874">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; complex scenarios &gt; handles optional fields" time="0.001250541">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; complex scenarios &gt; handles array schemas" time="0.001197583">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; JSON schema generation &gt; generates valid JSON schema from Zod schema" time="0.000827253">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; instanceof checks &gt; passes instanceof Tool check and has InvokableTool methods" time="0.000591483">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is undefined &gt; creates tool with default empty object schema" time="0.000559873">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is undefined &gt; invoke() works with empty object" time="0.000329895">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is undefined &gt; stream() works with empty input" time="0.000535518">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is undefined &gt; callback receives empty object when no schema" time="0.000276906">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is undefined &gt; works with async callback" time="0.00020409">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is undefined &gt; works with async generator callback" time="0.000222686">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is z.void() &gt; creates tool with default empty object schema" time="0.000248032">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is z.void() &gt; invoke() works with empty object" time="0.000586173">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is z.void() &gt; stream() works with empty input" time="0.001544552">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is z.void() &gt; works with async generator callback" time="0.00054153">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test.ts" name="tool &gt; optional inputSchema &gt; when inputSchema is z.void() &gt; does not throw Zod conversion errors" time="0.000478021">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/types/__tests__/agent.test.ts" timestamp="2025-12-06T01:34:01.358Z" hostname="runnervmoqczp" tests="10" failures="0" errors="0" skipped="0" time="0.010146016">
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when content is empty &gt; returns empty string" time="0.002198058">
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when content has single TextBlock &gt; returns the text content" time="0.000354541">
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when content has multiple TextBlocks &gt; returns all text joined with newlines" time="0.000221753">
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when content has ReasoningBlock with text &gt; returns the reasoning text with prefix" time="0.000312894">
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when content has ReasoningBlock without text &gt; returns empty string (reasoning block is skipped)" time="0.000261147">
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when content has mixed TextBlock and ReasoningBlock &gt; returns all text joined with newlines" time="0.000240799">
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when content has only non-text blocks &gt; returns empty string" time="0.002737334">
+            <system-out>
+Skipping content block type: toolUseBlock
+Skipping content block type: toolResultBlock
+Skipping content block type: cachePointBlock
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when content has mixed text and non-text blocks &gt; returns only text from TextBlock and ReasoningBlock" time="0.000408391">
+            <system-out>
+Skipping content block type: toolUseBlock
+Skipping content block type: cachePointBlock
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when called implicitly &gt; works with String() conversion" time="0.000242973">
+        </testcase>
+        <testcase classname="src/types/__tests__/agent.test.ts" name="AgentResult &gt; toString &gt; when called implicitly &gt; works with template literals" time="0.000274191">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/types/__tests__/json.test.ts" timestamp="2025-12-06T01:34:01.359Z" hostname="runnervmoqczp" tests="39" failures="0" errors="0" skipped="0" time="0.022538481">
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; primitive values &gt; copies strings" time="0.00208124">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; primitive values &gt; copies numbers" time="0.000214761">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; primitive values &gt; copies booleans" time="0.000153506">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; primitive values &gt; copies null" time="0.000181649">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; object values &gt; creates a deep copy of objects" time="0.001434234">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; object values &gt; copies empty objects" time="0.00027856">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; object values &gt; copies objects with multiple properties" time="0.000225721">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; array values &gt; creates a deep copy of arrays" time="0.000437856">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; array values &gt; copies empty arrays" time="0.000270915">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; array values &gt; copies nested arrays" time="0.000260535">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; error handling &gt; throws error for circular references" time="0.001386414">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; error handling &gt; silently drops functions from objects" time="0.000958848">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; error handling &gt; silently drops symbols from objects" time="0.001745554">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; error handling &gt; silently drops undefined values from objects" time="0.000482139">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; complex nested structures &gt; copies deeply nested structures" time="0.000459516">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopy &gt; complex nested structures &gt; copies arrays of objects" time="0.000424371">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; primitive values &gt; copies strings" time="0.000419522">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; primitive values &gt; copies numbers" time="0.000189443">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; primitive values &gt; copies booleans" time="0.000184504">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; primitive values &gt; copies null" time="0.000193491">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; object values &gt; creates a deep copy of objects" time="0.000389917">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; object values &gt; copies empty objects" time="0.000183492">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; object values &gt; copies objects with multiple properties" time="0.000251729">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; array values &gt; creates a deep copy of arrays" time="0.000416547">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; array values &gt; copies empty arrays" time="0.000187059">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; array values &gt; copies nested arrays" time="0.000226132">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for functions at top level" time="0.000495694">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for functions in objects" time="0.000430652">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for functions in nested objects" time="0.000463904">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for functions in arrays" time="0.000415565">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for symbols in objects" time="0.000476398">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for symbols in arrays" time="0.000470287">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for undefined values in objects" time="0.000475908">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for undefined values in arrays" time="0.000429431">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; validation errors &gt; throws JsonValidationError for circular references" time="0.000345003">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; complex nested structures &gt; copies deeply nested structures" time="0.000408092">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; complex nested structures &gt; copies arrays of objects" time="0.000523917">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; context path parameter &gt; uses custom context path in error messages" time="0.000389065">
+        </testcase>
+        <testcase classname="src/types/__tests__/json.test.ts" name="deepCopyWithValidation &gt; context path parameter &gt; uses default context path when not provided" time="0.000329253">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/types/__tests__/media.test.ts" timestamp="2025-12-06T01:34:01.365Z" hostname="runnervmoqczp" tests="17" failures="0" errors="0" skipped="0" time="0.009855564">
+        <testcase classname="src/types/__tests__/media.test.ts" name="S3Location &gt; creates instance with uri only" time="0.001977897">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="S3Location &gt; creates instance with uri and bucketOwner" time="0.000204331">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="ImageBlock &gt; creates instance with bytes source" time="0.000461661">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="ImageBlock &gt; creates instance with S3 location source" time="0.000653208">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="ImageBlock &gt; creates instance with URL source" time="0.000158245">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="ImageBlock &gt; throws error for invalid source" time="0.000964969">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="VideoBlock &gt; creates instance with bytes source" time="0.000320497">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="VideoBlock &gt; creates instance with S3 location source" time="0.000233386">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="VideoBlock &gt; throws error for invalid source" time="0.000217656">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="DocumentBlock &gt; creates instance with bytes source" time="0.000334744">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="DocumentBlock &gt; creates instance with text source" time="0.000171731">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="DocumentBlock &gt; creates instance with content source" time="0.001171684">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="DocumentBlock &gt; creates instance with S3 location source" time="0.000180086">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="DocumentBlock &gt; creates instance with bytes and filename" time="0.000205213">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="DocumentBlock &gt; creates instance with text and filename" time="0.000190054">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="DocumentBlock &gt; creates instance with citations and context" time="0.000253111">
+        </testcase>
+        <testcase classname="src/types/__tests__/media.test.ts" name="DocumentBlock &gt; throws error for invalid source" time="0.000238534">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/types/__tests__/messages.test.ts" timestamp="2025-12-06T01:34:01.367Z" hostname="runnervmoqczp" tests="27" failures="0" errors="0" skipped="0" time="0.0181667">
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message &gt; creates message with role and content" time="0.002960951">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="TextBlock &gt; creates text block with text" time="0.000253613">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="ToolUseBlock &gt; creates tool use block" time="0.000329023">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="ToolResultBlock &gt; creates tool result block" time="0.000329955">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="ReasoningBlock &gt; creates reasoning block with text" time="0.000285412">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="CachePointBlock &gt; creates cache point block" time="0.000274622">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="JsonBlock &gt; creates json block" time="0.000258392">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts text block data to TextBlock" time="0.00163059">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts tool use block data to ToolUseBlock" time="0.000790664">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts tool result block data to ToolResultBlock with text content" time="0.000732214">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts tool result block data to ToolResultBlock with json content" time="0.000609577">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts reasoning block data to ReasoningBlock" time="0.000390097">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts cache point block data to CachePointBlock" time="0.000399074">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts guard content block data to GuardContentBlock" time="0.000399524">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts image block data to ImageBlock" time="0.000543333">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts video block data to VideoBlock" time="0.000515321">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts document block data to DocumentBlock" time="0.000572617">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; converts multiple content blocks" time="0.000423219">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="Message.fromMessageData &gt; throws error for unknown content block type" time="0.00109953">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="systemPromptFromData &gt; when called with string &gt; returns the string unchanged" time="0.000229949">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="systemPromptFromData &gt; when called with TextBlockData &gt; converts to TextBlock" time="0.000257109">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="systemPromptFromData &gt; when called with CachePointBlockData &gt; converts to CachePointBlock" time="0.00024639">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="systemPromptFromData &gt; when called with GuardContentBlockData &gt; converts to GuardContentBlock" time="0.000297074">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="systemPromptFromData &gt; when called with mixed content blocks &gt; converts all block types correctly" time="0.000317171">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="systemPromptFromData &gt; when called with empty array &gt; returns empty array" time="0.000190636">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="systemPromptFromData &gt; when called with unknown block type &gt; throws error" time="0.000303536">
+        </testcase>
+        <testcase classname="src/types/__tests__/messages.test.ts" name="systemPromptFromData &gt; when called with class instances &gt; returns them unchanged" time="0.000247582">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/types/__tests__/validation.test.ts" timestamp="2025-12-06T01:34:01.371Z" hostname="runnervmoqczp" tests="5" failures="0" errors="0" skipped="0" time="0.006024562">
+        <testcase classname="src/types/__tests__/validation.test.ts" name="ensureDefined &gt; when value is defined &gt; returns the value" time="0.001944164">
+        </testcase>
+        <testcase classname="src/types/__tests__/validation.test.ts" name="ensureDefined &gt; when value is defined &gt; returns zero" time="0.00018779">
+        </testcase>
+        <testcase classname="src/types/__tests__/validation.test.ts" name="ensureDefined &gt; when value is defined &gt; returns empty string" time="0.000186388">
+        </testcase>
+        <testcase classname="src/types/__tests__/validation.test.ts" name="ensureDefined &gt; when value is null &gt; throws error with field name" time="0.001251163">
+        </testcase>
+        <testcase classname="src/types/__tests__/validation.test.ts" name="ensureDefined &gt; when value is undefined &gt; throws error with field name" time="0.000320748">
+        </testcase>
+    </testsuite>
+    <testsuite name="vended_tools/bash/__tests__/bash.test.ts" timestamp="2025-12-06T01:34:01.372Z" hostname="runnervmoqczp" tests="44" failures="0" errors="0" skipped="0" time="0.370932119">
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; input validation &gt; accepts valid execute command" time="0.012121369">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; input validation &gt; accepts valid restart command" time="0.000346696">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; input validation &gt; rejects invalid mode" time="0.002311981">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; input validation &gt; rejects execute without command" time="0.000302534">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; input validation &gt; accepts valid timeout configuration" time="0.004826459">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; input validation &gt; rejects negative timeout" time="0.0004722">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; session lifecycle &gt; creates session on first execute" time="0.003506939">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; session lifecycle &gt; creates new session after restart" time="0.006179501">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; session lifecycle &gt; restarts existing session when restart is called" time="0.007092251">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; session lifecycle &gt; provides isolated sessions for different agents" time="0.006181184">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; session lifecycle &gt; handles session restart with no existing session gracefully" time="0.003320481">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; command execution &gt; executes command and returns output" time="0.003368761">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; command execution &gt; returns empty stderr on success" time="0.003303088">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; command execution &gt; captures stderr on command error" time="0.003708795">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; timeout handling &gt; completes command before timeout" time="0.003940659">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; timeout handling &gt; throws BashTimeoutError when command times out" time="0.103674269">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; timeout handling &gt; uses default timeout of 120 seconds" time="0.005097754">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; timeout handling &gt; respects custom timeout for new session" time="0.004797024">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; timeout handling &gt; handles timeout during command with large output" time="0.102741264">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; requires context for bash operations" time="0.000711103">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; validates command is required for execute mode" time="0.000479394">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; validates command is required with undefined command" time="0.000426545">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; validates command is required with empty string" time="0.000417789">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; handles command execution in a session without proper initialization" time="0.009464886">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; creates new session when none exists" time="0.004712697">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; handles restart when no session exists" time="0.00030062">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; properly cleans up session on restart" time="0.008252977">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; handles multiple restarts in sequence" time="0.003952249">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; handles command with empty output gracefully" time="0.00456951">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; handles command with only whitespace output" time="0.004265225">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; handles very long command output" time="0.00414095">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error handling &gt; creates session with default timeout when not specified" time="0.003654683">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; working directory &gt; starts in process.cwd()" time="0.004481475">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; tool properties &gt; has correct tool name" time="0.000252561">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; tool properties &gt; has description" time="0.000417178">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; tool properties &gt; has toolSpec" time="0.000354671">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error classes &gt; BashTimeoutError has correct properties" time="0.000312582">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; error classes &gt; BashSessionError has correct properties" time="0.00040727">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; module exports &gt; exports bash tool from index" time="0.000219149">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; module exports &gt; exports error classes from index" time="0.000215471">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; bash session edge cases &gt; handles process close during command execution" time="0.010303665">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; process cleanup &gt; cleans up on beforeExit event" time="0.011161499">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; process cleanup &gt; cleans up on exit event" time="0.008833404">
+        </testcase>
+        <testcase classname="vended_tools/bash/__tests__/bash.test.ts" name="bash tool &gt; process cleanup &gt; cleans up on SIGINT" time="0.007989045">
+        </testcase>
+    </testsuite>
+    <testsuite name="vended_tools/file_editor/__tests__/file-editor.test.ts" timestamp="2025-12-06T01:34:01.378Z" hostname="runnervmoqczp" tests="44" failures="0" errors="0" skipped="0" time="0.082316938">
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; when viewing entire file &gt; returns file content with line numbers" time="0.009762842">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; when viewing entire file &gt; handles empty file" time="0.001722294">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; when viewing entire file &gt; handles single line file" time="0.00132992">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; when viewing with line range &gt; returns specified lines with line numbers" time="0.001900303">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; when viewing with line range &gt; handles negative end index (-1 means to end)" time="0.001444413">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; when viewing with line range &gt; handles single line range" time="0.001509271">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; when viewing directory &gt; lists files up to 2 levels deep" time="0.004106025">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; when viewing directory &gt; excludes hidden files" time="0.002714123">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; error cases &gt; throws when file not found" time="0.00219888">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; error cases &gt; throws when path is not absolute" time="0.000646836">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; error cases &gt; throws when view_range has invalid start line" time="0.001772612">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; error cases &gt; throws when view_range end is beyond file length" time="0.001687125">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; error cases &gt; throws when view_range end is before start" time="0.001559878">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; view command &gt; error cases &gt; throws when view_range is provided for directory" time="0.001569576">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; create command &gt; creates new file with content" time="0.001561504">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; create command &gt; creates file in non-existent directory" time="0.001818971">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; create command &gt; creates empty file" time="0.001264928">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; create command &gt; error cases &gt; throws when file already exists" time="0.001126621">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; create command &gt; error cases &gt; throws when path is not absolute" time="0.000679466">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; create command &gt; error cases &gt; throws when path contains traversal" time="0.000591964">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; create command &gt; error cases &gt; throws when trying to create in directory as path" time="0.000989675">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; str_replace command &gt; replaces unique string occurrence" time="0.002330986">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; str_replace command &gt; shows snippet with 4 lines before and after change" time="0.001707122">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; str_replace command &gt; handles empty new_str (deletion)" time="0.001871138">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; str_replace command &gt; handles multi-line old_str" time="0.001860169">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; str_replace command &gt; error cases &gt; throws when old_str not found" time="0.001461765">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; str_replace command &gt; error cases &gt; throws when multiple occurrences of old_str" time="0.00158197">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; str_replace command &gt; error cases &gt; throws when file not found" time="0.000707569">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; str_replace command &gt; error cases &gt; throws when path is directory" time="0.001138122">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; inserts at beginning (line 0)" time="0.002121423">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; inserts in middle" time="0.002028444">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; inserts at end" time="0.001826877">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; shows snippet with 4 lines before and after insertion" time="0.00162542">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; handles multi-line insertion" time="0.002690416">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; handles insertion in empty file" time="0.001746116">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; error cases &gt; throws when insert_line is negative" time="0.00143738">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; error cases &gt; throws when insert_line is beyond file length" time="0.001421179">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; error cases &gt; throws when file not found" time="0.000714553">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; insert command &gt; error cases &gt; throws when path is directory" time="0.001054195">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; path validation and security &gt; rejects relative paths" time="0.000593887">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; file size limits &gt; throws when file exceeds default size limit" time="0.003442228">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; edge cases &gt; handles files with special characters in content" time="0.001451967">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; edge cases &gt; handles files with unicode characters" time="0.00139454">
+        </testcase>
+        <testcase classname="vended_tools/file_editor/__tests__/file-editor.test.ts" name="fileEditor tool &gt; edge cases &gt; handles files with tabs (expands tabs)" time="0.001365208">
+        </testcase>
+    </testsuite>
+    <testsuite name="vended_tools/http_request/__tests__/http-request.test.ts" timestamp="2025-12-06T01:34:01.402Z" hostname="runnervmoqczp" tests="17" failures="0" errors="0" skipped="0" time="0.123703131">
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; &apos;GET&apos; request &gt; returns successful response" time="0.006270131">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; &apos;POST&apos; request &gt; returns successful response" time="0.000546429">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; &apos;PUT&apos; request &gt; returns successful response" time="0.00042914">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; &apos;DELETE&apos; request &gt; returns successful response" time="0.000408682">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; &apos;PATCH&apos; request &gt; returns successful response" time="0.0004079">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; &apos;HEAD&apos; request &gt; returns successful response" time="0.000397191">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; &apos;OPTIONS&apos; request &gt; returns successful response" time="0.000399836">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; request configuration &gt; sends request with custom headers and body" time="0.00499371">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; response handling &gt; handles empty response body" time="0.000405957">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; response handling &gt; handles string response body" time="0.000394305">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; response handling &gt; converts response headers to plain object" time="0.000509971">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; HTTP status codes &gt; succeeds for 2xx status codes" time="0.000390218">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; HTTP status codes &gt; throws error for 3xx redirect status codes" time="0.002404994">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; HTTP status codes &gt; throws error for 4xx client error codes" time="0.000425854">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; HTTP status codes &gt; throws error for 5xx server error codes" time="0.000455689">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; error handling &gt; throws timeout error when request exceeds timeout" time="0.101247997">
+        </testcase>
+        <testcase classname="vended_tools/http_request/__tests__/http-request.test.ts" name="httpRequest tool &gt; error handling &gt; throws error for network failures" time="0.000661122">
+        </testcase>
+    </testsuite>
+    <testsuite name="vended_tools/notebook/__tests__/notebook.test.ts" timestamp="2025-12-06T01:34:01.404Z" hostname="runnervmoqczp" tests="39" failures="0" errors="0" skipped="0" time="0.019091885">
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; create oper ation &gt; creates an empty notebook with default name" time="0.004165626">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; create oper ation &gt; creates an empty notebook with custom name" time="0.000327641">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; create oper ation &gt; creates a notebook with initial content" time="0.000266857">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; create oper ation &gt; overwrites existing notebook on create" time="0.000216083">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; list operation &gt; lists default notebook when initialized" time="0.000372514">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; list operation &gt; lists multiple notebooks with line counts" time="0.000259403">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; reads entire notebook with default name" time="0.000260185">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; reads entire notebook with custom name" time="0.000281525">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; reads empty notebook" time="0.000182801">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; throws error for non-existent notebook" time="0.001739653">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; reads specific line range" time="0.000577006">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; reads line range with negative start index" time="0.00026254">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; reads line range with negative end index" time="0.000293748">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; reads line range with both negative indices" time="0.000195756">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; read operation &gt; returns no valid lines for out of range" time="0.000177882">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - string replacement &gt; replaces text in default notebook" time="0.000355313">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - string replacement &gt; replaces text in custom notebook" time="0.000261668">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - string replacement &gt; replaces multiline text" time="0.000213018">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - string replacement &gt; throws error if old string not found" time="0.000279882">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - string replacement &gt; throws error for non-existent notebook" time="0.000260996">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; inserts after line number" time="0.000378846">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; inserts at beginning (after line 0)" time="0.000231662">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; appends to end with negative index" time="0.000210953">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; inserts after negative line index" time="0.000235679">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; inserts after text search" time="0.000215231">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; inserts after partial text match" time="0.000214489">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; throws error if search text not found" time="0.000272679">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; throws error for line number out of range" time="0.00028987">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; write operation - line insertion &gt; inserts into custom notebook" time="0.000243874">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; clear operation &gt; clears default notebook" time="0.000307564">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; clear operation &gt; clears custom notebook" time="0.000210913">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; clear operation &gt; throws error for non-existent notebook" time="0.000273961">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; clear operation &gt; clearing does not affect other notebooks" time="0.000192058">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; state persistence &gt; persists notebooks across operations" time="0.000312994">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; state persistence &gt; initializes default notebook if state is empty" time="0.000223127">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; validation errors &gt; requires context" time="0.000239015">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; validation errors &gt; rejects write without newStr for replacement" time="0.000656524">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; validation errors &gt; rejects write without newStr for insertion" time="0.000331939">
+        </testcase>
+        <testcase classname="vended_tools/notebook/__tests__/notebook.test.ts" name="notebook tool &gt; validation errors &gt; rejects write without valid operation parameters" time="0.000336347">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/registry/tool-registry.ts" timestamp="2025-12-06T01:34:01.410Z" hostname="runnervmoqczp" tests="15" failures="0" errors="0" skipped="0" time="0.012718453">
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should register a valid tool successfully" time="0.004971619">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should throw ValidationError for a duplicate tool name" time="0.000704303">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should throw ValidationError for an invalid tool name pattern" time="0.000426244">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should throw ValidationError for a tool name that is too long" time="0.000418681">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should throw ValidationError for a tool name that is too short" time="0.000431344">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should throw ValidationError for an invalid description" time="0.000490284">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should throw ValidationError for an empty string description" time="0.000387442">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should allow a tool with a null or undefined description" time="0.000494231">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should retrieve a tool by its name" time="0.000221192">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should return undefined when getting a tool by a name that does not exist" time="0.000194924">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should remove a tool by its name" time="0.000416246">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should not throw when removing a tool by a name that does not exist" time="0.00027903">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should generate a valid ToolIdentifier" time="0.000172201">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should register a tool with a name at the maximum length" time="0.000298497">
+        </testcase>
+        <testcase classname="src/registry/tool-registry.ts" name="ToolRegistry &gt; should throw ValidationError for a non-string tool name" time="0.000448867">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/registry/registry.ts" timestamp="2025-12-06T01:34:01.412Z" hostname="runnervmoqczp" tests="21" failures="0" errors="0" skipped="0" time="0.014793481">
+        <testcase classname="src/registry/registry.ts" name="Error Classes &gt; ItemNotFoundError should have the correct name and message" time="0.00218244">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Error Classes &gt; DuplicateItemError should have the correct name and message" time="0.000319105">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Error Classes &gt; ValidationError should have the correct name and message" time="0.000282636">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should register an item and return a new ID" time="0.000762972">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should throw DuplicateItemError when registering with an existing ID" time="0.002093754">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should deregister an item and return it" time="0.000329334">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should throw ItemNotFoundError when deregistering a non-existent item" time="0.000256628">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should get an item by its ID" time="0.000203239">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should return undefined when getting a non-existent item" time="0.000186067">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should find an item using a predicate" time="0.000261939">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should return undefined when no item matches the predicate" time="0.000222425">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should return all keys" time="0.00108309">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should return all values" time="0.000265125">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should return all key-value pairs" time="0.000272698">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should clear all items from the registry" time="0.0003004">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should register multiple items" time="0.000357437">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should deregister multiple items" time="0.000338711">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should find and deregister an item" time="0.000475437">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should return undefined from findRemove if no item matches" time="0.000196106">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should call the validate method on register" time="0.00147469">
+        </testcase>
+        <testcase classname="src/registry/registry.ts" name="Registry &gt; should throw a validation error for an invalid item" time="0.000249686">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/tools/__tests__/zod-tool.test-d.ts" timestamp="2025-12-06T01:34:01.415Z" hostname="runnervmoqczp" tests="19" failures="0" errors="0" skipped="0" time="0">
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; invoke return type matches callback return type &gt; should return string when callback returns string" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; invoke return type matches callback return type &gt; should return number when callback returns number" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; invoke return type matches callback return type &gt; should return boolean when callback returns boolean" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; invoke return type matches callback return type &gt; should return object when callback returns object" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; invoke return type matches callback return type &gt; should return array when callback returns array" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; invoke return type matches callback return type &gt; should return null when callback returns null" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; async callback return types &gt; should return string when async callback returns string" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; async callback return types &gt; should return number when async callback returns number" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; async callback return types &gt; should return complex object when async callback returns complex object" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; async generator callback return types &gt; should return the final return value from async generator" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; async generator callback return types &gt; should return string when async generator returns string" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; async generator callback return types &gt; should return object when async generator returns object" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; union return types &gt; should handle union return types correctly" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; union return types &gt; should handle conditional return types" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; input type validation &gt; should enforce correct input types" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; input type validation &gt; should handle optional fields in input" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; input type validation &gt; should handle complex nested input types" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; generic type constraints &gt; should maintain type safety with explicit generic parameters" time="0">
+        </testcase>
+        <testcase classname="src/tools/__tests__/zod-tool.test-d.ts" name="zod-tool type tests &gt; generic type constraints &gt; should work with complex generic constraints" time="0">
+        </testcase>
+    </testsuite>
+</testsuites>
