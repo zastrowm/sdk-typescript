@@ -210,6 +210,7 @@ If the implementation is complete, proceed with review of the implementation to 
 
 **Constraints:**
 
+- You SHOULD review your own code according to the checklist items in [docs/TESTING.md](../../docs/TESTING.md).
 - You MAY reply to user review threads with a concise response
   - You MUST keep your response to less than 3 sentences
 - You MUST check that all tasks are complete before proceeding
@@ -246,7 +247,8 @@ If all tests are passing, draft a conventional commit message, perform the git c
 
 **Constraints:**
 
-- You MUST read and follow the PR description guidelines in [docs/PR.md](../../docs/PR.md) when creating pull requests
+- You MUST read and follow the PR description guidelines in [docs/PR.md](../../docs/PR.md) when creating pull requests & commits
+- You SHOULD include checklist items from [docs/PR.md](../../docs/PR.md) to validate the pull request description
 - You MUST check that all tasks are complete before proceeding
 - You MUST reference your notes for the issue you are creating a pull request for
 - You MUST NOT commit changes until builds AND tests have been verified because committing broken code can disrupt the development workflow and introduce bugs into the codebase
@@ -259,16 +261,11 @@ If all tests are passing, draft a conventional commit message, perform the git c
 - You MUST attempt to create the pull request using the `create_pull_request` tool if it does not exist yet
   - If the PR creation is deferred, continue with the workflow and note the deferred status
   - You MUST use the task id recorded in your notes, not the issue id
-  - You MUST include "Resolves: #<ISSUE NUMBER>" in the body of the pull request
-    - You MUST NOT bold this line
-  - You MUST give an overview of the feature being implemented
-  - You MUST include any notes on key implementation decisions, ambiguity, or other information as part of the pull request description
 - If the `create_pull_request` tool fails (excluding deferred responses):
   - You MUST create a PR creation link using GitHub's query parameters
   - You MUST post the link as a comment on the issue
     - You MUST use the format: `https://github.com/{owner}/{repo}/compare/{base}...{head}?quick_pull=1&title={url_encoded_title}&body={url_encoded_body}`
     - URL-encode the title and body parameters
-    - Include "Resolves: #{issue_number}" in the body
 - If PR creation succeeds or is deferred:
   - You MUST review your notes for any updates to provide on the pull request
   - You MAY use the `update_pull_request` tool to update the pull request body or title
@@ -320,6 +317,7 @@ Based on the users feedback, you will review and update your implementation plan
 - You MUST NOT close the parent issue - only the user should close it after the pull request is merged
 - You MUST not attempt to merge the pull request
 - You MUST use the handoff_to_user tool to inform the user you are ready for clarifying information on the pull request
+- You SHOULD include additional checklist items from [docs/PR.md](../../docs/PR.md) to validate the pull request description is correct after making additional changes
 
 ## Desired Outcome
 
@@ -387,7 +385,7 @@ If builds fail during implementation:
 ### Project Structure Detection
 
 - Detect project type by examining files (pyproject.toml, build.gradle, package.json, etc.)
-- Check for DEVELOPMENT.md for explicit project instructions
+- Check for DEVELOPMENT.md for explicit project instructions in the `docs/` directory
 - Apply appropriate build commands and directory structures based on detected type
 - Use project-specific practices when specified in DEVELOPMENT.md
 
