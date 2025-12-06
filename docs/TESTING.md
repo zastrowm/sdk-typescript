@@ -298,10 +298,10 @@ const provider = new MockMessageModel()
 
 ## Testing Hooks
 
-When testing hook behavior with an Agent, you **SHOULD** register callbacks directly on the agent's `hooks` property rather than creating an inline `HookProvider` object.
+When testing hook behavior, you **MUST** use `agent.hooks.addCallback()` for registering single callbacks when `agent.hooks` is available. Do NOT create inline `HookProvider` objects — this is an anti-pattern for single callbacks.
 
 ```typescript
-// ✅ CORRECT - Register callbacks directly on agent.hooks
+// ✅ CORRECT - Use agent.hooks.addCallback() for single callbacks
 const agent = new Agent({ model, tools: [tool] })
 
 agent.hooks.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
@@ -311,20 +311,93 @@ agent.hooks.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
   }
 })
 
-// ❌ WRONG - Do not create HookProvider objects for tests
-const modifyInputHook = {
+// ✅ CORRECT - Use MockHookProvider to record and verify hook invocations
+const hookProvider = new MockHookProvider()
+const agent = new Agent({ model, hooks: [hookProvider] })
+await agent.invoke('Hi')
+expect(hookProvider.invocations).toContainEqual(new BeforeInvocationEvent({ agent }))
+
+// ❌ WRONG - Do NOT create inline HookProvider objects
+const switchToolHook = {
   registerCallbacks: (registry: HookRegistry) => {
     registry.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
-      event.toolUse = {
-        ...event.toolUse,
-        input: { value: 42 },
+      if (event.toolUse.name === 'tool1') {
+        event.tool = tool2
       }
     })
   },
 }
 ```
 
-Tests should use the simpler, direct approach via `agent.hooks.addCallback()`
+**When to use each approach:**
+
+- **`agent.hooks.addCallback()`** - For adding a single callback to verify hook behavior (e.g., modifying tool input, switching tools)
+- **`MockHookProvider`** - For recording and verifying hook lifecycle behavior and that specific hook events fired during execution
+
+## Test Fixtures Reference
+
+All test fixtures are located in `src/__fixtures__/`. Use these helpers to reduce boilerplate and ensure consistency.
+
+### Model Fixtures (`mock-message-model.ts`, `model-test-helpers.ts`)
+
+- **`MockMessageModel`** - Content-focused model for agent loop tests. Use `addTurn()` with content blocks.
+- **`TestModelProvider`** - Low-level model for precise control over `ModelStreamEvent` sequences.
+- **`collectIterator(stream)`** - Collects all items from an async iterable into an array.
+- **`collectGenerator(generator)`** - Collects yielded items and final return value from an async generator.
+
+```typescript
+// MockMessageModel for agent tests
+const model = new MockMessageModel()
+  .addTurn({ type: 'toolUseBlock', name: 'calc', toolUseId: 'id-1', input: {} })
+  .addTurn({ type: 'textBlock', text: 'Done' })
+
+// collectIterator for stream results
+const events = await collectIterator(agent.stream('Hi'))
+```
+
+### Hook Fixtures (`mock-hook-provider.ts`)
+
+- **`MockHookProvider`** - Records all hook invocations for verification. Pass to `Agent({ hooks: [provider] })`.
+  - Use `{ includeModelEvents: false }` to exclude `ModelStreamEventHook` from recordings.
+  - Access `provider.invocations` to verify hook events fired.
+
+```typescript
+// Record and verify hook invocations
+const hookProvider = new MockHookProvider({ includeModelEvents: false })
+const agent = new Agent({ model, hooks: [hookProvider] })
+
+await agent.invoke('Hi')
+
+expect(hookProvider.invocations[0]).toEqual(new BeforeInvocationEvent({ agent }))
+```
+
+### Tool Fixtures (`tool-helpers.ts`)
+
+- **`createMockTool(name, resultFn)`** - Creates a mock tool with custom result behavior.
+- **`createRandomTool(name?)`** - Creates a minimal mock tool (use when tool execution doesn't matter).
+- **`createMockContext(toolUse, agentState?)`** - Creates a mock `ToolContext` for testing tool implementations directly.
+
+```typescript
+// Mock tool with custom result
+const tool = createMockTool(
+  'calculator',
+  () => new ToolResultBlock({ toolUseId: 'id', status: 'success', content: [new TextBlock('42')] })
+)
+
+// Minimal tool when execution doesn't matter
+const tool = createRandomTool('myTool')
+```
+
+### Agent Fixtures (`agent-helpers.ts`)
+
+- **`createMockAgent(data?)`** - Creates a minimal mock Agent with messages and state. Use for testing components that need an Agent reference without full agent behavior.
+
+```typescript
+const agent = createMockAgent({
+  messages: [new Message({ role: 'user', content: [new TextBlock('Hi')] })],
+  state: { key: 'value' },
+})
+```
 
 ## Multi-Environment Testing
 
@@ -371,7 +444,7 @@ For detailed command usage, see [CONTRIBUTING.md - Testing Instructions](../CONT
 
 ## Checklist Items
 
-- [ ] Do the test use relevent helpers from `__fixtures__` (`MockMessageModel`, `createMockTool`, `createMockAgent` etc.)
+- [ ] Do the test use relevent helpers from `__fixtures__` as noted in the "Test Fixtures Reference" section
 - [ ] Are reoccuring code or patterns extracted to functions for better usability/readability
 - [ ] Are tests focused on verifying one or two things only?
 - [ ] Are tests written concisely enough that the bulk of each test is important to the test instead of boilerplate code?

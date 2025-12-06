@@ -231,11 +231,29 @@ After reviewing the implementation, review the test code to ensure it follows es
 **Constraints:**
 
 - You MUST review your test code according to the guidelines in [docs/TESTING.md](../../docs/TESTING.md).
-  - You SHOULD add a task to validate it conforms to that documents
 - You MUST verify tests conform to the testing documentation standards
 - You MUST verify tests are readable and maintainable
 - You SHOULD refactor tests that are overly complex or duplicative
 - You MUST return to step 4.1 if tests need significant restructuring
+
+**Testing Checklist Verification (REQUIRED):**
+
+You MUST copy the checklist from [docs/TESTING.md](../../docs/TESTING.md) into your progress notes and explicitly verify each item. For each checklist item, you MUST:
+
+1. Copy the checklist item verbatim
+2. Mark it as `[x]` (pass) or `[ ]` (fail)
+3. If failed, provide a brief explanation and fix the issue before proceeding
+
+Example format in your notes:
+
+```markdown
+## Testing Checklist Verification
+
+- [x] Do the tests use relevant helpers from `__fixtures__` as noted in the "Test Fixtures Reference" section
+- [ ] Are tests asserting on the entire object instead of specific fields? → FAILED: test on line 45 asserts individual properties, refactoring now
+```
+
+You MUST NOT proceed to step 4.5 until ALL checklist items pass.
 
 #### 4.5 Validate Implementation
 
@@ -279,10 +297,28 @@ If you have received feedback from user reviews or PR comments, address them bef
 
 If all tests are passing, draft a conventional commit message, perform the git commit, and create/update the pull request.
 
+**PR Checklist Verification (REQUIRED):**
+
+Before creating or updating a PR, you MUST copy the checklist from [docs/PR.md](../../docs/PR.md) into your progress notes and explicitly verify each item. For each checklist item, you MUST:
+
+1. Copy the checklist item verbatim
+2. Mark it as `[x]` (pass) or `[ ]` (fail)
+3. If failed, revise the PR description until the item passes
+
+Example format in your notes:
+
+```markdown
+## PR Description Checklist Verification
+
+- [x] Does the PR description target a Senior Engineer familiar with the project?
+- [ ] Does the PR include a "Resolves #<ISSUE NUMBER>" in the body? → FAILED: missing issue reference, adding now
+```
+
+You MUST NOT create or update the PR until ALL checklist items pass.
+
 **Constraints:**
 
 - You MUST read and follow the PR description guidelines in [docs/PR.md](../../docs/PR.md) when creating pull requests & commits
-- You SHOULD include checklist items from [docs/PR.md](../../docs/PR.md) to validate the pull request description
 - You MUST check that all tasks are complete before proceeding
 - You MUST reference your notes for the issue you are creating a pull request for
 - You MUST NOT commit changes until builds AND tests have been verified because committing broken code can disrupt the development workflow and introduce bugs into the codebase
@@ -460,6 +496,17 @@ If builds fail during implementation:
 - Focus on high-level concepts rather than detailed code in documentation
 - Use progress tracking with markdown checklists
 - Document decisions, assumptions, and challenges
+
+### Checklist Verification Pattern
+
+When documentation files contain checklists (e.g., `docs/TESTING.md`, `docs/PR.md`), you MUST:
+
+1. Copy the entire checklist into your progress notes
+2. Explicitly verify each item by marking `[x]` or `[ ]`
+3. For any failed items, document the issue and fix it before proceeding
+4. Re-verify failed items after fixes until all pass
+
+This pattern ensures quality gates are not skipped and provides an audit trail of verification.
 
 ### Pull Request Best Practices
 
