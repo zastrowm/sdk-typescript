@@ -1,10 +1,9 @@
 import {
   AgentResult,
   type AgentStreamEvent,
-  BedrockModel,
-  contentBlockFromData,
   type ContentBlock,
   type ContentBlockData,
+  contentBlockFromData,
   type JSONValue,
   McpClient,
   Message,
@@ -18,17 +17,16 @@ import {
   ToolUseBlock,
 } from '../index.js'
 import { systemPromptFromData } from '../types/messages.js'
-import { normalizeError, ConcurrentInvocationError } from '../errors.js'
-import type { BaseModelConfig, Model, StreamOptions } from '../models/model.js'
+import { ConcurrentInvocationError, normalizeError } from '../errors.js'
+import { type BaseModelConfig, Model, type StreamOptions } from '../models/model.js'
 import { ToolRegistry } from '../registry/tool-registry.js'
 import { AgentState } from './state.js'
 import type { AgentData } from '../types/agent.js'
-import { AgentPrinter, getDefaultAppender, type Printer } from './printer.js'
+import { type Printer } from './printer.js'
 import type { HookProvider } from '../hooks/types.js'
 import { SlidingWindowConversationManager } from '../conversation-manager/sliding-window-conversation-manager.js'
 import { HookRegistryImplementation } from '../hooks/registry.js'
 import {
-  HookEvent,
   AfterInvocationEvent,
   AfterModelCallEvent,
   AfterToolCallEvent,
@@ -37,9 +35,11 @@ import {
   BeforeModelCallEvent,
   BeforeToolCallEvent,
   BeforeToolsEvent,
+  HookEvent,
   MessageAddedEvent,
   ModelStreamEventHook,
 } from '../hooks/events.js'
+import { AgentDefaults } from './agent-defaults.js'
 
 /**
  * Recursive type definition for nested tool arrays.
@@ -148,13 +148,13 @@ export class Agent implements AgentData {
   /**
    * The system prompt to pass to the model provider.
    */
-  public systemPrompt?: SystemPrompt
+  public systemPrompt: SystemPrompt | undefined
 
   private _toolRegistry: ToolRegistry
   private _mcpClients: McpClient[]
   private _initialized: boolean
   private _isInvoking: boolean = false
-  private _printer?: Printer
+  private _printer: Printer | undefined
 
   /**
    * Creates an instance of the Agent.
@@ -171,10 +171,10 @@ export class Agent implements AgentData {
     this.hooks.addHook(this.conversationManager)
     this.hooks.addAllHooks(config?.hooks ?? [])
 
-    if (typeof config?.model === 'string') {
-      this.model = new BedrockModel({ modelId: config.model })
+    if (config?.model instanceof Model) {
+      this.model = config.model
     } else {
-      this.model = config?.model ?? new BedrockModel()
+      this.model = AgentDefaults.getModel(config?.model)
     }
 
     const { tools, mcpClients } = flattenTools(config?.tools ?? [])
@@ -183,12 +183,16 @@ export class Agent implements AgentData {
 
     if (config?.systemPrompt !== undefined) {
       this.systemPrompt = systemPromptFromData(config.systemPrompt)
+    } else {
+      this.systemPrompt = AgentDefaults.getSystemPrompt()
     }
 
     // Create printer if printer is enabled (default: true)
     const printer = config?.printer ?? true
     if (printer) {
-      this._printer = new AgentPrinter(getDefaultAppender())
+      this._printer = AgentDefaults.getPrinter()
+    } else {
+      this._printer = undefined
     }
 
     this._initialized = false

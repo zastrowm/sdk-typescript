@@ -14,6 +14,10 @@
       "types": "./dist/src/index.d.ts",
       "default": "./dist/src/index.js"
     },
+    "./experimental": {
+      "types": "./dist/src/experimental.d.ts",
+      "default": "./dist/src/experimental.js"
+    },
     "./openai": {
       "types": "./dist/src/models/openai.d.ts",
       "default": "./dist/src/models/openai.js"
