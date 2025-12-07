@@ -5,10 +5,10 @@
  * construct events in tests.
  */
 
-import { Model } from '../models/model.js'
-import type { Message, ContentBlock } from '../types/messages.js'
-import type { ModelStreamEvent } from '../models/streaming.js'
 import type { BaseModelConfig, StreamOptions } from '../models/model.js'
+import { Model } from '../models/model.js'
+import type { ContentBlock, Message } from '../types/messages.js'
+import type { ModelStreamEvent } from '../models/streaming.js'
 
 /**
  * Represents a single turn in the test sequence.
@@ -21,7 +21,7 @@ type Turn = { type: 'content'; content: ContentBlock[]; stopReason: string } | {
  * Simplifies agent loop tests by allowing specification of content blocks
  * instead of manually yielding individual ModelStreamEvents.
  */
-export class MockMessageModel extends Model<BaseModelConfig> {
+export class MockMessageModel extends Model {
   private _turns: Turn[]
   private _currentTurnIndex: number
   private _config: BaseModelConfig
