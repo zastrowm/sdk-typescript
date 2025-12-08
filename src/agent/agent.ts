@@ -567,33 +567,45 @@ export class Agent implements AgentData {
       input: toolUseBlock.input,
     }
 
-    yield new BeforeToolCallEvent({ agent: this, toolUse, tool })
+    const beforeEvent = new BeforeToolCallEvent({ agent: this, toolUse, tool })
+    yield beforeEvent
 
-    if (!tool) {
+    // After yielding, hooks may have modified tool and toolUse
+    const actualTool = beforeEvent.tool
+    const actualToolUse = beforeEvent.toolUse
+
+    if (!actualTool) {
       // Tool not found - return error result instead of throwing
       const errorResult = new ToolResultBlock({
-        toolUseId: toolUseBlock.toolUseId,
+        toolUseId: actualToolUse.toolUseId,
         status: 'error',
-        content: [new TextBlock(`Tool '${toolUseBlock.name}' not found in registry`)],
+        content: [new TextBlock(`Tool '${actualToolUse.name}' not found in registry`)],
       })
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: errorResult,
+      })
+      yield afterEvent
 
-      return errorResult
+      // After yielding, hooks may have modified result
+      return afterEvent.result
     }
 
     // Execute tool and collect result
     const toolContext: ToolContext = {
       toolUse: {
-        name: toolUseBlock.name,
-        toolUseId: toolUseBlock.toolUseId,
-        input: toolUseBlock.input,
+        name: actualToolUse.name,
+        toolUseId: actualToolUse.toolUseId,
+        input: actualToolUse.input,
       },
       agent: this,
     }
 
     try {
-      const toolGenerator = tool.stream(toolContext)
+      const toolGenerator = actualTool.stream(toolContext)
 
       // Use yield* to delegate to the tool generator and capture the return value
       const toolResult = yield* toolGenerator
@@ -601,33 +613,53 @@ export class Agent implements AgentData {
       if (!toolResult) {
         // Tool didn't return a result - return error result instead of throwing
         const errorResult = new ToolResultBlock({
-          toolUseId: toolUseBlock.toolUseId,
+          toolUseId: actualToolUse.toolUseId,
           status: 'error',
-          content: [new TextBlock(`Tool '${toolUseBlock.name}' did not return a result`)],
+          content: [new TextBlock(`Tool '${actualToolUse.name}' did not return a result`)],
         })
 
-        yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult })
+        const afterEvent = new AfterToolCallEvent({
+          agent: this,
+          toolUse: actualToolUse,
+          tool: actualTool,
+          result: errorResult,
+        })
+        yield afterEvent
 
-        return errorResult
+        // After yielding, hooks may have modified result
+        return afterEvent.result
       }
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: toolResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: toolResult,
+      })
+      yield afterEvent
 
-      // Tool already returns ToolResultBlock directly
-      return toolResult
+      // After yielding, hooks may have modified result
+      return afterEvent.result
     } catch (error) {
       // Tool execution failed with error
       const toolError = normalizeError(error)
       const errorResult = new ToolResultBlock({
-        toolUseId: toolUseBlock.toolUseId,
+        toolUseId: actualToolUse.toolUseId,
         status: 'error',
         content: [new TextBlock(toolError.message)],
         error: toolError,
       })
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult, error: toolError })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: errorResult,
+      })
+      yield afterEvent
 
-      return errorResult
+      // After yielding, hooks may have modified result
+      return afterEvent.result
     }
   }
 
