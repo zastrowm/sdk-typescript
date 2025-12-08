@@ -3,9 +3,9 @@ import { Agent, BedrockModel } from '$/sdk/index.js'
 import type { AgentStreamEvent, AgentResult } from '$/sdk/index.js'
 import { notebook } from '$/sdk/vended-tools/notebook/index.js'
 import { collectGenerator } from '$/sdk/__fixtures__/model-test-helpers.js'
-import { shouldRunTests } from './__fixtures__/model-test-helpers.js'
+import { shouldSkipBedrockTests } from './__fixtures__/model-test-helpers.js'
 
-describe.skipIf(!(await shouldRunTests()))('Notebook Tool Integration', () => {
+describe.skipIf(await shouldSkipBedrockTests())('Notebook Tool Integration', () => {
   // Shared agent configuration for all tests
   const agentParams = {
     model: new BedrockModel({

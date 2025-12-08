@@ -11,26 +11,7 @@ import { collectGenerator } from '$/sdk/__fixtures__/model-test-helpers.js'
 
 // Import fixtures
 import yellowPngUrl from '../__resources__/yellow.png?url'
-
-// Environment detection for browser vs Node.js
-const isNode = typeof process !== 'undefined' && typeof process.versions !== 'undefined' && !!process.versions.node
-
-// Browser-compatible fixture loader
-const loadFixture = async (url: string): Promise<Uint8Array> => {
-  if (isNode) {
-    // In Node.js, use synchronous file reading
-    const { readFileSync } = await import('node:fs')
-    const { join } = await import('node:path')
-    const relativePath = url.startsWith('/') ? url.slice(1) : url
-    const filePath = join(process.cwd(), relativePath)
-    return new Uint8Array(readFileSync(filePath))
-  } else {
-    // In browser, use fetch API
-    const response = await globalThis.fetch(url)
-    const arrayBuffer = await response.arrayBuffer()
-    return new Uint8Array(arrayBuffer)
-  }
-}
+import { loadFixture } from '../__fixtures__/test-helpers.js'
 
 // Calculator tool for testing
 const calculatorTool = tool({

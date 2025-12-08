@@ -4,7 +4,8 @@ import { Message } from '@strands-agents/sdk'
 import type { ToolSpec } from '@strands-agents/sdk'
 
 import { collectIterator } from '$/sdk/__fixtures__/model-test-helpers.js'
-import { shouldSkipOpenAITests } from './__fixtures__/test-helpers.js'
+
+import { shouldSkipOpenAITests } from './__fixtures__/model-test-helpers.js'
 
 describe.skipIf(shouldSkipOpenAITests())('OpenAIModel Integration Tests', () => {
   describe('Configuration', () => {
