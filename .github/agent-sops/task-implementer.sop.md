@@ -332,10 +332,9 @@ You MUST NOT create or update the PR until ALL checklist items pass.
   - If the PR creation is deferred, continue with the workflow and note the deferred status
   - You MUST use the task id recorded in your notes, not the issue id
 - If the `create_pull_request` tool fails (excluding deferred responses):
-  - You MUST create a PR creation link using GitHub's query parameters
-  - You MUST post the link as a comment on the issue
-    - You MUST use the format: `https://github.com/{owner}/{repo}/compare/{base}...{head}?quick_pull=1&title={url_encoded_title}&body={url_encoded_body}`
-    - URL-encode the title and body parameters
+    - The tool automatically handles fallback by posting a properly URL-encoded manual PR creation link as a comment on the specified fallback issue
+    - You MUST verify the fallback comment was posted successfully by checking the tool's return message
+    - You MUST NOT manually construct PR creation URLs since the tool handles URL encoding automatically
 - If PR creation succeeds or is deferred:
   - You MUST review your notes for any updates to provide on the pull request
   - You MAY use the `update_pull_request` tool to update the pull request body or title
