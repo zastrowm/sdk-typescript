@@ -582,7 +582,12 @@ export class Agent implements AgentData {
         content: [new TextBlock(`Tool '${actualToolUse.name}' not found in registry`)],
       })
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: actualToolUse, tool: actualTool, result: errorResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: errorResult,
+      })
       yield afterEvent
 
       // Use potentially modified result from the event
@@ -613,14 +618,24 @@ export class Agent implements AgentData {
           content: [new TextBlock(`Tool '${actualToolUse.name}' did not return a result`)],
         })
 
-        const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: actualToolUse, tool: actualTool, result: errorResult })
+        const afterEvent = new AfterToolCallEvent({
+          agent: this,
+          toolUse: actualToolUse,
+          tool: actualTool,
+          result: errorResult,
+        })
         yield afterEvent
 
         // Use potentially modified result from the event
         return afterEvent.result
       }
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: actualToolUse, tool: actualTool, result: toolResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: toolResult,
+      })
       yield afterEvent
 
       // Use potentially modified result from the event
@@ -635,7 +650,13 @@ export class Agent implements AgentData {
         error: toolError,
       })
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: actualToolUse, tool: actualTool, result: errorResult, error: toolError })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: errorResult,
+        error: toolError,
+      })
       yield afterEvent
 
       // Use potentially modified result from the event
