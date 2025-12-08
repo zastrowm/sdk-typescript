@@ -8,18 +8,18 @@ This document contains comprehensive testing guidelines for the Strands TypeScri
 
 All test fixtures are located in `src/__fixtures__/`. Use these helpers to reduce boilerplate and ensure consistency.
 
-| Fixture                | File                    | When to Use                                                                          |
-| ---------------------- | ----------------------- | ------------------------------------------------------------------------------------ |
-| `MockMessageModel`     | `mock-message-model.ts` | Agent loop tests - specify content blocks, auto-generates stream events              |
-| `TestModelProvider`    | `model-test-helpers.ts` | Low-level model tests - precise control over individual `ModelStreamEvent` sequences |
-| `collectIterator()`    | `model-test-helpers.ts` | Collect all items from any async iterable into an array                              |
-| `collectGenerator()`   | `model-test-helpers.ts` | Collect yielded items AND final return value from async generators                   |
-| `MockHookProvider`     | `mock-hook-provider.ts` | Record and verify hook invocations during agent execution                            |
-| `createMockTool()`     | `tool-helpers.ts`       | Create mock tools with custom result behavior                                        |
-| `createRandomTool()`   | `tool-helpers.ts`       | Create minimal mock tools when execution doesn't matter                              |
-| `createMockContext()`  | `tool-helpers.ts`       | Create mock `ToolContext` for testing tool implementations directly                  |
-| `createMockAgent()`    | `agent-helpers.ts`      | Create minimal mock Agent with messages and state                                    |
-| `isNode` / `isBrowser` | `environment.ts`        | Environment detection for conditional test execution                                 |
+| Fixture                | File                    | When to Use                                                                          | Details                                                                     |
+| ---------------------- | ----------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| `MockMessageModel`     | `mock-message-model.ts` | Agent loop tests - specify content blocks, auto-generates stream events              | [Model Fixtures](#model-fixtures-mock-message-modelts-model-test-helpersts) |
+| `TestModelProvider`    | `model-test-helpers.ts` | Low-level model tests - precise control over individual `ModelStreamEvent` sequences | [Model Fixtures](#model-fixtures-mock-message-modelts-model-test-helpersts) |
+| `collectIterator()`    | `model-test-helpers.ts` | Collect all items from any async iterable into an array                              | [Model Fixtures](#model-fixtures-mock-message-modelts-model-test-helpersts) |
+| `collectGenerator()`   | `model-test-helpers.ts` | Collect yielded items AND final return value from async generators                   | [Model Fixtures](#model-fixtures-mock-message-modelts-model-test-helpersts) |
+| `MockHookProvider`     | `mock-hook-provider.ts` | Record and verify hook invocations during agent execution                            | [Hook Fixtures](#hook-fixtures-mock-hook-providerts)                        |
+| `createMockTool()`     | `tool-helpers.ts`       | Create mock tools with custom result behavior                                        | [Tool Fixtures](#tool-fixtures-tool-helpersts)                              |
+| `createRandomTool()`   | `tool-helpers.ts`       | Create minimal mock tools when execution doesn't matter                              | [Tool Fixtures](#tool-fixtures-tool-helpersts)                              |
+| `createMockContext()`  | `tool-helpers.ts`       | Create mock `ToolContext` for testing tool implementations directly                  | [Tool Fixtures](#tool-fixtures-tool-helpersts)                              |
+| `createMockAgent()`    | `agent-helpers.ts`      | Create minimal mock Agent with messages and state                                    | [Agent Fixtures](#agent-fixtures-agent-helpersts)                           |
+| `isNode` / `isBrowser` | `environment.ts`        | Environment detection for conditional test execution                                 | [Environment Fixtures](#environment-fixtures-environmentts)                 |
 
 ## Test Organization
 
@@ -403,6 +403,33 @@ const tool = createMockTool(
 
 // Minimal tool when execution doesn't matter
 const tool = createRandomTool('myTool')
+```
+
+**When to use fixtures vs `FunctionTool` directly:**
+
+Use `createMockTool()` or `createRandomTool()` when tools are incidental to the test. Use `FunctionTool` or `tool()` directly only when testing tool-specific behavior.
+
+```typescript
+// ✅ Use fixtures when testing agent/hook behavior
+const tool = createMockTool('testTool', () => ({
+  type: 'toolResultBlock',
+  toolUseId: 'tool-1',
+  status: 'success' as const,
+  content: [new TextBlock('Success')],
+}))
+const agent = new Agent({ model, tools: [tool] })
+
+// ✅ Use FunctionTool when testing tool-specific behavior (callback handling, result wrapping)
+const tool = new FunctionTool({
+  name: 'syncTool',
+  description: 'Returns value',
+  inputSchema: { type: 'object' },
+  callback: (input: unknown): number => (input as { value: number }).value * 2,
+})
+const { result } = await collectGenerator(tool.stream(context))
+
+// ❌ Don't use FunctionTool when tool behavior is irrelevant to the test
+const tool = new FunctionTool({ name: 'testTool', description: '...', inputSchema: {...}, callback: ... })
 ```
 
 ### Agent Fixtures (`agent-helpers.ts`)
