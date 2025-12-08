@@ -582,7 +582,12 @@ export class Agent implements AgentData {
         content: [new TextBlock(`Tool '${actualToolUse.name}' not found in registry`)],
       })
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: actualToolUse, tool: actualTool, result: errorResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: errorResult,
+      })
       yield afterEvent
 
       // After yielding, hooks may have modified result
@@ -613,14 +618,24 @@ export class Agent implements AgentData {
           content: [new TextBlock(`Tool '${actualToolUse.name}' did not return a result`)],
         })
 
-        const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: actualToolUse, tool: actualTool, result: errorResult })
+        const afterEvent = new AfterToolCallEvent({
+          agent: this,
+          toolUse: actualToolUse,
+          tool: actualTool,
+          result: errorResult,
+        })
         yield afterEvent
 
         // After yielding, hooks may have modified result
         return afterEvent.result
       }
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: actualToolUse, tool: actualTool, result: toolResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: toolResult,
+      })
       yield afterEvent
 
       // After yielding, hooks may have modified result
@@ -635,7 +650,12 @@ export class Agent implements AgentData {
         error: toolError,
       })
 
-      const afterEvent = new AfterToolCallEvent({ agent: this, toolUse: actualToolUse, tool: actualTool, result: errorResult })
+      const afterEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: actualToolUse,
+        tool: actualTool,
+        result: errorResult,
+      })
       yield afterEvent
 
       // After yielding, hooks may have modified result
