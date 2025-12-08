@@ -567,33 +567,46 @@ export class Agent implements AgentData {
       input: toolUseBlock.input,
     }
 
-    yield new BeforeToolCallEvent({ agent: this, toolUse, tool })
+    // Yield BeforeToolCallEvent and capture potentially modified values
+    const beforeToolCallEvent = new BeforeToolCallEvent({ agent: this, toolUse, tool })
+    yield beforeToolCallEvent
 
-    if (!tool) {
+    // Use potentially modified tool and toolUse from hook callbacks
+    const finalTool = beforeToolCallEvent.tool
+    const finalToolUse = beforeToolCallEvent.toolUse
+
+    if (!finalTool) {
       // Tool not found - return error result instead of throwing
       const errorResult = new ToolResultBlock({
-        toolUseId: toolUseBlock.toolUseId,
+        toolUseId: finalToolUse.toolUseId,
         status: 'error',
-        content: [new TextBlock(`Tool '${toolUseBlock.name}' not found in registry`)],
+        content: [new TextBlock(`Tool '${finalToolUse.name}' not found in registry`)],
       })
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult })
+      const afterToolCallEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: finalToolUse,
+        tool: finalTool,
+        result: errorResult,
+      })
+      yield afterToolCallEvent
 
-      return errorResult
+      // Use potentially modified result from hook callbacks
+      return afterToolCallEvent.result
     }
 
     // Execute tool and collect result
     const toolContext: ToolContext = {
       toolUse: {
-        name: toolUseBlock.name,
-        toolUseId: toolUseBlock.toolUseId,
-        input: toolUseBlock.input,
+        name: finalToolUse.name,
+        toolUseId: finalToolUse.toolUseId,
+        input: finalToolUse.input,
       },
       agent: this,
     }
 
     try {
-      const toolGenerator = tool.stream(toolContext)
+      const toolGenerator = finalTool.stream(toolContext)
 
       // Use yield* to delegate to the tool generator and capture the return value
       const toolResult = yield* toolGenerator
@@ -601,33 +614,54 @@ export class Agent implements AgentData {
       if (!toolResult) {
         // Tool didn't return a result - return error result instead of throwing
         const errorResult = new ToolResultBlock({
-          toolUseId: toolUseBlock.toolUseId,
+          toolUseId: finalToolUse.toolUseId,
           status: 'error',
-          content: [new TextBlock(`Tool '${toolUseBlock.name}' did not return a result`)],
+          content: [new TextBlock(`Tool '${finalToolUse.name}' did not return a result`)],
         })
 
-        yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult })
+        const afterToolCallEvent = new AfterToolCallEvent({
+          agent: this,
+          toolUse: finalToolUse,
+          tool: finalTool,
+          result: errorResult,
+        })
+        yield afterToolCallEvent
 
-        return errorResult
+        // Use potentially modified result from hook callbacks
+        return afterToolCallEvent.result
       }
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: toolResult })
+      const afterToolCallEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: finalToolUse,
+        tool: finalTool,
+        result: toolResult,
+      })
+      yield afterToolCallEvent
 
-      // Tool already returns ToolResultBlock directly
-      return toolResult
+      // Use potentially modified result from hook callbacks
+      return afterToolCallEvent.result
     } catch (error) {
       // Tool execution failed with error
       const toolError = normalizeError(error)
       const errorResult = new ToolResultBlock({
-        toolUseId: toolUseBlock.toolUseId,
+        toolUseId: finalToolUse.toolUseId,
         status: 'error',
         content: [new TextBlock(toolError.message)],
         error: toolError,
       })
 
-      yield new AfterToolCallEvent({ agent: this, toolUse, tool, result: errorResult, error: toolError })
+      const afterToolCallEvent = new AfterToolCallEvent({
+        agent: this,
+        toolUse: finalToolUse,
+        tool: finalTool,
+        result: errorResult,
+        error: toolError,
+      })
+      yield afterToolCallEvent
 
-      return errorResult
+      // Use potentially modified result from hook callbacks
+      return afterToolCallEvent.result
     }
   }
 
