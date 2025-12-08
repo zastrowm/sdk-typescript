@@ -104,10 +104,6 @@ describe('BeforeToolCallEvent', () => {
     })
     // @ts-expect-error verifying that property is readonly
     event.agent = new Agent()
-    // @ts-expect-error verifying that property is readonly
-    event.toolUse = toolUse
-    // @ts-expect-error verifying that property is readonly
-    event.tool = tool
   })
 
   it('creates instance with undefined tool when tool is not found', () => {
@@ -132,6 +128,43 @@ describe('BeforeToolCallEvent', () => {
     const toolUse = { name: 'test', toolUseId: 'id', input: {} }
     const event = new BeforeToolCallEvent({ agent, toolUse, tool: undefined })
     expect(event._shouldReverseCallbacks()).toBe(false)
+  })
+
+  it('allows tool property to be modified', () => {
+    const agent = new Agent()
+    const tool1 = new FunctionTool({
+      name: 'tool1',
+      description: 'First tool',
+      inputSchema: {},
+      callback: () => 'result1',
+    })
+    const tool2 = new FunctionTool({
+      name: 'tool2',
+      description: 'Second tool',
+      inputSchema: {},
+      callback: () => 'result2',
+    })
+    const toolUse = { name: 'tool1', toolUseId: 'id', input: {} }
+    const event = new BeforeToolCallEvent({ agent, toolUse, tool: tool1 })
+
+    // Should be able to modify tool
+    event.tool = tool2
+    expect(event.tool).toBe(tool2)
+
+    // Should be able to set to undefined
+    event.tool = undefined
+    expect(event.tool).toBeUndefined()
+  })
+
+  it('allows toolUse property to be modified', () => {
+    const agent = new Agent()
+    const toolUse1 = { name: 'tool1', toolUseId: 'id1', input: { value: 1 } }
+    const toolUse2 = { name: 'tool2', toolUseId: 'id2', input: { value: 2 } }
+    const event = new BeforeToolCallEvent({ agent, toolUse: toolUse1, tool: undefined })
+
+    // Should be able to modify toolUse
+    event.toolUse = toolUse2
+    expect(event.toolUse).toEqual(toolUse2)
   })
 })
 
@@ -170,8 +203,6 @@ describe('AfterToolCallEvent', () => {
     event.toolUse = toolUse
     // @ts-expect-error verifying that property is readonly
     event.tool = tool
-    // @ts-expect-error verifying that property is readonly
-    event.result = result
   })
 
   it('creates instance with error property when tool execution fails', () => {
@@ -205,6 +236,27 @@ describe('AfterToolCallEvent', () => {
     })
     const event = new AfterToolCallEvent({ agent, toolUse, tool: undefined, result })
     expect(event._shouldReverseCallbacks()).toBe(true)
+  })
+
+  it('allows result property to be modified', () => {
+    const agent = new Agent()
+    const toolUse = { name: 'test', toolUseId: 'id', input: {} }
+    const result1 = new ToolResultBlock({
+      toolUseId: 'id',
+      status: 'success',
+      content: [new TextBlock('Result 1')],
+    })
+    const result2 = new ToolResultBlock({
+      toolUseId: 'id',
+      status: 'error',
+      content: [new TextBlock('Result 2')],
+    })
+    const event = new AfterToolCallEvent({ agent, toolUse, tool: undefined, result: result1 })
+
+    // Should be able to modify result
+    event.result = result2
+    expect(event.result).toBe(result2)
+    expect(event.result.status).toBe('error')
   })
 })
 

@@ -335,4 +335,228 @@ describe('Agent Hooks Integration', () => {
       await expect(agent.invoke('Test')).rejects.toThrow('Failure')
     })
   })
+
+  describe('BeforeToolCallEvent writable properties', () => {
+    it('allows hook to modify tool to switch to different tool', async () => {
+      const tool1 = new FunctionTool({
+        name: 'tool1',
+        description: 'First tool',
+        inputSchema: {},
+        callback: () => 'Tool 1 result',
+      })
+
+      const tool2 = new FunctionTool({
+        name: 'tool2',
+        description: 'Second tool',
+        inputSchema: {},
+        callback: () => 'Tool 2 result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'tool1', toolUseId: 'id-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Done' })
+
+      const agent = new Agent({ model, tools: [tool1, tool2] })
+
+      // Hook to switch tool
+      agent.hooks.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
+        if (event.toolUse.name === 'tool1') {
+          event.tool = tool2
+        }
+      })
+
+      await agent.invoke('Test')
+
+      // Verify tool2 was executed instead of tool1
+      const toolResultMessage = agent.messages[2]!
+      expect(toolResultMessage.role).toBe('user')
+      expect(toolResultMessage.content[0]).toEqual(
+        new ToolResultBlock({
+          toolUseId: 'id-1',
+          status: 'success',
+          content: [new TextBlock('Tool 2 result')],
+        })
+      )
+    })
+
+    it('allows hook to modify tool to undefined causing error result', async () => {
+      const tool = new FunctionTool({
+        name: 'testTool',
+        description: 'Test tool',
+        inputSchema: {},
+        callback: () => 'Tool result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'testTool', toolUseId: 'id-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Done' })
+
+      const agent = new Agent({ model, tools: [tool] })
+
+      // Hook to set tool to undefined
+      agent.hooks.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
+        event.tool = undefined
+      })
+
+      await agent.invoke('Test')
+
+      // Verify error result was returned
+      const toolResultMessage = agent.messages[2]!
+      expect(toolResultMessage.role).toBe('user')
+      const resultBlock = toolResultMessage.content[0] as ToolResultBlock
+      expect(resultBlock.status).toBe('error')
+      expect(resultBlock.content[0]).toEqual(new TextBlock("Tool 'testTool' not found in registry"))
+    })
+
+    it('allows hook to modify toolUse.input', async () => {
+      let receivedInput: unknown = null
+
+      const tool = new FunctionTool({
+        name: 'calculator',
+        description: 'Calculator tool',
+        inputSchema: {},
+        callback: (input) => {
+          receivedInput = input
+          return 'Result'
+        },
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'calculator', toolUseId: 'id-1', input: { value: 10 } })
+        .addTurn({ type: 'textBlock', text: 'Done' })
+
+      const agent = new Agent({ model, tools: [tool] })
+
+      // Hook to modify input
+      agent.hooks.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
+        event.toolUse = {
+          ...event.toolUse,
+          input: { value: 42 },
+        }
+      })
+
+      await agent.invoke('Test')
+
+      // Verify tool received modified input
+      expect(receivedInput).toEqual({ value: 42 })
+    })
+
+    it('allows hook to modify toolUse.name', async () => {
+      const tool1 = new FunctionTool({
+        name: 'tool1',
+        description: 'First tool',
+        inputSchema: {},
+        callback: () => 'Tool 1 result',
+      })
+
+      const tool2 = new FunctionTool({
+        name: 'tool2',
+        description: 'Second tool',
+        inputSchema: {},
+        callback: () => 'Tool 2 result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'tool1', toolUseId: 'id-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Done' })
+
+      const agent = new Agent({ model, tools: [tool1, tool2] })
+
+      // Hook to modify toolUse.name and tool
+      agent.hooks.addCallback(BeforeToolCallEvent, (event: BeforeToolCallEvent) => {
+        if (event.toolUse.name === 'tool1') {
+          event.toolUse = {
+            ...event.toolUse,
+            name: 'tool2',
+          }
+          event.tool = tool2
+        }
+      })
+
+      await agent.invoke('Test')
+
+      // Verify tool2 was executed
+      const toolResultMessage = agent.messages[2]!
+      expect(toolResultMessage.role).toBe('user')
+      expect(toolResultMessage.content[0]).toEqual(
+        new ToolResultBlock({
+          toolUseId: 'id-1',
+          status: 'success',
+          content: [new TextBlock('Tool 2 result')],
+        })
+      )
+    })
+  })
+
+  describe('AfterToolCallEvent writable properties', () => {
+    it('allows hook to modify result content', async () => {
+      const tool = new FunctionTool({
+        name: 'testTool',
+        description: 'Test tool',
+        inputSchema: {},
+        callback: () => 'Original result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'testTool', toolUseId: 'id-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Done' })
+
+      const agent = new Agent({ model, tools: [tool] })
+
+      // Hook to modify result
+      agent.hooks.addCallback(AfterToolCallEvent, (event: AfterToolCallEvent) => {
+        event.result = new ToolResultBlock({
+          toolUseId: event.result.toolUseId,
+          status: event.result.status,
+          content: [new TextBlock('Modified result')],
+        })
+      })
+
+      await agent.invoke('Test')
+
+      // Verify modified result appears in conversation
+      const toolResultMessage = agent.messages[2]!
+      expect(toolResultMessage.role).toBe('user')
+      expect(toolResultMessage.content[0]).toEqual(
+        new ToolResultBlock({
+          toolUseId: 'id-1',
+          status: 'success',
+          content: [new TextBlock('Modified result')],
+        })
+      )
+    })
+
+    it('allows hook to modify result status from success to error', async () => {
+      const tool = new FunctionTool({
+        name: 'testTool',
+        description: 'Test tool',
+        inputSchema: {},
+        callback: () => 'Success result',
+      })
+
+      const model = new MockMessageModel()
+        .addTurn({ type: 'toolUseBlock', name: 'testTool', toolUseId: 'id-1', input: {} })
+        .addTurn({ type: 'textBlock', text: 'Done' })
+
+      const agent = new Agent({ model, tools: [tool] })
+
+      // Hook to change status
+      agent.hooks.addCallback(AfterToolCallEvent, (event: AfterToolCallEvent) => {
+        event.result = new ToolResultBlock({
+          toolUseId: event.result.toolUseId,
+          status: 'error',
+          content: [new TextBlock('Forced error')],
+        })
+      })
+
+      await agent.invoke('Test')
+
+      // Verify error status appears in conversation
+      const toolResultMessage = agent.messages[2]!
+      expect(toolResultMessage.role).toBe('user')
+      const resultBlock = toolResultMessage.content[0] as ToolResultBlock
+      expect(resultBlock.status).toBe('error')
+      expect(resultBlock.content[0]).toEqual(new TextBlock('Forced error'))
+    })
+  })
 })
