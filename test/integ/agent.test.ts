@@ -7,8 +7,8 @@ import { OpenAIModel } from '@strands-agents/sdk/openai'
 import { z } from 'zod'
 
 import { collectGenerator } from '$/sdk/__fixtures__/model-test-helpers.js'
-import { shouldRunTests } from './__fixtures__/model-test-helpers.js'
-import { loadFixture, shouldSkipOpenAITests } from './__fixtures__/test-helpers.js'
+import { shouldSkipBedrockTests, shouldSkipOpenAITests } from './__fixtures__/model-test-helpers.js'
+import { loadFixture } from './__fixtures__/test-helpers.js'
 
 // Import fixtures using Vite's ?url suffix
 import yellowPngUrl from './__resources__/yellow.png?url'
@@ -37,7 +37,7 @@ const calculatorTool = tool({
 const providers = [
   {
     name: 'BedrockModel',
-    skip: !(await shouldRunTests()),
+    skip: await shouldSkipBedrockTests(),
     createModel: () => new BedrockModel(),
   },
   {
@@ -144,7 +144,7 @@ describe.each(providers)('Agent with $name', ({ name, skip, createModel }) => {
         })
 
         // Create image block
-        const imageBytes = loadFixture(yellowPngUrl)
+        const imageBytes = await loadFixture(yellowPngUrl)
         const imageBlock = new ImageBlock({
           format: 'png',
           source: { bytes: imageBytes },

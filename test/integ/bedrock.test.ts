@@ -9,9 +9,9 @@ import {
 } from '@strands-agents/sdk'
 
 import { collectIterator } from '$/sdk/__fixtures__/model-test-helpers.js'
-import { shouldRunTests } from './__fixtures__/model-test-helpers.js'
+import { shouldSkipBedrockTests } from './__fixtures__/model-test-helpers.js'
 
-describe.skipIf(!(await shouldRunTests()))('BedrockModel Integration Tests', () => {
+describe.skipIf(await shouldSkipBedrockTests())('BedrockModel Integration Tests', () => {
   describe('Streaming', () => {
     describe('Configuration', () => {
       it.concurrent('respects maxTokens configuration', async () => {

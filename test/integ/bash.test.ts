@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { Agent, BedrockModel } from '$/sdk/index.js'
 import { bash } from '$/sdk/vended-tools/bash/index.js'
-import { getMessageText, shouldRunTests } from './__fixtures__/model-test-helpers.js'
+import { getMessageText, shouldSkipBedrockTests } from './__fixtures__/model-test-helpers.js'
 
-describe.skipIf(!(await shouldRunTests()) || process.platform === 'win32')(
+describe.skipIf((await shouldSkipBedrockTests()) || process.platform === 'win32')(
   'Bash Tool Integration',
   { timeout: 60000 },
   () => {
