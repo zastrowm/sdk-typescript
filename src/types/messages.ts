@@ -1,5 +1,12 @@
 import type { JSONValue } from './json.js'
-import { type ImageBlockData, type VideoBlockData, type DocumentBlockData, ImageBlock, VideoBlock, DocumentBlock } from './media.js'
+import {
+  type ImageBlockData,
+  type VideoBlockData,
+  type DocumentBlockData,
+  ImageBlock,
+  VideoBlock,
+  DocumentBlock,
+} from './media.js'
 import { ContentBlockBase } from './content-block-base.js'
 
 /**
