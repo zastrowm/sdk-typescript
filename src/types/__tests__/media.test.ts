@@ -8,7 +8,7 @@ import {
   type VideoBlockData,
   type DocumentBlockData,
 } from '../media.js'
-import { TextBlock } from '../messages.js'
+import { ContentBlockBase, TextBlock } from '../messages.js'
 
 describe('S3Location', () => {
   it('creates instance with uri only', () => {
@@ -277,5 +277,34 @@ describe('DocumentBlock', () => {
       source: {},
     } as DocumentBlockData
     expect(() => new DocumentBlock(data)).toThrow('Invalid document source')
+  })
+})
+
+describe('ContentBlockBase', () => {
+  describe('instanceof checks', () => {
+    it('ImageBlock is instanceof ContentBlockBase', () => {
+      const block = new ImageBlock({
+        format: 'jpeg',
+        source: { bytes: new Uint8Array([1, 2, 3]) },
+      })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+
+    it('VideoBlock is instanceof ContentBlockBase', () => {
+      const block = new VideoBlock({
+        format: 'mp4',
+        source: { bytes: new Uint8Array([1, 2, 3]) },
+      })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+
+    it('DocumentBlock is instanceof ContentBlockBase', () => {
+      const block = new DocumentBlock({
+        name: 'test.pdf',
+        format: 'pdf',
+        source: { bytes: new Uint8Array([1, 2, 3]) },
+      })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
   })
 })

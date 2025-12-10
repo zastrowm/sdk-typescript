@@ -1,5 +1,6 @@
 import { describe, expect, test, it } from 'vitest'
 import {
+  ContentBlockBase,
   Message,
   TextBlock,
   ToolUseBlock,
@@ -8,6 +9,7 @@ import {
   CachePointBlock,
   GuardContentBlock,
   JsonBlock,
+  type ContentBlock,
   type MessageData,
   type SystemPromptData,
   systemPromptFromData,
@@ -101,6 +103,69 @@ describe('JsonBlock', () => {
     expect(block).toEqual({
       type: 'jsonBlock',
       json: { key: 'value' },
+    })
+  })
+})
+
+describe('ContentBlockBase', () => {
+  describe('instanceof checks', () => {
+    it('TextBlock is instanceof ContentBlockBase', () => {
+      const block = new TextBlock('test')
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+
+    it('ToolUseBlock is instanceof ContentBlockBase', () => {
+      const block = new ToolUseBlock({
+        name: 'test-tool',
+        toolUseId: '123',
+        input: { param: 'value' },
+      })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+
+    it('ToolResultBlock is instanceof ContentBlockBase', () => {
+      const block = new ToolResultBlock({
+        toolUseId: '123',
+        status: 'success',
+        content: [new TextBlock('result')],
+      })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+
+    it('ReasoningBlock is instanceof ContentBlockBase', () => {
+      const block = new ReasoningBlock({ text: 'thinking...' })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+
+    it('CachePointBlock is instanceof ContentBlockBase', () => {
+      const block = new CachePointBlock({ cacheType: 'default' })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+
+    it('GuardContentBlock is instanceof ContentBlockBase', () => {
+      const block = new GuardContentBlock({
+        text: {
+          text: 'guard this',
+          qualifiers: ['guard_content'],
+        },
+      })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+
+    it('JsonBlock is instanceof ContentBlockBase', () => {
+      const block = new JsonBlock({ json: { key: 'value' } })
+      expect(block instanceof ContentBlockBase).toBe(true)
+    })
+  })
+
+  describe('type narrowing', () => {
+    it('preserves type discriminator narrowing', () => {
+      const block: ContentBlock = new TextBlock('test')
+      if (block.type === 'textBlock') {
+        expect(block.text).toBe('test')
+      } else {
+        throw new Error('Type narrowing failed')
+      }
     })
   })
 })

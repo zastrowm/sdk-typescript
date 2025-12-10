@@ -1,6 +1,6 @@
 import type { JSONValue } from './json.js'
-import type { ImageBlockData, VideoBlockData, DocumentBlockData } from './media.js'
-import { ImageBlock, VideoBlock, DocumentBlock } from './media.js'
+import { type ImageBlockData, type VideoBlockData, type DocumentBlockData, ImageBlock, VideoBlock, DocumentBlock } from './media.js'
+import { ContentBlockBase } from './content-block-base.js'
 
 /**
  * Message types and content blocks for conversational AI interactions.
@@ -104,6 +104,9 @@ export type ContentBlock =
   | VideoBlock
   | DocumentBlock
 
+// Re-export ContentBlockBase from its own file
+export { ContentBlockBase } from './content-block-base.js'
+
 /**
  * Data for a text block.
  */
@@ -117,7 +120,7 @@ export interface TextBlockData {
 /**
  * Text content block within a message.
  */
-export class TextBlock implements TextBlockData {
+export class TextBlock extends ContentBlockBase implements TextBlockData {
   /**
    * Discriminator for text content.
    */
@@ -129,6 +132,7 @@ export class TextBlock implements TextBlockData {
   readonly text: string
 
   constructor(data: string) {
+    super()
     this.text = data
   }
 }
@@ -157,7 +161,7 @@ export interface ToolUseBlockData {
 /**
  * Tool use content block.
  */
-export class ToolUseBlock implements ToolUseBlockData {
+export class ToolUseBlock extends ContentBlockBase implements ToolUseBlockData {
   /**
    * Discriminator for tool use content.
    */
@@ -180,6 +184,7 @@ export class ToolUseBlock implements ToolUseBlockData {
   readonly input: JSONValue
 
   constructor(data: ToolUseBlockData) {
+    super()
     this.name = data.name
     this.toolUseId = data.toolUseId
     this.input = data.input
@@ -226,7 +231,7 @@ export interface ToolResultBlockData {
 /**
  * Tool result content block.
  */
-export class ToolResultBlock implements ToolResultBlockData {
+export class ToolResultBlock extends ContentBlockBase implements ToolResultBlockData {
   /**
    * Discriminator for tool result content.
    */
@@ -255,6 +260,7 @@ export class ToolResultBlock implements ToolResultBlockData {
   readonly error?: Error
 
   constructor(data: { toolUseId: string; status: 'success' | 'error'; content: ToolResultContent[]; error?: Error }) {
+    super()
     this.toolUseId = data.toolUseId
     this.status = data.status
     this.content = data.content
@@ -287,7 +293,7 @@ export interface ReasoningBlockData {
 /**
  * Reasoning content block within a message.
  */
-export class ReasoningBlock implements ReasoningBlockData {
+export class ReasoningBlock extends ContentBlockBase implements ReasoningBlockData {
   /**
    * Discriminator for reasoning content.
    */
@@ -309,6 +315,7 @@ export class ReasoningBlock implements ReasoningBlockData {
   readonly redactedContent?: Uint8Array
 
   constructor(data: ReasoningBlockData) {
+    super()
     if (data.text !== undefined) {
       this.text = data.text
     }
@@ -335,7 +342,7 @@ export interface CachePointBlockData {
  * Cache point block for prompt caching.
  * Marks a position in a message or system prompt where caching should occur.
  */
-export class CachePointBlock implements CachePointBlockData {
+export class CachePointBlock extends ContentBlockBase implements CachePointBlockData {
   /**
    * Discriminator for cache point.
    */
@@ -347,6 +354,7 @@ export class CachePointBlock implements CachePointBlockData {
   readonly cacheType: 'default'
 
   constructor(data: CachePointBlockData) {
+    super()
     this.cacheType = data.cacheType
   }
 }
@@ -365,7 +373,7 @@ export interface JsonBlockData {
  * JSON content block within a message.
  * Used for structured data returned from tools or model responses.
  */
-export class JsonBlock implements JsonBlockData {
+export class JsonBlock extends ContentBlockBase implements JsonBlockData {
   /**
    * Discriminator for JSON content.
    */
@@ -377,6 +385,7 @@ export class JsonBlock implements JsonBlockData {
   readonly json: JSONValue
 
   constructor(data: JsonBlockData) {
+    super()
     this.json = data.json
   }
 }
@@ -542,7 +551,7 @@ export interface GuardContentBlockData {
  * Marks content that should be evaluated by guardrails for safety, grounding, or other policies.
  * Can be used in both message content and system prompts.
  */
-export class GuardContentBlock implements GuardContentBlockData {
+export class GuardContentBlock extends ContentBlockBase implements GuardContentBlockData {
   /**
    * Discriminator for guard content.
    */
@@ -559,6 +568,7 @@ export class GuardContentBlock implements GuardContentBlockData {
   readonly image?: GuardContentImage
 
   constructor(data: GuardContentBlockData) {
+    super()
     if (!data.text && !data.image) {
       throw new Error('GuardContentBlock must have either text or image content')
     }

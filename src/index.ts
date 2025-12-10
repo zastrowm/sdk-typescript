@@ -48,6 +48,7 @@ export type {
 
 // Message classes
 export {
+  ContentBlockBase,
   TextBlock,
   ToolUseBlock,
   ToolResultBlock,
