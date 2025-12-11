@@ -126,6 +126,24 @@ Identify first-time contributors to highlight in the release notes.
 - You SHOULD query the GitHub API if needed to determine first contribution status
 - You MAY skip this step if there are no new contributors
 
+#### 2.5 Confirm Categorization with User
+
+Present the categorized PRs to the user for review and confirmation.
+
+**Constraints:**
+- You MUST present the categorization to the user for review before proceeding
+- You MUST format the categorization as a numbered list organized by category:
+  - **Major Features** (with PR numbers and titles)
+  - **Major Bug Fixes** (with PR numbers and titles)
+  - **Minor Changes** (with PR numbers and titles, or just count if >20)
+- You MUST make it easy for the user to recategorize items by providing clear instructions
+- You SHOULD present the list in a format that allows easy reordering (e.g., "To move PR#123 to Major Features, reply with: 'Move #123 to Major Features'")
+- You MUST post this categorization as a comment on the GitHub issue
+- You MUST use the handoff_to_user tool to request review
+- You MUST wait for user confirmation or recategorization before proceeding
+- You SHOULD update your categorization based on user feedback
+- You MAY iterate on categorization if the user requests changes
+
 ### 3. Code Snippet Extraction and Generation
 
 **Note**: This phase applies only to PRs categorized as "Major Features". Bug fixes typically do not require code examples.
@@ -172,7 +190,7 @@ When existing examples are insufficient, generate new code snippets.
   - Existing code is too complex or specific
   - Existing code doesn't clearly demonstrate the feature
 - You MUST keep generated snippets minimal and focused
-- You MUST use TypeScript syntax for this project
+- You MUST use the appropriate programming language for the project
 - You MUST ensure generated code follows the project's coding patterns
 - You SHOULD base generated code on the actual API changes in the PR
 - You SHOULD include only necessary imports
@@ -181,7 +199,7 @@ When existing examples are insufficient, generate new code snippets.
 
 ### 4. Code Validation
 
-**Note**: This phase is REQUIRED for all code snippets (extracted or generated) that will appear in Major Features sections.
+**Note**: This phase is REQUIRED for all code snippets (extracted or generated) that will appear in Major Features sections. Validation must occur AFTER snippets have been extracted or generated in Step 3.
 
 #### 4.1 Create Temporary Test Files
 
@@ -189,26 +207,18 @@ Create temporary test files to validate the code snippets.
 
 **Constraints:**
 - You MUST create a temporary test file for each code snippet
-- You MUST place test files in an appropriate test directory (e.g., `test/integ/release-notes-validation.test.ts`)
+- You MUST place test files in an appropriate test directory based on the project structure
 - You MUST include all necessary imports and setup code in the test file
 - You MUST wrap the snippet in a proper test case
-- You SHOULD use the project's testing framework (vitest for this project)
+- You SHOULD use the project's testing framework
 - You MAY need to mock dependencies or setup test fixtures
 - You MAY include additional test code that doesn't appear in the release notes
 
-**Example test file structure**:
-```typescript
-import { describe, it, expect } from 'vitest'
-import { FeatureName } from '../src/feature'
-
-describe('Release notes validation - Feature Name', () => {
-  it('validates the example code snippet', () => {
-    // The actual snippet from release notes goes here
-    const result = new FeatureName()
-    // Add assertions to verify it works
-    expect(result).toBeDefined()
-  })
-})
+**Example test file structure** (language-specific format will vary):
+```
+# Test structure depends on the project's testing framework
+# Include necessary imports, setup, and the snippet being validated
+# Add assertions to verify the code works correctly
 ```
 
 #### 4.2 Run Validation Tests
@@ -216,15 +226,15 @@ describe('Release notes validation - Feature Name', () => {
 Execute tests to ensure code snippets are valid and functional.
 
 **Constraints:**
-- You MUST run the test command for the project: `npm test -- path/to/test-file.test.ts`
+- You MUST run the appropriate test command for the project (e.g., `npm test`, `pytest`, `go test`)
 - You MUST verify that the test passes successfully
-- You MUST check that the code compiles without TypeScript errors
-- You SHOULD run `npm run type-check` if compilation issues are suspected
+- You MUST check that the code compiles without errors in compiled languages
+- You SHOULD run type checking if applicable (e.g., `npm run type-check`, `mypy`)
 - You MAY need to adjust imports or setup code if tests fail
 - You MAY need to install additional dependencies if required
 
 **Fallback validation** (if test execution fails or is not possible):
-- You MUST at minimum validate TypeScript syntax: `npx tsc --noEmit path/to/test-file.ts`
+- You MUST at minimum validate syntax using the appropriate language tools
 - You MUST ensure the code is syntactically correct
 - You MUST verify all referenced types and modules exist
 
@@ -256,11 +266,8 @@ Create the Major Features section with detailed descriptions and code examples.
   - What the feature does
   - Why it's valuable to users
   - How it changes or enhances the SDK
-- You MUST include a TypeScript code block demonstrating the feature:
-  ```typescript
-  // Code example here
-  ```
-- You MUST use proper TypeScript syntax highlighting
+- You MUST include a code block demonstrating the feature using the project's programming language
+- You MUST use proper syntax highlighting for the project's language
 - You SHOULD keep code examples under 20 lines
 - You SHOULD include inline comments in code examples only when necessary for clarity
 - You MAY include multiple code examples if the feature has distinct use cases
@@ -272,17 +279,11 @@ Create the Major Features section with detailed descriptions and code examples.
 ```markdown
 ### Structured Output via Agentic Loop - [PR#943](https://github.com/org/repo/pull/943)
 
-Agents can now validate responses against predefined schemas using JSON Schema or Pydantic models. Validation occurs at response generation time with configurable retry behavior for non-conforming outputs.
+Agents can now validate responses against predefined schemas. Validation occurs at response generation time with configurable retry behavior for non-conforming outputs.
 
-\`\`\`typescript
-const agent = new Agent()
-const result = await agent.run(
-  "John Smith is a 30 year-old software engineer",
-  { structuredOutputModel: PersonInfo }
-)
-
-// Access the structured output from the result
-const personInfo: PersonInfo = result.structuredOutput
+\`\`\`[language]
+# Code example in the project's programming language
+# Show the feature in action with clear, focused code
 \`\`\`
 
 See more in the docs for [Structured Output](https://docs.example.com/structured-output).
@@ -388,23 +389,26 @@ Post the formatted release notes as a comment on the triggering GitHub issue.
 - You MAY use markdown formatting in the comment
 - If comment posting is deferred, continue with the workflow and note the deferred status
 
-#### 6.2 Handle Long Content
+#### 6.2 Post Full Validation Code
 
-For very long release notes, use collapsible sections to improve readability.
+Below the release notes, post the complete validation code for transparency.
 
 **Constraints:**
-- You SHOULD use collapsible `<details>` sections if the release notes exceed 500 lines
-- You MUST use this format if using collapsible sections:
+- You MUST post a second comment (or append to the release notes comment) with the full validation code
+- You MUST include all test files created during validation (Step 4)
+- You MUST clearly label this section as "Validation Code" or "Code Validation Tests"
+- You MUST include a note explaining that this code was used to validate the snippets in the release notes
+- You SHOULD use collapsible `<details>` sections to keep this organized:
   ```markdown
   <details>
-  <summary>Release Notes for v1.15.0</summary>
+  <summary>Validation Code for Feature Name</summary>
 
-  [Full release notes content here]
+  [Full test file with imports, setup, and validation]
 
   </details>
   ```
-- You MUST still include a brief summary outside the collapsible section highlighting key changes
-- You MAY split into multiple collapsible sections (Major Features, Bug Fixes, All Changes) if very long
+- You MAY organize by feature if there are multiple validation files
+- This allows reviewers who are skeptical of LLM validation to run the actual code themselves
 
 ## Examples
 
@@ -413,50 +417,26 @@ For very long release notes, use collapsible sections to improve readability.
 ```markdown
 ## Major Features
 
-### Managed MCP Connections - [PR#895](https://github.com/strands-agents/sdk-typescript/pull/895)
+### Managed MCP Connections - [PR#895](https://github.com/org/repo/pull/895)
 
 We've introduced MCP Connections via ToolProviders, an experimental interface that addresses the requirement to use context managers with MCP tools. The Agent now manages connection lifecycles automatically, enabling simpler syntax.
 
-\`\`\`typescript
-import { Agent, McpClient } from '@strands-agents/sdk'
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
-
-const mcpClient = new McpClient({
-  transport: new StdioClientTransport({
-    command: 'npx',
-    args: ['-y', 'chrome-devtools-mcp']
-  })
-})
-
-const agent = new Agent({ tools: [mcpClient] })
-await agent.run("do something")
+\`\`\`[language]
+# Code example in the project's programming language
+# Demonstrate the key feature usage
+# Keep it focused and concise
 \`\`\`
 
 While this feature is experimental, we aim to mark it as stable soon and welcome user testing.
 
-### Async Streaming for Multi-Agent Systems - [PR#961](https://github.com/strands-agents/sdk-typescript/pull/961)
+### Async Streaming for Multi-Agent Systems - [PR#961](https://github.com/org/repo/pull/961)
 
-Multi-agent systems now support `streamAsync`, enabling real-time streaming of events from agent teams as they collaborate.
+Multi-agent systems now support async streaming, enabling real-time streaming of events from agent teams as they collaborate.
 
-\`\`\`typescript
-import { Agent } from '@strands-agents/sdk'
-import { GraphBuilder } from '@strands-agents/sdk/multiagent'
-
-const analyzer = new Agent({ name: "analyzer" })
-const processor = new Agent({ name: "processor" })
-
-const builder = new GraphBuilder()
-builder.addNode(analyzer)
-builder.addNode(processor)
-builder.addEdge("analyzer", "processor")
-builder.setEntryPoint("analyzer")
-
-const graph = builder.build()
-
-// Stream events as agents process
-for await (const event of graph.streamAsync("Analyze this data")) {
-  console.log(`Event: ${event.type}`)
-}
+\`\`\`[language]
+# Another code example
+# Show the feature in action
+# Include only essential code
 \`\`\`
 ```
 
@@ -486,10 +466,8 @@ for await (const event of graph.streamAsync("Analyze this data")) {
 
 Description of the feature and its impact.
 
-\`\`\`typescript
-// Code example
-const example = new Feature()
-await example.doSomething()
+\`\`\`[language]
+# Code example demonstrating the feature
 \`\`\`
 
 ---
@@ -599,5 +577,8 @@ If no suitable code examples can be found or generated for a feature:
 * Comprehensive release notes that match the quality of manually-written releases
 * Clear categorization of changes into Major Features, Major Bug Fixes, and minor changes
 * Working, validated code examples for all major features
+* Well-formatted markdown that renders properly on GitHub
+* Release notes posted as a comment on the GitHub issue for review
+r features
 * Well-formatted markdown that renders properly on GitHub
 * Release notes posted as a comment on the GitHub issue for review
