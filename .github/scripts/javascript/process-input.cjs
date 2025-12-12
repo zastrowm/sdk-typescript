@@ -92,7 +92,7 @@ module.exports = async (context, github, core, inputs) => {
     
     // Determine mode based on explicit command first, then context
     let mode;
-    if (command.startsWith('release-notes')) {
+    if (command.startsWith('release-notes') || command.startsWith('release notes')) {
       mode = 'release-notes';
     } else if (command.startsWith('implement')) {
       mode = 'implementer';
