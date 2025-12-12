@@ -10,7 +10,7 @@ async function getIssueInfo(github, context, inputs) {
     : context.payload.issue.number.toString();
   const command = context.eventName === 'workflow_dispatch'
     ? inputs.command
-    : (context.payload.comment.body.match(/^\/strands\s*(.*)$/)?.[1]?.trim() || '');
+    : (context.payload.comment.body.match(/^\/strands\s*(.*?)$/m)?.[1]?.trim() || '');
 
   console.log(`Event: ${context.eventName}, Issue ID: ${issueId}, Command: "${command}"`);
 
@@ -89,15 +89,20 @@ module.exports = async (context, github, core, inputs) => {
     const { issueId, command, issue } = await getIssueInfo(github, context, inputs);
     
     const isPullRequest = !!issue.data.pull_request;
+    
+    // Determine mode based on explicit command first, then context
     let mode;
     if (command.startsWith('release-notes')) {
       mode = 'release-notes';
-    } else if (isPullRequest || command.startsWith('implement')) {
+    } else if (command.startsWith('implement')) {
       mode = 'implementer';
-    } else {
+    } else if (command.startsWith('refine')) {
       mode = 'refiner';
+    } else {
+      // Default behavior when no explicit command: PR -> implementer, Issue -> refiner
+      mode = isPullRequest ? 'implementer' : 'refiner';
     }
-    console.log(`Is PR: ${isPullRequest}, Mode: ${mode}`);
+    console.log(`Is PR: ${isPullRequest}, Command: "${command}", Mode: ${mode}`);
 
     const branchName = await determineBranch(github, context, issueId, mode, isPullRequest);
     console.log(`Building prompts - mode: ${mode}, issue: ${issueId}, is PR: ${isPullRequest}`);
