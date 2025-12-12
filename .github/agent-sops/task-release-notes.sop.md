@@ -263,37 +263,35 @@ Address any validation failures before including snippets in release notes.
 
 #### 5.1 Format Major Features Section
 
-Create the Major Features section with detailed descriptions and code examples.
+Create the Major Features section with concise descriptions and code examples.
 
 **Constraints:**
 - You MUST create a section with heading: `## Major Features`
 - You MUST create a subsection for each major feature using heading: `### Feature Name - [PR#123](link)`
 - You MUST include the PR number and link in the feature heading
-- You MUST write a clear description (1-3 paragraphs) that explains:
-  - What the feature does
-  - Why it's valuable to users
-  - How it changes or enhances the SDK
+- You MUST write a concise description of 2-3 sentences that explains what the feature does and why it matters
+- You MUST NOT use bullet points or lists in feature descriptions—use prose only
+- You MUST NOT write lengthy multi-paragraph explanations
 - You MUST include a code block demonstrating the feature using the project's programming language
 - You MUST use proper syntax highlighting for the project's language
 - You SHOULD keep code examples under 20 lines
 - You SHOULD include inline comments in code examples only when necessary for clarity
 - You MAY include multiple code examples if the feature has distinct use cases
-- You MAY include links to documentation after the code example
-- You MAY include additional context or notes after the code example
+- You MAY include a single closing sentence after the code example (e.g., documentation link or brief note)
 - You MAY reference multiple PRs if a feature spans several PRs: `### Feature Name - [PR#123](link), [PR#124](link)`
 
 **Example format**:
 ```markdown
 ### Structured Output via Agentic Loop - [PR#943](https://github.com/org/repo/pull/943)
 
-Agents can now validate responses against predefined schemas. Validation occurs at response generation time with configurable retry behavior for non-conforming outputs.
+Agents can now validate responses against predefined schemas with configurable retry behavior for non-conforming outputs.
 
 \`\`\`[language]
 # Code example in the project's programming language
 # Show the feature in action with clear, focused code
 \`\`\`
 
-See more in the docs for [Structured Output](https://docs.example.com/structured-output).
+See the [Structured Output docs](https://docs.example.com/structured-output) for configuration options.
 ```
 
 #### 5.2 Format Major Bug Fixes Section
@@ -383,7 +381,7 @@ Below the release notes, post the complete validation code for transparency.
 
 ### Managed MCP Connections - [PR#895](https://github.com/org/repo/pull/895)
 
-We've introduced MCP Connections via ToolProviders, an experimental interface that addresses the requirement to use context managers with MCP tools. The Agent now manages connection lifecycles automatically, enabling simpler syntax.
+MCP Connections via ToolProviders allow the Agent to manage connection lifecycles automatically, eliminating the need for manual context managers. This experimental interface simplifies MCP tool integration significantly.
 
 \`\`\`[language]
 # Code example in the project's programming language
@@ -391,11 +389,11 @@ We've introduced MCP Connections via ToolProviders, an experimental interface th
 # Keep it focused and concise
 \`\`\`
 
-While this feature is experimental, we aim to mark it as stable soon and welcome user testing.
+See the [MCP docs](https://docs.example.com/mcp) for details.
 
 ### Async Streaming for Multi-Agent Systems - [PR#961](https://github.com/org/repo/pull/961)
 
-Multi-agent systems now support async streaming, enabling real-time streaming of events from agent teams as they collaborate.
+Multi-agent systems now support async streaming, enabling real-time event streaming from agent teams as they collaborate.
 
 \`\`\`[language]
 # Another code example
@@ -539,7 +537,7 @@ If no suitable code examples can be found or generated for a feature:
 
 ## Desired Outcome
 
-* Focused release notes highlighting Major Features and Major Bug Fixes with rich descriptions
+* Focused release notes highlighting Major Features and Major Bug Fixes with concise descriptions (2-3 sentences, no bullet points)
 * Working, validated code examples for all major features
 * Well-formatted markdown that renders properly on GitHub
 * Release notes posted as a comment on the GitHub issue for review
