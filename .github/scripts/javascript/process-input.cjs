@@ -67,10 +67,13 @@ function buildPrompts(mode, issueId, isPullRequest, command, branchName, inputs)
     ? `${mode}-${branchName}`.replace(/[\/\\]/g, '-')
     : `${mode}-${issueId}`);
 
-  const scriptFile = mode === 'implementer' 
-    ? '.github/agent-sops/task-implementer.sop.md'
-    : '.github/agent-sops/task-refiner.sop.md';
+  const scriptFiles = {
+    'implementer': '.github/agent-sops/task-implementer.sop.md',
+    'refiner': '.github/agent-sops/task-refiner.sop.md',
+    'release-notes': '.github/agent-sops/task-release-notes.sop.md'
+  };
   
+  const scriptFile = scriptFiles[mode] || scriptFiles['refiner'];
   const systemPrompt = fs.readFileSync(scriptFile, 'utf8');
   
   let prompt = (isPullRequest) 
@@ -86,7 +89,14 @@ module.exports = async (context, github, core, inputs) => {
     const { issueId, command, issue } = await getIssueInfo(github, context, inputs);
     
     const isPullRequest = !!issue.data.pull_request;
-    const mode = (isPullRequest || command.startsWith('implement')) ? 'implementer' : 'refiner';
+    let mode;
+    if (command.startsWith('release-notes')) {
+      mode = 'release-notes';
+    } else if (isPullRequest || command.startsWith('implement')) {
+      mode = 'implementer';
+    } else {
+      mode = 'refiner';
+    }
     console.log(`Is PR: ${isPullRequest}, Mode: ${mode}`);
 
     const branchName = await determineBranch(github, context, issueId, mode, isPullRequest);
