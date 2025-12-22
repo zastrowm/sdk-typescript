@@ -5,6 +5,8 @@ import { JsonValidationError } from '../errors.js'
  * Represents any valid JSON value.
  * This type ensures type safety for JSON-serializable data.
  *
+ * Accepts both interface types and type aliases for objects, enabling flexible tool return types.
+ *
  * @example
  * ```typescript
  * const value: JSONValue = { key: 'value', nested: { arr: [1, 2, 3] } }
@@ -12,9 +14,17 @@ import { JsonValidationError } from '../errors.js'
  * const num: JSONValue = 42
  * const bool: JSONValue = true
  * const nothing: JSONValue = null
+ *
+ * // Works with interfaces
+ * interface Product {
+ *   id: string
+ *   name: string
+ * }
+ * const product: JSONValue = { id: '1', name: 'Widget' } satisfies Product
  * ```
  */
-export type JSONValue = string | number | boolean | null | { [key: string]: JSONValue } | JSONValue[]
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export type JSONValue = string | number | boolean | null | {} | JSONValue[]
 
 /**
  * Represents a JSON Schema definition.

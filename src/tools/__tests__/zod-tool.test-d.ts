@@ -103,7 +103,7 @@ describe('zod-tool type tests', () => {
       expectTypeOf(asyncComplexTool.invoke).returns.resolves.toEqualTypeOf<{
         id: string
         timestamp: number
-        metadata: { processed: true }
+        metadata: { processed: boolean }
       }>()
     })
   })
@@ -152,7 +152,7 @@ describe('zod-tool type tests', () => {
 
       expectTypeOf(generatorObjectTool.invoke).returns.resolves.toEqualTypeOf<{
         processed: number
-        success: true
+        success: boolean
       }>()
     })
   })
@@ -294,6 +294,113 @@ describe('zod-tool type tests', () => {
       })
 
       expectTypeOf(customTool.invoke).returns.resolves.toEqualTypeOf<CustomResult>()
+    })
+  })
+
+  describe('interface return types', () => {
+    it('should accept interface types as return values', () => {
+      interface Product {
+        id: string
+        name: string
+        price: number
+        stock: number
+      }
+
+      const interfaceTool = tool({
+        name: 'getProduct',
+        inputSchema: z.object({ productId: z.string() }),
+        callback: (input): Product => ({
+          id: input.productId,
+          name: 'Widget',
+          price: 9.99,
+          stock: 100,
+        }),
+      })
+
+      expectTypeOf(interfaceTool.invoke).returns.resolves.toEqualTypeOf<Product>()
+    })
+
+    it('should accept nested interface types', () => {
+      interface Address {
+        street: string
+        city: string
+        zip: string
+      }
+
+      interface User {
+        id: string
+        name: string
+        address: Address
+      }
+
+      const nestedInterfaceTool = tool({
+        name: 'getUser',
+        inputSchema: z.object({ userId: z.string() }),
+        callback: (input): User => ({
+          id: input.userId,
+          name: 'John Doe',
+          address: {
+            street: '123 Main St',
+            city: 'Springfield',
+            zip: '12345',
+          },
+        }),
+      })
+
+      expectTypeOf(nestedInterfaceTool.invoke).returns.resolves.toEqualTypeOf<User>()
+    })
+
+    it('should accept objects containing interfaces in arrays', () => {
+      interface Product {
+        id: string
+        name: string
+        price: number
+      }
+
+      const arrayInterfaceTool = tool({
+        name: 'getCatalog',
+        inputSchema: z.object({ category: z.string() }),
+        callback: (input) => {
+          const products: Product[] = [
+            { id: '1', name: 'Widget', price: 9.99 },
+            { id: '2', name: 'Gadget', price: 19.99 },
+          ]
+          return { products, totalProducts: products.length, category: input.category }
+        },
+      })
+
+      expectTypeOf(arrayInterfaceTool.invoke).returns.resolves.toEqualTypeOf<{
+        products: Product[]
+        totalProducts: number
+        category: string
+      }>()
+    })
+
+    it('should work with both interfaces and type aliases', () => {
+      interface ProductInterface {
+        id: string
+        name: string
+      }
+
+      type ProductType = {
+        id: string
+        name: string
+      }
+
+      const interfaceToolA = tool({
+        name: 'getProductA',
+        inputSchema: z.object({ id: z.string() }),
+        callback: (input): ProductInterface => ({ id: input.id, name: 'Product A' }),
+      })
+
+      const typeToolB = tool({
+        name: 'getProductB',
+        inputSchema: z.object({ id: z.string() }),
+        callback: (input): ProductType => ({ id: input.id, name: 'Product B' }),
+      })
+
+      expectTypeOf(interfaceToolA.invoke).returns.resolves.toEqualTypeOf<ProductInterface>()
+      expectTypeOf(typeToolB.invoke).returns.resolves.toEqualTypeOf<ProductType>()
     })
   })
 })
