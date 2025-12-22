@@ -2,7 +2,7 @@ import { createErrorResult, Tool } from './tool.js'
 import type { ToolContext } from './tool.js'
 import { ToolStreamEvent } from './tool.js'
 import type { ToolSpec } from './types.js'
-import type { JSONSchema, JSONValue, JSONSerializable } from '../types/json.js'
+import type { JSONSchema, JSONSerializable } from '../types/json.js'
 import { deepCopy } from '../types/json.js'
 import { JsonBlock, TextBlock, ToolResultBlock } from '../types/messages.js'
 
