@@ -641,4 +641,106 @@ describe('tool', () => {
       })
     })
   })
+
+  describe('interface return types', () => {
+    it('handles interface-based return types', async () => {
+      interface Product {
+        id: string
+        name: string
+        price: number
+        stock: number
+      }
+
+      const myTool = tool({
+        name: 'getProduct',
+        description: 'Gets a product',
+        inputSchema: z.object({ productId: z.string() }),
+        callback: (input): Product => ({
+          id: input.productId,
+          name: 'Widget',
+          price: 9.99,
+          stock: 100,
+        }),
+      })
+
+      const result = await myTool.invoke({ productId: 'prod-123' })
+      expect(result).toEqual({
+        id: 'prod-123',
+        name: 'Widget',
+        price: 9.99,
+        stock: 100,
+      })
+    })
+
+    it('handles nested interface return types', async () => {
+      interface Address {
+        street: string
+        city: string
+        zip: string
+      }
+
+      interface User {
+        id: string
+        name: string
+        address: Address
+      }
+
+      const myTool = tool({
+        name: 'getUser',
+        description: 'Gets a user',
+        inputSchema: z.object({ userId: z.string() }),
+        callback: (input): User => ({
+          id: input.userId,
+          name: 'John Doe',
+          address: {
+            street: '123 Main St',
+            city: 'Springfield',
+            zip: '12345',
+          },
+        }),
+      })
+
+      const result = await myTool.invoke({ userId: 'user-456' })
+      expect(result).toEqual({
+        id: 'user-456',
+        name: 'John Doe',
+        address: {
+          street: '123 Main St',
+          city: 'Springfield',
+          zip: '12345',
+        },
+      })
+    })
+
+    it('handles objects containing interface arrays', async () => {
+      interface Product {
+        id: string
+        name: string
+        price: number
+      }
+
+      const myTool = tool({
+        name: 'getCatalog',
+        description: 'Gets catalog',
+        inputSchema: z.object({ category: z.string() }),
+        callback: (input) => {
+          const products: Product[] = [
+            { id: '1', name: 'Widget', price: 9.99 },
+            { id: '2', name: 'Gadget', price: 19.99 },
+          ]
+          return { products, totalProducts: products.length, category: input.category }
+        },
+      })
+
+      const result = await myTool.invoke({ category: 'electronics' })
+      expect(result).toEqual({
+        products: [
+          { id: '1', name: 'Widget', price: 9.99 },
+          { id: '2', name: 'Gadget', price: 19.99 },
+        ],
+        totalProducts: 2,
+        category: 'electronics',
+      })
+    })
+  })
 })

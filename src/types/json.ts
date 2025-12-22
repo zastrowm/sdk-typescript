@@ -17,6 +17,30 @@ import { JsonValidationError } from '../errors.js'
 export type JSONValue = string | number | boolean | null | { [key: string]: JSONValue } | JSONValue[]
 
 /**
+ * Represents any JSON-serializable value, including interface types.
+ * This type is more permissive than JSONValue and accepts both interface types and type aliases.
+ *
+ * Use this as a generic constraint for tool return types to support interface-based return values.
+ * While the type system is permissive, runtime validation ensures only JSON-serializable values are used.
+ *
+ * @example
+ * ```typescript
+ * interface Product {
+ *   id: string
+ *   name: string
+ * }
+ *
+ * function processTool<TReturn extends JSONSerializable>(callback: () => TReturn): TReturn {
+ *   return callback()
+ * }
+ *
+ * const result = processTool<Product>(() => ({ id: '1', name: 'Widget' }))
+ * ```
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export type JSONSerializable = string | number | boolean | null | {} | JSONSerializable[]
+
+/**
  * Represents a JSON Schema definition.
  * Used for defining the structure of tool inputs and outputs.
  *

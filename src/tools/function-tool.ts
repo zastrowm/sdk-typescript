@@ -2,7 +2,7 @@ import { createErrorResult, Tool } from './tool.js'
 import type { ToolContext } from './tool.js'
 import { ToolStreamEvent } from './tool.js'
 import type { ToolSpec } from './types.js'
-import type { JSONSchema, JSONValue } from '../types/json.js'
+import type { JSONSchema, JSONSerializable } from '../types/json.js'
 import { deepCopy } from '../types/json.js'
 import { JsonBlock, TextBlock, ToolResultBlock } from '../types/messages.js'
 
@@ -43,7 +43,7 @@ import { JsonBlock, TextBlock, ToolResultBlock } from '../types/messages.js'
 export type FunctionToolCallback = (
   input: unknown,
   toolContext: ToolContext
-) => AsyncGenerator<JSONValue, JSONValue, never> | Promise<JSONValue> | JSONValue
+) => AsyncGenerator<JSONSerializable, JSONSerializable, never> | Promise<JSONSerializable> | JSONSerializable
 
 /**
  * Configuration options for creating a FunctionTool.
