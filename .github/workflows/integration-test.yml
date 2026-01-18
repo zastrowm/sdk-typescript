@@ -7,6 +7,7 @@ on:
     types: [checks_requested]
 jobs:
   authorization-check:
+    name: Check access
     permissions: read-all
     runs-on: ubuntu-latest
     outputs:
@@ -47,7 +48,8 @@ jobs:
           script: |
             return "auto-approve"
 
-  check-access-and-checkout:
+  run-integration-tests:
+    name: Run integration tests
     runs-on: ubuntu-latest
     needs: authorization-check
     environment: ${{ needs.authorization-check.outputs.approval-env }}
@@ -88,7 +90,7 @@ jobs:
 
       - name: Upload test artifacts
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: test-artifacts-integ
           path: ./test/.artifacts/
