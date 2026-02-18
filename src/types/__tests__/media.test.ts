@@ -4,6 +4,8 @@ import {
   ImageBlock,
   VideoBlock,
   DocumentBlock,
+  encodeBase64,
+  decodeBase64,
   type ImageBlockData,
   type VideoBlockData,
   type DocumentBlockData,
@@ -277,5 +279,202 @@ describe('DocumentBlock', () => {
       source: {},
     } as DocumentBlockData
     expect(() => new DocumentBlock(data)).toThrow('Invalid document source')
+  })
+})
+
+describe('decodeBase64', () => {
+  it('decodes base64 string to Uint8Array', () => {
+    const original = new Uint8Array([72, 101, 108, 108, 111]) // "Hello"
+    const base64 = encodeBase64(original)
+    const decoded = decodeBase64(base64)
+    expect(decoded).toEqual(original)
+  })
+
+  it('handles empty input', () => {
+    const decoded = decodeBase64('')
+    expect(decoded).toEqual(new Uint8Array([]))
+  })
+
+  it('round-trips binary data correctly', () => {
+    const original = new Uint8Array([0, 1, 2, 255, 254, 253])
+    const encoded = encodeBase64(original)
+    const decoded = decodeBase64(encoded)
+    expect(decoded).toEqual(original)
+  })
+})
+
+describe('S3Location', () => {
+  describe('toJSON', () => {
+    it('serializes with uri only', () => {
+      const location = new S3Location({ uri: 's3://bucket/key' })
+      expect(location.toJSON()).toEqual({
+        type: 's3Location',
+        uri: 's3://bucket/key',
+      })
+    })
+
+    it('serializes with uri and bucketOwner', () => {
+      const location = new S3Location({
+        uri: 's3://bucket/key',
+        bucketOwner: '123456789012',
+      })
+      expect(location.toJSON()).toEqual({
+        type: 's3Location',
+        uri: 's3://bucket/key',
+        bucketOwner: '123456789012',
+      })
+    })
+  })
+})
+
+describe('ImageBlock', () => {
+  describe('toJSON', () => {
+    it('serializes bytes source as base64', () => {
+      const bytes = new Uint8Array([1, 2, 3])
+      const block = new ImageBlock({ format: 'jpeg', source: { bytes } })
+      expect(block.toJSON()).toEqual({
+        type: 'imageBlock',
+        format: 'jpeg',
+        source: { type: 'imageSourceBytes', bytes: encodeBase64(bytes) },
+      })
+    })
+
+    it('serializes S3 location source', () => {
+      const block = new ImageBlock({
+        format: 'png',
+        source: { s3Location: { uri: 's3://bucket/image.png' } },
+      })
+      expect(block.toJSON()).toEqual({
+        type: 'imageBlock',
+        format: 'png',
+        source: {
+          type: 'imageSourceS3Location',
+          s3Location: { type: 's3Location', uri: 's3://bucket/image.png' },
+        },
+      })
+    })
+
+    it('serializes URL source', () => {
+      const block = new ImageBlock({
+        format: 'webp',
+        source: { url: 'https://example.com/image.webp' },
+      })
+      expect(block.toJSON()).toEqual({
+        type: 'imageBlock',
+        format: 'webp',
+        source: { type: 'imageSourceUrl', url: 'https://example.com/image.webp' },
+      })
+    })
+  })
+})
+
+describe('VideoBlock', () => {
+  describe('toJSON', () => {
+    it('serializes bytes source as base64', () => {
+      const bytes = new Uint8Array([4, 5, 6])
+      const block = new VideoBlock({ format: 'mp4', source: { bytes } })
+      expect(block.toJSON()).toEqual({
+        type: 'videoBlock',
+        format: 'mp4',
+        source: { type: 'videoSourceBytes', bytes: encodeBase64(bytes) },
+      })
+    })
+
+    it('serializes S3 location source', () => {
+      const block = new VideoBlock({
+        format: 'webm',
+        source: { s3Location: { uri: 's3://bucket/video.webm' } },
+      })
+      expect(block.toJSON()).toEqual({
+        type: 'videoBlock',
+        format: 'webm',
+        source: {
+          type: 'videoSourceS3Location',
+          s3Location: { type: 's3Location', uri: 's3://bucket/video.webm' },
+        },
+      })
+    })
+  })
+})
+
+describe('DocumentBlock', () => {
+  describe('toJSON', () => {
+    it('serializes bytes source as base64', () => {
+      const bytes = new Uint8Array([7, 8, 9])
+      const block = new DocumentBlock({ name: 'doc.pdf', format: 'pdf', source: { bytes } })
+      expect(block.toJSON()).toEqual({
+        type: 'documentBlock',
+        name: 'doc.pdf',
+        format: 'pdf',
+        source: { type: 'documentSourceBytes', bytes: encodeBase64(bytes) },
+      })
+    })
+
+    it('serializes text source', () => {
+      const block = new DocumentBlock({
+        name: 'note.txt',
+        format: 'txt',
+        source: { text: 'Hello world' },
+      })
+      expect(block.toJSON()).toEqual({
+        type: 'documentBlock',
+        name: 'note.txt',
+        format: 'txt',
+        source: { type: 'documentSourceText', text: 'Hello world' },
+      })
+    })
+
+    it('serializes content source', () => {
+      const block = new DocumentBlock({
+        name: 'report.html',
+        format: 'html',
+        source: { content: [{ text: 'Introduction' }] },
+      })
+      expect(block.toJSON()).toEqual({
+        type: 'documentBlock',
+        name: 'report.html',
+        format: 'html',
+        source: {
+          type: 'documentSourceContentBlock',
+          content: [{ type: 'textBlock', text: 'Introduction' }],
+        },
+      })
+    })
+
+    it('serializes S3 location source', () => {
+      const block = new DocumentBlock({
+        name: 'doc.pdf',
+        format: 'pdf',
+        source: { s3Location: { uri: 's3://bucket/doc.pdf', bucketOwner: '123456789012' } },
+      })
+      expect(block.toJSON()).toEqual({
+        type: 'documentBlock',
+        name: 'doc.pdf',
+        format: 'pdf',
+        source: {
+          type: 'documentSourceS3Location',
+          s3Location: { type: 's3Location', uri: 's3://bucket/doc.pdf', bucketOwner: '123456789012' },
+        },
+      })
+    })
+
+    it('serializes with citations and context', () => {
+      const bytes = new Uint8Array([1, 2, 3])
+      const block = new DocumentBlock({
+        name: 'research.pdf',
+        format: 'pdf',
+        source: { bytes },
+        citations: { enabled: true },
+        context: 'Research paper',
+      })
+      expect(block.toJSON()).toEqual({
+        type: 'documentBlock',
+        name: 'research.pdf',
+        format: 'pdf',
+        source: { type: 'documentSourceBytes', bytes: encodeBase64(bytes) },
+        citations: { enabled: true },
+        context: 'Research paper',
+      })
+    })
   })
 })

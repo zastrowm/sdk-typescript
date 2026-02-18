@@ -64,10 +64,24 @@ export {
   Message,
   JsonBlock,
   contentBlockFromData,
+  contentBlockFromJSON,
+} from './types/messages.js'
+
+// Message JSON types (for serialization/deserialization)
+export type {
+  MessageJSON,
+  ContentBlockJSON,
+  TextBlockJSON,
+  ToolUseBlockJSON,
+  ToolResultBlockJSON,
+  ReasoningBlockJSON,
+  CachePointBlockJSON,
+  GuardContentBlockJSON,
+  JsonBlockJSON,
 } from './types/messages.js'
 
 // Media classes
-export { S3Location, ImageBlock, VideoBlock, DocumentBlock } from './types/media.js'
+export { S3Location, ImageBlock, VideoBlock, DocumentBlock, encodeBase64, decodeBase64 } from './types/media.js'
 
 // Media types
 export type {
@@ -86,6 +100,17 @@ export type {
   DocumentBlockData,
   DocumentContentBlock,
   DocumentContentBlockData,
+} from './types/media.js'
+
+// Media JSON types (for serialization/deserialization)
+export type {
+  S3LocationJSON,
+  ImageBlockJSON,
+  ImageSourceJSON,
+  VideoBlockJSON,
+  VideoSourceJSON,
+  DocumentBlockJSON,
+  DocumentSourceJSON,
 } from './types/media.js'
 
 // Tool types

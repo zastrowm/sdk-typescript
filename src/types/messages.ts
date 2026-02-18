@@ -1,6 +1,14 @@
 import type { JSONValue } from './json.js'
-import type { ImageBlockData, VideoBlockData, DocumentBlockData } from './media.js'
-import { ImageBlock, VideoBlock, DocumentBlock } from './media.js'
+import type {
+  ImageBlockData,
+  VideoBlockData,
+  DocumentBlockData,
+  ImageBlockJSON,
+  VideoBlockJSON,
+  DocumentBlockJSON,
+  S3LocationData,
+} from './media.js'
+import { ImageBlock, VideoBlock, DocumentBlock, encodeBase64, decodeBase64 } from './media.js'
 
 /**
  * Message types and content blocks for conversational AI interactions.
@@ -52,6 +60,9 @@ export class Message {
 
   /**
    * Creates a Message instance from MessageData.
+   *
+   * @param data - The message data to convert
+   * @returns A Message instance
    */
   public static fromMessageData(data: MessageData): Message {
     const contentBlocks: ContentBlock[] = data.content.map(contentBlockFromData)
@@ -61,7 +72,60 @@ export class Message {
       content: contentBlocks,
     })
   }
+
+  /**
+   * Creates a Message instance from a serialized JSON object.
+   * This is the counterpart to toJSON() for deserialization.
+   *
+   * @param json - The serialized message JSON to deserialize
+   * @returns A Message instance with fully reconstructed content blocks
+   */
+  public static fromJSON(json: MessageJSON): Message {
+    const contentBlocks: ContentBlock[] = json.content.map(contentBlockFromJSON)
+
+    return new Message({
+      role: json.role,
+      content: contentBlocks,
+    })
+  }
+
+  /**
+   * Serializes this Message to a JSON-compatible object.
+   * This enables JSON.stringify(message) to work automatically via JavaScript's toJSON protocol.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): MessageJSON {
+    return {
+      type: 'message',
+      role: this.role,
+      content: this.content.map((block) => block.toJSON()),
+    }
+  }
 }
+
+/**
+ * JSON representation of a Message.
+ */
+export interface MessageJSON {
+  type: 'message'
+  role: Role
+  content: ContentBlockJSON[]
+}
+
+/**
+ * Union of all content block JSON types.
+ */
+export type ContentBlockJSON =
+  | TextBlockJSON
+  | ToolUseBlockJSON
+  | ToolResultBlockJSON
+  | ReasoningBlockJSON
+  | CachePointBlockJSON
+  | GuardContentBlockJSON
+  | ImageBlockJSON
+  | VideoBlockJSON
+  | DocumentBlockJSON
 
 /**
  * Role of a message in a conversation.
@@ -131,6 +195,26 @@ export class TextBlock implements TextBlockData {
   constructor(data: string) {
     this.text = data
   }
+
+  /**
+   * Serializes this TextBlock to a JSON-compatible object.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): TextBlockJSON {
+    return {
+      type: 'textBlock',
+      text: this.text,
+    }
+  }
+}
+
+/**
+ * JSON representation of a TextBlock.
+ */
+export interface TextBlockJSON {
+  type: 'textBlock'
+  text: string
 }
 
 /**
@@ -199,6 +283,35 @@ export class ToolUseBlock implements ToolUseBlockData {
       this.reasoningSignature = data.reasoningSignature
     }
   }
+
+  /**
+   * Serializes this ToolUseBlock to a JSON-compatible object.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): ToolUseBlockJSON {
+    const result: ToolUseBlockJSON = {
+      type: 'toolUseBlock',
+      name: this.name,
+      toolUseId: this.toolUseId,
+      input: this.input,
+    }
+    if (this.reasoningSignature !== undefined) {
+      result.reasoningSignature = this.reasoningSignature
+    }
+    return result
+  }
+}
+
+/**
+ * JSON representation of a ToolUseBlock.
+ */
+export interface ToolUseBlockJSON {
+  type: 'toolUseBlock'
+  name: string
+  toolUseId: string
+  input: JSONValue
+  reasoningSignature?: string
 }
 
 /**
@@ -266,6 +379,7 @@ export class ToolResultBlock implements ToolResultBlockData {
    * The original error object when status is 'error'.
    * Available for inspection by hooks, error handlers, and event loop.
    * Tools must wrap non-Error thrown values into Error objects.
+   * Note: This property is excluded from JSON serialization.
    */
   readonly error?: Error
 
@@ -277,7 +391,38 @@ export class ToolResultBlock implements ToolResultBlockData {
       this.error = data.error
     }
   }
+
+  /**
+   * Serializes this ToolResultBlock to a JSON-compatible object.
+   * Note: The `error` property is excluded from serialization as Error objects
+   * are not JSON-serializable and may contain sensitive stack trace information.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): ToolResultBlockJSON {
+    return {
+      type: 'toolResultBlock',
+      toolUseId: this.toolUseId,
+      status: this.status,
+      content: this.content.map((block) => block.toJSON()),
+    }
+  }
 }
+
+/**
+ * JSON representation of a ToolResultBlock.
+ */
+export interface ToolResultBlockJSON {
+  type: 'toolResultBlock'
+  toolUseId: string
+  status: 'success' | 'error'
+  content: ToolResultContentJSON[]
+}
+
+/**
+ * JSON representation of tool result content.
+ */
+export type ToolResultContentJSON = TextBlockJSON | JsonBlockJSON
 
 /**
  * Data for a reasoning block.
@@ -334,6 +479,38 @@ export class ReasoningBlock implements ReasoningBlockData {
       this.redactedContent = data.redactedContent
     }
   }
+
+  /**
+   * Serializes this ReasoningBlock to a JSON-compatible object.
+   * Uint8Array redactedContent is encoded as a base64 string.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): ReasoningBlockJSON {
+    const result: ReasoningBlockJSON = {
+      type: 'reasoningBlock',
+    }
+    if (this.text !== undefined) {
+      result.text = this.text
+    }
+    if (this.signature !== undefined) {
+      result.signature = this.signature
+    }
+    if (this.redactedContent !== undefined) {
+      result.redactedContent = encodeBase64(this.redactedContent)
+    }
+    return result
+  }
+}
+
+/**
+ * JSON representation of a ReasoningBlock.
+ */
+export interface ReasoningBlockJSON {
+  type: 'reasoningBlock'
+  text?: string
+  signature?: string
+  redactedContent?: string
 }
 
 /**
@@ -364,6 +541,26 @@ export class CachePointBlock implements CachePointBlockData {
   constructor(data: CachePointBlockData) {
     this.cacheType = data.cacheType
   }
+
+  /**
+   * Serializes this CachePointBlock to a JSON-compatible object.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): CachePointBlockJSON {
+    return {
+      type: 'cachePointBlock',
+      cacheType: this.cacheType,
+    }
+  }
+}
+
+/**
+ * JSON representation of a CachePointBlock.
+ */
+export interface CachePointBlockJSON {
+  type: 'cachePointBlock'
+  cacheType: 'default'
 }
 
 /**
@@ -394,6 +591,26 @@ export class JsonBlock implements JsonBlockData {
   constructor(data: JsonBlockData) {
     this.json = data.json
   }
+
+  /**
+   * Serializes this JsonBlock to a JSON-compatible object.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): JsonBlockJSON {
+    return {
+      type: 'jsonBlock',
+      json: this.json,
+    }
+  }
+}
+
+/**
+ * JSON representation of a JsonBlock.
+ */
+export interface JsonBlockJSON {
+  type: 'jsonBlock'
+  json: JSONValue
 }
 
 /**
@@ -588,6 +805,45 @@ export class GuardContentBlock implements GuardContentBlockData {
       this.image = data.image
     }
   }
+
+  /**
+   * Serializes this GuardContentBlock to a JSON-compatible object.
+   * Uint8Array image bytes are encoded as base64 strings.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): GuardContentBlockJSON {
+    const result: GuardContentBlockJSON = {
+      type: 'guardContentBlock',
+    }
+    if (this.text !== undefined) {
+      result.text = this.text
+    }
+    if (this.image !== undefined) {
+      result.image = {
+        format: this.image.format,
+        source: { bytes: encodeBase64(this.image.source.bytes) },
+      }
+    }
+    return result
+  }
+}
+
+/**
+ * JSON representation of a GuardContentBlock.
+ */
+export interface GuardContentBlockJSON {
+  type: 'guardContentBlock'
+  text?: GuardContentText
+  image?: GuardContentImageJSON
+}
+
+/**
+ * JSON representation of guard content image.
+ */
+export interface GuardContentImageJSON {
+  format: GuardImageFormat
+  source: { bytes: string }
 }
 
 /**
@@ -631,5 +887,169 @@ export function contentBlockFromData(data: ContentBlockData): ContentBlock {
     return new DocumentBlock(data.document)
   } else {
     throw new Error('Unknown ContentBlockData type')
+  }
+}
+
+/**
+ * Converts a serialized ContentBlockJSON to a ContentBlock instance.
+ * Handles deserialization of all content block types, including base64 decoding of binary data.
+ *
+ * @param json - The serialized content block JSON to convert
+ * @returns A ContentBlock instance of the appropriate type
+ * @throws Error if the content block type is unknown
+ */
+export function contentBlockFromJSON(json: ContentBlockJSON): ContentBlock {
+  switch (json.type) {
+    case 'textBlock':
+      return new TextBlock(json.text)
+
+    case 'toolUseBlock': {
+      const data: ToolUseBlockData = {
+        name: json.name,
+        toolUseId: json.toolUseId,
+        input: json.input,
+      }
+      if (json.reasoningSignature !== undefined) {
+        data.reasoningSignature = json.reasoningSignature
+      }
+      return new ToolUseBlock(data)
+    }
+
+    case 'toolResultBlock':
+      return new ToolResultBlock({
+        toolUseId: json.toolUseId,
+        status: json.status,
+        content: json.content.map((item) => {
+          if (item.type === 'textBlock') {
+            return new TextBlock(item.text)
+          } else {
+            return new JsonBlock({ json: item.json })
+          }
+        }),
+      })
+
+    case 'reasoningBlock': {
+      const data: ReasoningBlockData = {}
+      if (json.text !== undefined) {
+        data.text = json.text
+      }
+      if (json.signature !== undefined) {
+        data.signature = json.signature
+      }
+      if (json.redactedContent !== undefined) {
+        data.redactedContent = decodeBase64(json.redactedContent)
+      }
+      return new ReasoningBlock(data)
+    }
+
+    case 'cachePointBlock':
+      return new CachePointBlock({ cacheType: json.cacheType })
+
+    case 'guardContentBlock': {
+      if (json.text) {
+        return new GuardContentBlock({ text: json.text })
+      } else if (json.image) {
+        return new GuardContentBlock({
+          image: {
+            format: json.image.format,
+            source: { bytes: decodeBase64(json.image.source.bytes) },
+          },
+        })
+      }
+      throw new Error('GuardContentBlock must have either text or image')
+    }
+
+    case 'imageBlock':
+      return new ImageBlock({
+        format: json.format,
+        source: imageSourceFromJSON(json.source),
+      })
+
+    case 'videoBlock':
+      return new VideoBlock({
+        format: json.format,
+        source: videoSourceFromJSON(json.source),
+      })
+
+    case 'documentBlock': {
+      const data: DocumentBlockData = {
+        name: json.name,
+        format: json.format,
+        source: documentSourceFromJSON(json.source),
+      }
+      if (json.citations !== undefined) {
+        data.citations = json.citations
+      }
+      if (json.context !== undefined) {
+        data.context = json.context
+      }
+      return new DocumentBlock(data)
+    }
+
+    default:
+      throw new Error(`Unknown content block type: ${(json as { type: string }).type}`)
+  }
+}
+
+/**
+ * Converts a serialized ImageSourceJSON to ImageSourceData.
+ */
+function imageSourceFromJSON(
+  source: ImageBlockJSON['source']
+): { bytes: Uint8Array } | { s3Location: S3LocationData } | { url: string } {
+  switch (source.type) {
+    case 'imageSourceBytes':
+      return { bytes: decodeBase64(source.bytes) }
+    case 'imageSourceS3Location': {
+      const s3Location: S3LocationData = { uri: source.s3Location.uri }
+      if (source.s3Location.bucketOwner !== undefined) {
+        s3Location.bucketOwner = source.s3Location.bucketOwner
+      }
+      return { s3Location }
+    }
+    case 'imageSourceUrl':
+      return { url: source.url }
+  }
+}
+
+/**
+ * Converts a serialized VideoSourceJSON to VideoSourceData.
+ */
+function videoSourceFromJSON(
+  source: VideoBlockJSON['source']
+): { bytes: Uint8Array } | { s3Location: S3LocationData } {
+  switch (source.type) {
+    case 'videoSourceBytes':
+      return { bytes: decodeBase64(source.bytes) }
+    case 'videoSourceS3Location': {
+      const s3Location: S3LocationData = { uri: source.s3Location.uri }
+      if (source.s3Location.bucketOwner !== undefined) {
+        s3Location.bucketOwner = source.s3Location.bucketOwner
+      }
+      return { s3Location }
+    }
+  }
+}
+
+/**
+ * Converts a serialized DocumentSourceJSON to DocumentSourceData.
+ */
+function documentSourceFromJSON(
+  source: DocumentBlockJSON['source']
+): { bytes: Uint8Array } | { text: string } | { content: { text: string }[] } | { s3Location: S3LocationData } {
+  switch (source.type) {
+    case 'documentSourceBytes':
+      return { bytes: decodeBase64(source.bytes) }
+    case 'documentSourceText':
+      return { text: source.text }
+    case 'documentSourceContentBlock':
+      return { content: source.content.map((block) => ({ text: block.text })) }
+    case 'documentSourceS3Location': {
+      const s3Location: S3LocationData = { uri: source.s3Location.uri }
+      if (source.s3Location.bucketOwner !== undefined) {
+        s3Location.bucketOwner = source.s3Location.bucketOwner
+      }
+      return { s3Location }
+    }
   }
 }

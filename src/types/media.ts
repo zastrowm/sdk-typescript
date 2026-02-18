@@ -56,6 +56,9 @@ export function getMimeType(format: string): string | undefined {
 
 /**
  * Cross-platform base64 encoding function that works in both browser and Node.js environments.
+ *
+ * @param input - String or Uint8Array to encode
+ * @returns Base64 encoded string
  */
 export function encodeBase64(input: string | Uint8Array): string {
   // Handle Uint8Array (Image/PDF bytes)
@@ -84,6 +87,31 @@ export function encodeBase64(input: string | Uint8Array): string {
   }
 
   return globalThis.Buffer.from(input, 'binary').toString('base64')
+}
+
+/**
+ * Cross-platform base64 decoding function that works in both browser and Node.js environments.
+ *
+ * @param input - Base64 encoded string to decode
+ * @returns Decoded Uint8Array
+ */
+export function decodeBase64(input: string): Uint8Array {
+  if (input === '') {
+    return new Uint8Array([])
+  }
+
+  // Node.js: Fast and efficient
+  if (typeof globalThis.Buffer === 'function') {
+    return new Uint8Array(globalThis.Buffer.from(input, 'base64'))
+  }
+
+  // Browser: Use atob and convert to Uint8Array
+  const binary = globalThis.atob(input)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
 }
 
 /**
@@ -116,6 +144,31 @@ export class S3Location implements S3LocationData {
       this.bucketOwner = data.bucketOwner
     }
   }
+
+  /**
+   * Serializes this S3Location to a JSON-compatible object.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): S3LocationJSON {
+    const result: S3LocationJSON = {
+      type: 's3Location',
+      uri: this.uri,
+    }
+    if (this.bucketOwner !== undefined) {
+      result.bucketOwner = this.bucketOwner
+    }
+    return result
+  }
+}
+
+/**
+ * JSON representation of an S3Location.
+ */
+export interface S3LocationJSON {
+  type: 's3Location'
+  uri: string
+  bucketOwner?: string
 }
 
 /**
@@ -179,6 +232,40 @@ export class ImageBlock implements ImageBlockData {
     this.source = this._convertSource(data.source)
   }
 
+  /**
+   * Serializes this ImageBlock to a JSON-compatible object.
+   * Uint8Array bytes are encoded as base64 strings.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): ImageBlockJSON {
+    return {
+      type: 'imageBlock',
+      format: this.format,
+      source: this._serializeSource(),
+    }
+  }
+
+  private _serializeSource(): ImageSourceJSON {
+    switch (this.source.type) {
+      case 'imageSourceBytes':
+        return {
+          type: 'imageSourceBytes',
+          bytes: encodeBase64(this.source.bytes),
+        }
+      case 'imageSourceS3Location':
+        return {
+          type: 'imageSourceS3Location',
+          s3Location: this.source.s3Location.toJSON(),
+        }
+      case 'imageSourceUrl':
+        return {
+          type: 'imageSourceUrl',
+          url: this.source.url,
+        }
+    }
+  }
+
   private _convertSource(source: ImageSourceData): ImageSource {
     if ('bytes' in source) {
       return {
@@ -200,6 +287,23 @@ export class ImageBlock implements ImageBlockData {
     }
     throw new Error('Invalid image source')
   }
+}
+
+/**
+ * JSON representation of an image source.
+ */
+export type ImageSourceJSON =
+  | { type: 'imageSourceBytes'; bytes: string }
+  | { type: 'imageSourceS3Location'; s3Location: S3LocationJSON }
+  | { type: 'imageSourceUrl'; url: string }
+
+/**
+ * JSON representation of an ImageBlock.
+ */
+export interface ImageBlockJSON {
+  type: 'imageBlock'
+  format: ImageFormat
+  source: ImageSourceJSON
 }
 
 /**
@@ -258,6 +362,35 @@ export class VideoBlock implements VideoBlockData {
     this.source = this._convertSource(data.source)
   }
 
+  /**
+   * Serializes this VideoBlock to a JSON-compatible object.
+   * Uint8Array bytes are encoded as base64 strings.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): VideoBlockJSON {
+    return {
+      type: 'videoBlock',
+      format: this.format,
+      source: this._serializeSource(),
+    }
+  }
+
+  private _serializeSource(): VideoSourceJSON {
+    switch (this.source.type) {
+      case 'videoSourceBytes':
+        return {
+          type: 'videoSourceBytes',
+          bytes: encodeBase64(this.source.bytes),
+        }
+      case 'videoSourceS3Location':
+        return {
+          type: 'videoSourceS3Location',
+          s3Location: this.source.s3Location.toJSON(),
+        }
+    }
+  }
+
   private _convertSource(source: VideoSourceData): VideoSource {
     if ('bytes' in source) {
       return {
@@ -270,6 +403,22 @@ export class VideoBlock implements VideoBlockData {
     }
     throw new Error('Invalid video source')
   }
+}
+
+/**
+ * JSON representation of a video source.
+ */
+export type VideoSourceJSON =
+  | { type: 'videoSourceBytes'; bytes: string }
+  | { type: 'videoSourceS3Location'; s3Location: S3LocationJSON }
+
+/**
+ * JSON representation of a VideoBlock.
+ */
+export interface VideoBlockJSON {
+  type: 'videoBlock'
+  format: VideoFormat
+  source: VideoSourceJSON
 }
 
 /**
@@ -379,6 +528,53 @@ export class DocumentBlock implements DocumentBlockData {
     }
   }
 
+  /**
+   * Serializes this DocumentBlock to a JSON-compatible object.
+   * Uint8Array bytes are encoded as base64 strings.
+   *
+   * @returns A flat object with type discriminator suitable for JSON serialization
+   */
+  toJSON(): DocumentBlockJSON {
+    const result: DocumentBlockJSON = {
+      type: 'documentBlock',
+      name: this.name,
+      format: this.format,
+      source: this._serializeSource(),
+    }
+    if (this.citations !== undefined) {
+      result.citations = this.citations
+    }
+    if (this.context !== undefined) {
+      result.context = this.context
+    }
+    return result
+  }
+
+  private _serializeSource(): DocumentSourceJSON {
+    switch (this.source.type) {
+      case 'documentSourceBytes':
+        return {
+          type: 'documentSourceBytes',
+          bytes: encodeBase64(this.source.bytes),
+        }
+      case 'documentSourceText':
+        return {
+          type: 'documentSourceText',
+          text: this.source.text,
+        }
+      case 'documentSourceContentBlock':
+        return {
+          type: 'documentSourceContentBlock',
+          content: this.source.content.map((block) => block.toJSON()),
+        }
+      case 'documentSourceS3Location':
+        return {
+          type: 'documentSourceS3Location',
+          s3Location: this.source.s3Location.toJSON(),
+        }
+    }
+  }
+
   private _convertSource(source: DocumentSourceData): DocumentSource {
     if ('bytes' in source) {
       return {
@@ -406,4 +602,33 @@ export class DocumentBlock implements DocumentBlockData {
     }
     throw new Error('Invalid document source')
   }
+}
+
+/**
+ * JSON representation of a document source.
+ */
+export type DocumentSourceJSON =
+  | { type: 'documentSourceBytes'; bytes: string }
+  | { type: 'documentSourceText'; text: string }
+  | { type: 'documentSourceContentBlock'; content: TextBlockJSON[] }
+  | { type: 'documentSourceS3Location'; s3Location: S3LocationJSON }
+
+/**
+ * JSON representation of a DocumentBlock.
+ */
+export interface DocumentBlockJSON {
+  type: 'documentBlock'
+  name: string
+  format: DocumentFormat
+  source: DocumentSourceJSON
+  citations?: { enabled: boolean }
+  context?: string
+}
+
+/**
+ * JSON representation of a TextBlock (imported from messages module).
+ */
+export interface TextBlockJSON {
+  type: 'textBlock'
+  text: string
 }
