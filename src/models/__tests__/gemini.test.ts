@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { GoogleGenAI, FunctionCallingConfigMode, type GenerateContentResponse } from '@google/genai'
-import { collectIterator } from '../../__fixtures__/model-test-helpers.js'
+import { collectIterator, createMessages } from '../../__fixtures__/model-test-helpers.js'
 import { GeminiModel } from '../gemini/model.js'
 import { ContextWindowOverflowError } from '../../errors.js'
-import type { Message, ContentBlock } from '../../types/messages.js'
+import type { ContentBlock } from '../../types/messages.js'
 import {
   CachePointBlock,
   GuardContentBlock,
+  Message,
   ReasoningBlock,
   TextBlock,
   ToolResultBlock,
@@ -57,7 +58,7 @@ function setupCaptureTest(): {
 } {
   const { client, captured } = createMockClientWithCapture()
   const provider = new GeminiModel({ client })
-  const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+  const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
   return { provider, captured, messages }
 }
 
@@ -70,7 +71,7 @@ function setupStreamTest(streamGenerator: () => AsyncGenerator<Record<string, un
 } {
   const client = createMockClient(streamGenerator)
   const provider = new GeminiModel({ client })
-  const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+  const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
   return { provider, messages }
 }
 
@@ -78,7 +79,7 @@ function setupStreamTest(streamGenerator: () => AsyncGenerator<Record<string, un
  * Helper to format a single content block via formatMessages.
  */
 function formatBlock(block: ContentBlock, role: 'user' | 'assistant' = 'user'): ReturnType<typeof formatMessages> {
-  return formatMessages([{ type: 'message', role, content: [block] }])
+  return formatMessages([new Message({ role, content: [block] })])
 }
 
 describe('GeminiModel', () => {
@@ -262,7 +263,7 @@ describe('GeminiModel', () => {
       } as unknown as GoogleGenAI
 
       const provider = new GeminiModel({ client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(collectIterator(provider.stream(messages))).rejects.toThrow(ContextWindowOverflowError)
     })
@@ -277,7 +278,7 @@ describe('GeminiModel', () => {
       } as unknown as GoogleGenAI
 
       const provider = new GeminiModel({ client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(collectIterator(provider.stream(messages))).rejects.toThrow('Network error')
     })
@@ -306,7 +307,7 @@ describe('GeminiModel', () => {
   describe('message formatting', () => {
     it('formats user messages correctly', async () => {
       const { provider, captured } = setupCaptureTest()
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hello' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hello' }] }])
 
       await collectIterator(provider.stream(messages))
 
@@ -318,11 +319,11 @@ describe('GeminiModel', () => {
 
     it('formats assistant messages correctly', async () => {
       const { provider, captured } = setupCaptureTest()
-      const messages: Message[] = [
-        { type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] },
-        { type: 'message', role: 'assistant', content: [{ type: 'textBlock', text: 'Hello!' }] },
-        { type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'How are you?' }] },
-      ]
+      const messages = createMessages([
+        { role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] },
+        { role: 'assistant', content: [{ type: 'textBlock', text: 'Hello!' }] },
+        { role: 'user', content: [{ type: 'textBlock', text: 'How are you?' }] },
+      ])
 
       await collectIterator(provider.stream(messages))
 
@@ -674,7 +675,7 @@ describe('GeminiModel', () => {
     it('appends geminiTools to config.tools alongside functionDeclarations', async () => {
       const { client, captured } = createMockClientWithCapture()
       const provider = new GeminiModel({ client, geminiTools: [{ googleSearch: {} }] })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await collectIterator(
         provider.stream(messages, {
@@ -705,7 +706,7 @@ describe('GeminiModel', () => {
     it('passes geminiTools when no toolSpecs provided', async () => {
       const { client, captured } = createMockClientWithCapture()
       const provider = new GeminiModel({ client, geminiTools: [{ codeExecution: {} }] })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await collectIterator(provider.stream(messages))
 
@@ -717,7 +718,7 @@ describe('GeminiModel', () => {
     it('does not add tools when neither geminiTools nor toolSpecs provided', async () => {
       const { client, captured } = createMockClientWithCapture()
       const provider = new GeminiModel({ client })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await collectIterator(provider.stream(messages))
 
@@ -753,10 +754,10 @@ describe('GeminiModel', () => {
         status: 'success',
         content: [new TextBlock('result text')],
       })
-      const messages: Message[] = [
-        { type: 'message', role: 'assistant', content: [toolUseBlock as ContentBlock] },
-        { type: 'message', role: 'user', content: [toolResultBlock as ContentBlock] },
-      ]
+      const messages = createMessages([
+        { role: 'assistant', content: [toolUseBlock as ContentBlock] },
+        { role: 'user', content: [toolResultBlock as ContentBlock] },
+      ])
 
       const contents = formatMessages(messages)
 
@@ -777,10 +778,10 @@ describe('GeminiModel', () => {
         status: 'success',
         content: [new TextBlock('ok')],
       })
-      const messages: Message[] = [
-        { type: 'message', role: 'assistant', content: [toolUseBlock as ContentBlock] },
-        { type: 'message', role: 'user', content: [toolResultBlock as ContentBlock] },
-      ]
+      const messages = createMessages([
+        { role: 'assistant', content: [toolUseBlock as ContentBlock] },
+        { role: 'user', content: [toolResultBlock as ContentBlock] },
+      ])
 
       const contents = formatMessages(messages)
 
@@ -795,7 +796,7 @@ describe('GeminiModel', () => {
         status: 'success',
         content: [new TextBlock('ok')],
       })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [toolResultBlock as ContentBlock] }]
+      const messages = createMessages([{ role: 'user', content: [toolResultBlock as ContentBlock] }])
 
       const contents = formatMessages(messages)
 

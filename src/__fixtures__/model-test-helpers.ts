@@ -5,9 +5,137 @@
  */
 
 import { Model } from '../models/model.js'
-import type { Message } from '../types/messages.js'
+import {
+  Message,
+  TextBlock,
+  ToolUseBlock,
+  ToolResultBlock,
+  ReasoningBlock,
+  CachePointBlock,
+  GuardContentBlock,
+  JsonBlock,
+} from '../types/messages.js'
+import type { ContentBlock, ToolResultContent, Role } from '../types/messages.js'
 import type { ModelStreamEvent } from '../models/streaming.js'
 import type { BaseModelConfig, StreamOptions } from '../models/model.js'
+import type { JSONValue } from '../types/json.js'
+import { ImageBlock, VideoBlock, DocumentBlock } from '../types/media.js'
+
+/**
+ * Plain object representation of a content block for test data.
+ */
+type ContentBlockInput =
+  | ContentBlock
+  | { type: 'textBlock'; text: string }
+  | { type: 'toolUseBlock'; name: string; toolUseId: string; input: JSONValue }
+  | {
+      type: 'toolResultBlock'
+      toolUseId: string
+      status: 'success' | 'error'
+      content: ({ type: 'textBlock'; text: string } | { type: 'jsonBlock'; json: JSONValue })[]
+    }
+  | { type: 'reasoningBlock'; text?: string; signature?: string; redactedContent?: Uint8Array }
+  | { type: 'cachePointBlock'; cacheType?: 'default' | 'ephemeral' }
+  | { type: 'guardContentBlock'; text?: { text: string; qualifiers: string[] }; image?: unknown }
+  | { type: 'jsonBlock'; json: JSONValue }
+
+/**
+ * Plain object representation of a message for test data.
+ */
+type MessageData = {
+  type?: 'message'
+  role: Role
+  content: ContentBlockInput[]
+}
+
+/**
+ * Converts a plain content block object to a ContentBlock instance.
+ */
+function contentBlockFromInput(input: ContentBlockInput): ContentBlock {
+  // If it's already a class instance, return it
+  if (
+    input instanceof TextBlock ||
+    input instanceof ToolUseBlock ||
+    input instanceof ToolResultBlock ||
+    input instanceof ReasoningBlock ||
+    input instanceof CachePointBlock ||
+    input instanceof GuardContentBlock ||
+    input instanceof JsonBlock ||
+    input instanceof ImageBlock ||
+    input instanceof VideoBlock ||
+    input instanceof DocumentBlock
+  ) {
+    return input as ContentBlock
+  }
+
+  switch (input.type) {
+    case 'textBlock':
+      return new TextBlock(input.text)
+    case 'toolUseBlock':
+      return new ToolUseBlock({ name: input.name, toolUseId: input.toolUseId, input: input.input })
+    case 'toolResultBlock':
+      return new ToolResultBlock({
+        toolUseId: input.toolUseId,
+        status: input.status,
+        content: input.content.map((c): ToolResultContent => {
+          if (c.type === 'textBlock') {
+            return new TextBlock(c.text)
+          } else {
+            return new JsonBlock({ json: c.json })
+          }
+        }),
+      })
+    case 'reasoningBlock': {
+      const data: { text?: string; signature?: string; redactedContent?: Uint8Array } = {}
+      if (input.text !== undefined) data.text = input.text
+      if (input.signature !== undefined) data.signature = input.signature
+      if (input.redactedContent !== undefined) data.redactedContent = input.redactedContent
+      return new ReasoningBlock(data)
+    }
+    case 'cachePointBlock':
+      return new CachePointBlock({ cacheType: (input.cacheType ?? 'default') as 'default' })
+    case 'guardContentBlock': {
+      const guardData: { text?: { text: string; qualifiers: string[] }; image?: unknown } = {}
+      if (input.text !== undefined) {
+        guardData.text = input.text
+      }
+      if (input.image !== undefined) {
+        guardData.image = input.image
+      }
+      return new GuardContentBlock(guardData as never)
+    }
+    case 'jsonBlock':
+      // JsonBlock is not in ContentBlock union, so we throw
+      throw new Error('JsonBlock is not a valid ContentBlock type')
+    default:
+      throw new Error(`Unknown content block type: ${(input as ContentBlockInput).type}`)
+  }
+}
+
+/**
+ * Creates an array of Message instances from plain object data.
+ * This helper allows tests to use plain objects for message data while
+ * ensuring proper Message instances are created.
+ *
+ * @example
+ * ```typescript
+ * const messages = createMessages([
+ *   { role: 'user', content: [{ type: 'textBlock', text: 'Hello' }] },
+ *   { role: 'assistant', content: [{ type: 'textBlock', text: 'Hi!' }] }
+ * ])
+ * ```
+ */
+export function createMessages(data: (MessageData | Message)[]): Message[] {
+  return data.map((m) => {
+    if (m instanceof Message) {
+      return m
+    }
+    return new Message({
+      role: m.role,
+      content: m.content.map(contentBlockFromInput),
+    })
+  })
+}
 
 /**
  * Test model provider that returns a predefined stream of events.
