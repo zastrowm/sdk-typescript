@@ -3,10 +3,18 @@ import { BedrockRuntimeClient } from '@aws-sdk/client-bedrock-runtime'
 import { isNode } from '../../__fixtures__/environment.js'
 import { BedrockModel } from '../bedrock.js'
 import { ContextWindowOverflowError, ModelThrottledError } from '../../errors.js'
-import type { Message } from '../../types/messages.js'
-import { TextBlock, GuardContentBlock, CachePointBlock } from '../../types/messages.js'
+import {
+  Message,
+  TextBlock,
+  ToolUseBlock,
+  ToolResultBlock,
+  ReasoningBlock,
+  GuardContentBlock,
+  CachePointBlock,
+  JsonBlock,
+} from '../../types/messages.js'
 import type { StreamOptions } from '../model.js'
-import { collectIterator } from '../../__fixtures__/model-test-helpers.js'
+import { collectIterator, createMessages } from '../../__fixtures__/model-test-helpers.js'
 
 /**
  * Helper function to mock BedrockRuntimeClient implementation with customizable config.

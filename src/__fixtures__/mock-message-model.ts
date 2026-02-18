@@ -6,9 +6,83 @@
  */
 
 import { Model } from '../models/model.js'
-import type { Message, ContentBlock, StopReason } from '../types/messages.js'
+import {
+  TextBlock,
+  ToolUseBlock,
+  ToolResultBlock,
+  ReasoningBlock,
+  CachePointBlock,
+  GuardContentBlock,
+  JsonBlock,
+} from '../types/messages.js'
+import type { Message, ContentBlock, StopReason, ToolResultContent } from '../types/messages.js'
 import type { ModelStreamEvent } from '../models/streaming.js'
 import type { BaseModelConfig, StreamOptions } from '../models/model.js'
+import type { JSONValue } from '../types/json.js'
+
+/**
+ * Plain object representation of a content block for test data.
+ * Allows tests to pass simple objects without needing to instantiate classes.
+ */
+export type ContentBlockInput =
+  | ContentBlock
+  | { type: 'textBlock'; text: string }
+  | { type: 'toolUseBlock'; name: string; toolUseId: string; input: JSONValue; reasoningSignature?: string }
+  | {
+      type: 'toolResultBlock'
+      toolUseId: string
+      status: 'success' | 'error'
+      content: ({ type: 'textBlock'; text: string } | { type: 'jsonBlock'; json: JSONValue })[]
+    }
+  | { type: 'reasoningBlock'; text?: string; signature?: string; redactedContent?: Uint8Array }
+  | { type: 'cachePointBlock'; cacheType: 'default' }
+  | {
+      type: 'guardContentBlock'
+      text?: { text: string; qualifiers: ('grounding_source' | 'query' | 'guard_content')[] }
+      image?: { format: 'png' | 'jpeg'; source: { bytes: Uint8Array } }
+    }
+  | { type: 'jsonBlock'; json: JSONValue }
+
+/**
+ * Converts a ContentBlockInput to a ContentBlock instance.
+ */
+function toContentBlock(input: ContentBlockInput): ContentBlock {
+  // If it's already a class instance, return it
+  if ('toJSON' in input && typeof input.toJSON === 'function') {
+    return input as ContentBlock
+  }
+
+  const plainInput = input as Exclude<ContentBlockInput, ContentBlock>
+
+  switch (plainInput.type) {
+    case 'textBlock':
+      return new TextBlock(plainInput.text)
+    case 'toolUseBlock':
+      return new ToolUseBlock(plainInput)
+    case 'toolResultBlock':
+      return new ToolResultBlock({
+        toolUseId: plainInput.toolUseId,
+        status: plainInput.status,
+        content: plainInput.content.map((c): ToolResultContent => {
+          if (c.type === 'textBlock') {
+            return new TextBlock(c.text)
+          } else {
+            return new JsonBlock({ json: c.json })
+          }
+        }),
+      })
+    case 'reasoningBlock':
+      return new ReasoningBlock(plainInput)
+    case 'cachePointBlock':
+      return new CachePointBlock(plainInput)
+    case 'guardContentBlock':
+      return new GuardContentBlock(plainInput)
+    case 'jsonBlock':
+      return new JsonBlock(plainInput)
+    default:
+      throw new Error(`Unknown content block type: ${(plainInput as { type: string }).type}`)
+  }
+}
 
 /**
  * Represents a single turn in the test sequence.
@@ -47,7 +121,7 @@ export class MockMessageModel extends Model<BaseModelConfig> {
    * Adds a turn to the test sequence.
    * Returns this for method chaining.
    *
-   * @param turn - ContentBlock, ContentBlock[], or Error to add
+   * @param turn - ContentBlock, ContentBlockInput, array of either, or Error to add
    * @param stopReason - Optional explicit stopReason (overrides auto-derivation)
    * @returns This provider for chaining
    *
@@ -60,7 +134,7 @@ export class MockMessageModel extends Model<BaseModelConfig> {
    *   .addTurn(new Error('Failed'))  // Error turn
    * ```
    */
-  addTurn(turn: ContentBlock | ContentBlock[] | Error, stopReason?: StopReason): this {
+  addTurn(turn: ContentBlockInput | ContentBlockInput[] | Error, stopReason?: StopReason): this {
     this._turns.push(this._createTurn(turn, stopReason))
     return this
   }
@@ -144,15 +218,19 @@ export class MockMessageModel extends Model<BaseModelConfig> {
   }
 
   /**
-   * Creates a Turn object from ContentBlock(s) or Error.
+   * Creates a Turn object from ContentBlock(s), ContentBlockInput(s), or Error.
    */
-  private _createTurn(turn: ContentBlock | ContentBlock[] | Error, explicitStopReason?: StopReason): Turn {
+  private _createTurn(
+    turn: ContentBlockInput | ContentBlockInput[] | Error,
+    explicitStopReason?: StopReason
+  ): Turn {
     if (turn instanceof Error) {
       return { type: 'error', error: turn }
     }
 
-    // Normalize to array
-    const content = Array.isArray(turn) ? turn : [turn]
+    // Normalize to array and convert to ContentBlock instances
+    const inputArray = Array.isArray(turn) ? turn : [turn]
+    const content = inputArray.map(toContentBlock)
 
     return {
       type: 'content',

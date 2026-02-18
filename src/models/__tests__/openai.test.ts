@@ -3,8 +3,8 @@ import OpenAI from 'openai'
 import { isNode } from '../../__fixtures__/environment.js'
 import { OpenAIModel } from '../openai.js'
 import { ContextWindowOverflowError, ModelThrottledError } from '../../errors.js'
-import { collectIterator } from '../../__fixtures__/model-test-helpers.js'
-import type { Message } from '../../types/messages.js'
+import { collectIterator, createMessages } from '../../__fixtures__/model-test-helpers.js'
+import { Message, TextBlock, CachePointBlock, GuardContentBlock } from '../../types/messages.js'
 
 /**
  * Helper to create a mock OpenAI client with streaming support
@@ -241,7 +241,7 @@ describe('OpenAIModel', () => {
           }
         })
         const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-        const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+        const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
         // System prompt that's only whitespace should not be sent
         const events = await collectIterator(provider.stream(messages, { systemPrompt: '   ' }))
@@ -258,7 +258,7 @@ describe('OpenAIModel', () => {
           client: mockClient,
           params: { n: 2 },
         })
-        const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+        const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
         await expect(async () => {
           for await (const _ of provider.stream(messages)) {
@@ -270,7 +270,7 @@ describe('OpenAIModel', () => {
       it('throws error for tool spec without name or description', async () => {
         const mockClient = createMockClient(async function* () {})
         const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-        const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+        const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
         await expect(async () => {
           for await (const _ of provider.stream(messages, {
@@ -394,7 +394,7 @@ describe('OpenAIModel', () => {
         })
 
         const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-        const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+        const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
         const events = await collectIterator(provider.stream(messages))
 
@@ -434,7 +434,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       const events = await collectIterator(provider.stream(messages))
 
@@ -465,7 +465,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       const events = await collectIterator(provider.stream(messages))
 
@@ -498,7 +498,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       const events = await collectIterator(provider.stream(messages))
 
@@ -522,7 +522,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       // Suppress console.warn for this test
       vi.spyOn(console, 'warn').mockImplementation(() => {})
@@ -665,7 +665,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       const events = await collectIterator(provider.stream(messages))
 
@@ -704,7 +704,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       // Suppress console.warn for this test
       vi.spyOn(console, 'warn').mockImplementation(() => {})
@@ -752,7 +752,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       const events = await collectIterator(provider.stream(messages))
 
@@ -841,7 +841,7 @@ describe('OpenAIModel', () => {
         })
 
         const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-        const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+        const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
         const events = await collectIterator(provider.stream(messages))
 
@@ -862,7 +862,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       const events = await collectIterator(provider.stream(messages))
 
@@ -904,7 +904,7 @@ describe('OpenAIModel', () => {
         maxTokens: 1000,
       })
 
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       const toolSpecs = [
         {
@@ -1320,7 +1320,7 @@ describe('OpenAIModel', () => {
       } as any
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1341,7 +1341,7 @@ describe('OpenAIModel', () => {
       } as any
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1369,7 +1369,7 @@ describe('OpenAIModel', () => {
       } as any
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1390,7 +1390,7 @@ describe('OpenAIModel', () => {
       } as any
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1408,7 +1408,7 @@ describe('OpenAIModel', () => {
       })
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1432,7 +1432,7 @@ describe('OpenAIModel', () => {
       } as unknown as OpenAI
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1456,7 +1456,7 @@ describe('OpenAIModel', () => {
       } as unknown as OpenAI
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1477,7 +1477,7 @@ describe('OpenAIModel', () => {
       } as unknown as OpenAI
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1498,7 +1498,7 @@ describe('OpenAIModel', () => {
       } as unknown as OpenAI
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       await expect(async () => {
         for await (const _ of provider.stream(messages)) {
@@ -1522,7 +1522,7 @@ describe('OpenAIModel', () => {
       } as unknown as OpenAI
 
       const provider = new OpenAIModel({ modelId: 'gpt-4o', client: mockClient })
-      const messages: Message[] = [{ type: 'message', role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }]
+      const messages = createMessages([{ role: 'user', content: [{ type: 'textBlock', text: 'Hi' }] }])
 
       try {
         for await (const _ of provider.stream(messages)) {

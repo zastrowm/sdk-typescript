@@ -67,7 +67,7 @@ export {
 } from './types/messages.js'
 
 // Media classes
-export { S3Location, ImageBlock, VideoBlock, DocumentBlock } from './types/media.js'
+export { S3Location, ImageBlock, VideoBlock, DocumentBlock, encodeBase64, decodeBase64 } from './types/media.js'
 
 // Media types
 export type {

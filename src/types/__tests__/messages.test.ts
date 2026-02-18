@@ -60,14 +60,14 @@ describe('ToolResultBlock', () => {
     const block = new ToolResultBlock({
       toolUseId: '123',
       status: 'success',
-      content: [{ type: 'textBlock', text: 'result' }],
+      content: [new TextBlock('result')],
     })
 
     expect(block).toEqual({
       type: 'toolResultBlock',
       toolUseId: '123',
       status: 'success',
-      content: [{ type: 'textBlock', text: 'result' }],
+      content: [new TextBlock('result')],
     })
   })
 })
@@ -404,6 +404,274 @@ describe('systemPromptFromData', () => {
       const systemPrompt = [new TextBlock('prompt'), new CachePointBlock({ cacheType: 'default' })]
       const result = systemPromptFromData(systemPrompt)
       expect(result).toEqual(systemPrompt)
+    })
+  })
+})
+
+describe('Serialization', () => {
+  describe('TextBlock.toJSON', () => {
+    it('serializes to TextBlockData format', () => {
+      const block = new TextBlock('hello world')
+      expect(block.toJSON()).toEqual({ text: 'hello world' })
+    })
+  })
+
+  describe('ToolUseBlock.toJSON', () => {
+    it('serializes to wrapped ToolUseBlockData format', () => {
+      const block = new ToolUseBlock({
+        name: 'test-tool',
+        toolUseId: '123',
+        input: { param: 'value' },
+      })
+      expect(block.toJSON()).toEqual({
+        toolUse: {
+          name: 'test-tool',
+          toolUseId: '123',
+          input: { param: 'value' },
+        },
+      })
+    })
+
+    it('includes reasoningSignature when present', () => {
+      const block = new ToolUseBlock({
+        name: 'test-tool',
+        toolUseId: '123',
+        input: {},
+        reasoningSignature: 'sig123',
+      })
+      expect(block.toJSON()).toEqual({
+        toolUse: {
+          name: 'test-tool',
+          toolUseId: '123',
+          input: {},
+          reasoningSignature: 'sig123',
+        },
+      })
+    })
+  })
+
+  describe('ToolResultBlock.toJSON', () => {
+    it('serializes to wrapped ToolResultBlockData format', () => {
+      const block = new ToolResultBlock({
+        toolUseId: '123',
+        status: 'success',
+        content: [new TextBlock('result')],
+      })
+      expect(block.toJSON()).toEqual({
+        toolResult: {
+          toolUseId: '123',
+          status: 'success',
+          content: [{ text: 'result' }],
+        },
+      })
+    })
+
+    it('excludes error from serialization', () => {
+      const block = new ToolResultBlock({
+        toolUseId: '123',
+        status: 'error',
+        content: [new TextBlock('error message')],
+        error: new Error('test error'),
+      })
+      const json = block.toJSON()
+      expect(json).toEqual({
+        toolResult: {
+          toolUseId: '123',
+          status: 'error',
+          content: [{ text: 'error message' }],
+        },
+      })
+      expect('error' in json.toolResult).toBe(false)
+    })
+
+    it('serializes JsonBlock content', () => {
+      const block = new ToolResultBlock({
+        toolUseId: '123',
+        status: 'success',
+        content: [new JsonBlock({ json: { key: 'value' } })],
+      })
+      expect(block.toJSON()).toEqual({
+        toolResult: {
+          toolUseId: '123',
+          status: 'success',
+          content: [{ json: { key: 'value' } }],
+        },
+      })
+    })
+  })
+
+  describe('ReasoningBlock.toJSON', () => {
+    it('serializes to wrapped ReasoningBlockData format', () => {
+      const block = new ReasoningBlock({ text: 'thinking...' })
+      expect(block.toJSON()).toEqual({
+        reasoning: { text: 'thinking...' },
+      })
+    })
+
+    it('includes signature when present', () => {
+      const block = new ReasoningBlock({ text: 'thinking', signature: 'sig123' })
+      expect(block.toJSON()).toEqual({
+        reasoning: { text: 'thinking', signature: 'sig123' },
+      })
+    })
+
+    it('encodes redactedContent as base64', () => {
+      const redactedContent = new Uint8Array([1, 2, 3])
+      const block = new ReasoningBlock({ redactedContent })
+      const json = block.toJSON()
+      expect(json).toEqual({
+        reasoning: {
+          redactedContent: expect.any(String),
+        },
+      })
+      expect(typeof json.reasoning.redactedContent).toBe('string')
+    })
+  })
+
+  describe('CachePointBlock.toJSON', () => {
+    it('serializes to wrapped CachePointBlockData format', () => {
+      const block = new CachePointBlock({ cacheType: 'default' })
+      expect(block.toJSON()).toEqual({
+        cachePoint: { cacheType: 'default' },
+      })
+    })
+  })
+
+  describe('GuardContentBlock.toJSON', () => {
+    it('serializes text guard content', () => {
+      const block = new GuardContentBlock({
+        text: { text: 'guard this', qualifiers: ['guard_content'] },
+      })
+      expect(block.toJSON()).toEqual({
+        guardContent: {
+          text: { text: 'guard this', qualifiers: ['guard_content'] },
+        },
+      })
+    })
+
+    it('encodes image bytes as base64', () => {
+      const bytes = new Uint8Array([1, 2, 3])
+      const block = new GuardContentBlock({
+        image: { format: 'png', source: { bytes } },
+      })
+      const json = block.toJSON()
+      expect(json).toEqual({
+        guardContent: {
+          image: {
+            format: 'png',
+            source: { bytes: expect.any(String) },
+          },
+        },
+      })
+      expect(typeof json.guardContent.image!.source.bytes).toBe('string')
+    })
+  })
+
+  describe('JsonBlock.toJSON', () => {
+    it('serializes to JsonBlockData format', () => {
+      const block = new JsonBlock({ json: { key: 'value' } })
+      expect(block.toJSON()).toEqual({ json: { key: 'value' } })
+    })
+  })
+
+  describe('Message.toJSON', () => {
+    it('serializes to MessageData format', () => {
+      const message = new Message({
+        role: 'user',
+        content: [new TextBlock('hello')],
+      })
+      expect(message.toJSON()).toEqual({
+        role: 'user',
+        content: [{ text: 'hello' }],
+      })
+    })
+
+    it('serializes multiple content blocks', () => {
+      const message = new Message({
+        role: 'assistant',
+        content: [new TextBlock('Let me help'), new ToolUseBlock({ name: 'calc', toolUseId: '123', input: {} })],
+      })
+      expect(message.toJSON()).toEqual({
+        role: 'assistant',
+        content: [{ text: 'Let me help' }, { toolUse: { name: 'calc', toolUseId: '123', input: {} } }],
+      })
+    })
+  })
+
+  describe('Message.fromJSON', () => {
+    it('deserializes from MessageData format', () => {
+      const json = {
+        role: 'user' as const,
+        content: [{ text: 'hello' }],
+      }
+      const message = Message.fromJSON(json)
+      expect(message.type).toBe('message')
+      expect(message.role).toBe('user')
+      expect(message.content).toHaveLength(1)
+      expect(message.content[0]).toBeInstanceOf(TextBlock)
+      expect((message.content[0] as TextBlock).text).toBe('hello')
+    })
+
+    it('round-trips message correctly', () => {
+      const original = new Message({
+        role: 'assistant',
+        content: [
+          new TextBlock('Here is the result'),
+          new ToolUseBlock({ name: 'calc', toolUseId: 'id-1', input: { a: 1 } }),
+        ],
+      })
+      const json = original.toJSON()
+      const restored = Message.fromJSON(json)
+      expect(restored.role).toBe(original.role)
+      expect(restored.content).toHaveLength(original.content.length)
+      expect(restored.content[0]).toBeInstanceOf(TextBlock)
+      expect(restored.content[1]).toBeInstanceOf(ToolUseBlock)
+    })
+
+    it('round-trips all content block types', () => {
+      const bytes = new Uint8Array([1, 2, 3])
+      const original = new Message({
+        role: 'user',
+        content: [
+          new TextBlock('text'),
+          new ToolUseBlock({ name: 'tool', toolUseId: 'id', input: {} }),
+          new ToolResultBlock({ toolUseId: 'id', status: 'success', content: [new TextBlock('result')] }),
+          new ReasoningBlock({ text: 'thinking' }),
+          new CachePointBlock({ cacheType: 'default' }),
+          new GuardContentBlock({ text: { text: 'guard', qualifiers: ['guard_content'] } }),
+          new ImageBlock({ format: 'png', source: { bytes } }),
+          new VideoBlock({ format: 'mp4', source: { bytes } }),
+          new DocumentBlock({ name: 'doc.pdf', format: 'pdf', source: { bytes } }),
+        ],
+      })
+      const json = original.toJSON()
+      const restored = Message.fromJSON(json)
+
+      expect(restored.content).toHaveLength(9)
+      expect(restored.content[0]).toBeInstanceOf(TextBlock)
+      expect(restored.content[1]).toBeInstanceOf(ToolUseBlock)
+      expect(restored.content[2]).toBeInstanceOf(ToolResultBlock)
+      expect(restored.content[3]).toBeInstanceOf(ReasoningBlock)
+      expect(restored.content[4]).toBeInstanceOf(CachePointBlock)
+      expect(restored.content[5]).toBeInstanceOf(GuardContentBlock)
+      expect(restored.content[6]).toBeInstanceOf(ImageBlock)
+      expect(restored.content[7]).toBeInstanceOf(VideoBlock)
+      expect(restored.content[8]).toBeInstanceOf(DocumentBlock)
+    })
+
+    it('round-trips binary data correctly', () => {
+      const bytes = new Uint8Array([255, 128, 64, 32, 16, 8, 4, 2, 1, 0])
+      const original = new Message({
+        role: 'user',
+        content: [new ImageBlock({ format: 'png', source: { bytes } })],
+      })
+      const json = original.toJSON()
+      const restored = Message.fromJSON(json)
+
+      const restoredImage = restored.content[0] as ImageBlock
+      expect(restoredImage.source.type).toBe('imageSourceBytes')
+      const restoredSource = restoredImage.source as { type: 'imageSourceBytes'; bytes: Uint8Array }
+      expect(restoredSource.bytes).toEqual(bytes)
     })
   })
 })

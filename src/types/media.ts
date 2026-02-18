@@ -56,6 +56,9 @@ export function getMimeType(format: string): string | undefined {
 
 /**
  * Cross-platform base64 encoding function that works in both browser and Node.js environments.
+ *
+ * @param input - String or Uint8Array to encode
+ * @returns Base64 encoded string
  */
 export function encodeBase64(input: string | Uint8Array): string {
   // Handle Uint8Array (Image/PDF bytes)
@@ -87,6 +90,31 @@ export function encodeBase64(input: string | Uint8Array): string {
 }
 
 /**
+ * Cross-platform base64 decoding function that works in both browser and Node.js environments.
+ *
+ * @param input - Base64 encoded string to decode
+ * @returns Decoded Uint8Array
+ */
+export function decodeBase64(input: string): Uint8Array {
+  if (input === '') {
+    return new Uint8Array([])
+  }
+
+  // Node.js: Fast and efficient
+  if (typeof globalThis.Buffer === 'function') {
+    return new Uint8Array(globalThis.Buffer.from(input, 'base64'))
+  }
+
+  // Browser: Use atob and convert to Uint8Array
+  const binary = globalThis.atob(input)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
+}
+
+/**
  * Data for an S3 location.
  * Used by Bedrock for referencing media and documents stored in S3.
  */
@@ -115,6 +143,19 @@ export class S3Location implements S3LocationData {
     if (data.bucketOwner !== undefined) {
       this.bucketOwner = data.bucketOwner
     }
+  }
+
+  /**
+   * Serializes this S3Location to a JSON-compatible object.
+   *
+   * @returns S3LocationData object
+   */
+  toJSON(): S3LocationData {
+    const result: S3LocationData = { uri: this.uri }
+    if (this.bucketOwner !== undefined) {
+      result.bucketOwner = this.bucketOwner
+    }
+    return result
   }
 }
 
@@ -200,6 +241,37 @@ export class ImageBlock implements ImageBlockData {
     }
     throw new Error('Invalid image source')
   }
+
+  /**
+   * Serializes this ImageBlock to a JSON-compatible object.
+   * Binary data is encoded as base64 strings.
+   *
+   * @returns Object in { image: ImageBlockData } format with base64-encoded bytes
+   */
+  toJSON(): { image: { format: ImageFormat; source: { bytes: string } | { url: string } | { s3Location: S3LocationData } } } {
+    if (this.source.type === 'imageSourceBytes') {
+      return {
+        image: {
+          format: this.format,
+          source: { bytes: encodeBase64(this.source.bytes) },
+        },
+      }
+    } else if (this.source.type === 'imageSourceUrl') {
+      return {
+        image: {
+          format: this.format,
+          source: { url: this.source.url },
+        },
+      }
+    } else {
+      return {
+        image: {
+          format: this.format,
+          source: { s3Location: this.source.s3Location.toJSON() },
+        },
+      }
+    }
+  }
 }
 
 /**
@@ -269,6 +341,30 @@ export class VideoBlock implements VideoBlockData {
       return { type: 'videoSourceS3Location', s3Location: new S3Location(source.s3Location) }
     }
     throw new Error('Invalid video source')
+  }
+
+  /**
+   * Serializes this VideoBlock to a JSON-compatible object.
+   * Binary data is encoded as base64 strings.
+   *
+   * @returns Object in { video: VideoBlockData } format with base64-encoded bytes
+   */
+  toJSON(): { video: { format: VideoFormat; source: { bytes: string } | { s3Location: S3LocationData } } } {
+    if (this.source.type === 'videoSourceBytes') {
+      return {
+        video: {
+          format: this.format,
+          source: { bytes: encodeBase64(this.source.bytes) },
+        },
+      }
+    } else {
+      return {
+        video: {
+          format: this.format,
+          source: { s3Location: this.source.s3Location.toJSON() },
+        },
+      }
+    }
   }
 }
 
@@ -405,5 +501,55 @@ export class DocumentBlock implements DocumentBlockData {
       }
     }
     throw new Error('Invalid document source')
+  }
+
+  /**
+   * Serializes this DocumentBlock to a JSON-compatible object.
+   * Binary data is encoded as base64 strings.
+   *
+   * @returns Object in { document: DocumentBlockData } format with base64-encoded bytes
+   */
+  toJSON(): {
+    document: {
+      name: string
+      format: DocumentFormat
+      source: { bytes: string } | { text: string } | { content: TextBlockData[] } | { s3Location: S3LocationData }
+      citations?: { enabled: boolean }
+      context?: string
+    }
+  } {
+    let source: { bytes: string } | { text: string } | { content: TextBlockData[] } | { s3Location: S3LocationData }
+    if (this.source.type === 'documentSourceBytes') {
+      source = { bytes: encodeBase64(this.source.bytes) }
+    } else if (this.source.type === 'documentSourceText') {
+      source = { text: this.source.text }
+    } else if (this.source.type === 'documentSourceContentBlock') {
+      source = { content: this.source.content.map((block) => ({ text: block.text })) }
+    } else {
+      source = { s3Location: this.source.s3Location.toJSON() }
+    }
+
+    const result: {
+      document: {
+        name: string
+        format: DocumentFormat
+        source: { bytes: string } | { text: string } | { content: TextBlockData[] } | { s3Location: S3LocationData }
+        citations?: { enabled: boolean }
+        context?: string
+      }
+    } = {
+      document: {
+        name: this.name,
+        format: this.format,
+        source,
+      },
+    }
+    if (this.citations !== undefined) {
+      result.document.citations = this.citations
+    }
+    if (this.context !== undefined) {
+      result.document.context = this.context
+    }
+    return result
   }
 }
