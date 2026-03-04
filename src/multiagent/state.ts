@@ -1,4 +1,4 @@
-import { AgentState } from '../agent/state.js'
+import { AppState } from '../app-state.js'
 import type { ContentBlock } from '../types/messages.js'
 
 /**
@@ -134,14 +134,14 @@ export class MultiAgentState {
   /** All node results in completion order. */
   readonly results: NodeResult[]
   /** User-defined key-value state accessible from hooks, edge handlers, and custom nodes. */
-  readonly user: AgentState
+  readonly user: AppState
   private readonly _nodes: Map<string, NodeState>
 
   constructor(data?: { nodeIds?: string[] }) {
     this.startTime = Date.now()
     this.steps = 0
     this.results = []
-    this.user = new AgentState()
+    this.user = new AppState()
     this._nodes = new Map()
     for (const id of data?.nodeIds ?? []) {
       this._nodes.set(id, new NodeState())
