@@ -3,6 +3,7 @@ import { bash } from '../index.js'
 import { BashTimeoutError, BashSessionError, type BashOutput } from '../index.js'
 import type { ToolContext } from '../../../index.js'
 import { AppState } from '../../../app-state.js'
+import { ToolRegistry } from '../../../registry/tool-registry.js'
 import { realpathSync } from 'fs'
 
 // Skip tests on Windows (bash not available)
@@ -16,7 +17,7 @@ describe.skipIf(process.platform === 'win32')('bash tool', () => {
         toolUseId: 'test-id',
         input: {},
       },
-      agent: { state, messages: [] },
+      agent: { state, messages: [], toolRegistry: new ToolRegistry(), addHook: () => () => {} },
     }
     return { state, context }
   }

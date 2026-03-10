@@ -1,4 +1,5 @@
-import type { HookableEvent, HookProvider, HookRegistry } from '../hooks/index.js'
+import type { HookableEvent } from '../hooks/index.js'
+import { Plugin, type PluginAgent } from '../plugins/plugin.js'
 import {
   InitializedEvent,
   BeforeInvocationEvent,
@@ -12,12 +13,16 @@ import {
 import type { HookableEventConstructor } from '../hooks/types.js'
 
 /**
- * Mock hook provider that records all hookable event invocations for testing.
+ * Mock plugin that records all hookable event invocations for testing.
  */
-export class MockHookProvider implements HookProvider {
+export class MockPlugin extends Plugin {
   invocations: HookableEvent[] = []
 
-  registerCallbacks(registry: HookRegistry): void {
+  get name(): string {
+    return 'mock-plugin'
+  }
+
+  override initAgent(agent: PluginAgent): void {
     const eventTypes: HookableEventConstructor[] = [
       InitializedEvent,
       BeforeInvocationEvent,
@@ -30,7 +35,7 @@ export class MockHookProvider implements HookProvider {
     ]
 
     for (const eventType of eventTypes) {
-      registry.addCallback(eventType, (e) => {
+      agent.addHook(eventType, (e) => {
         this.invocations.push(e)
       })
     }

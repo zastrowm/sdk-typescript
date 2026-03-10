@@ -8,6 +8,7 @@ import { Message, TextBlock } from '../types/messages.js'
 import type { Role } from '../types/messages.js'
 import { AppState } from '../app-state.js'
 import type { JSONValue } from '../types/json.js'
+import { ToolRegistry } from '../registry/tool-registry.js'
 
 /**
  * Data for creating a mock Agent.
@@ -21,11 +22,15 @@ export interface MockAgentData {
    * Initial state for the agent.
    */
   state?: Record<string, JSONValue>
+  /**
+   * Optional tool registry for the agent.
+   */
+  toolRegistry?: ToolRegistry
 }
 
 /**
  * Helper to create a mock Agent for testing.
- * Provides minimal Agent interface with messages and state.
+ * Provides minimal Agent interface with messages, state, and tool registry.
  *
  * @param data - Optional mock agent data
  * @returns Mock Agent object
@@ -34,6 +39,8 @@ export function createMockAgent(data?: MockAgentData): Agent {
   return {
     messages: data?.messages ?? [],
     state: new AppState(data?.state ?? {}),
+    toolRegistry: data?.toolRegistry ?? new ToolRegistry(),
+    addHook: () => () => {},
   } as unknown as Agent
 }
 

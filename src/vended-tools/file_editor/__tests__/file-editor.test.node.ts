@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { fileEditor } from '../file-editor.js'
 import type { ToolContext } from '../../../index.js'
 import { AppState } from '../../../app-state.js'
+import { ToolRegistry } from '../../../registry/tool-registry.js'
 import { promises as fs } from 'fs'
 import * as path from 'path'
 import { tmpdir } from 'os'
@@ -19,7 +20,7 @@ describe('fileEditor tool', () => {
         toolUseId: 'test-id',
         input: {},
       },
-      agent: { state: appState, messages: [] },
+      agent: { state: appState, messages: [], toolRegistry: new ToolRegistry(), addHook: () => () => {} },
     }
     return { state: appState, context: toolContext }
   }

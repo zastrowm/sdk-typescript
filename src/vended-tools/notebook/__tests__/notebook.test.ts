@@ -3,6 +3,7 @@ import { notebook } from '../notebook.js'
 import type { NotebookState } from '../types.js'
 import type { ToolContext } from '../../../index.js'
 import { AppState } from '../../../app-state.js'
+import { ToolRegistry } from '../../../registry/tool-registry.js'
 
 describe('notebook tool', () => {
   // Helper to create fresh state and context for each test
@@ -14,7 +15,7 @@ describe('notebook tool', () => {
         toolUseId: 'test-id',
         input: {},
       },
-      agent: { state, messages: [] },
+      agent: { state, messages: [], toolRegistry: new ToolRegistry(), addHook: () => () => {} },
     }
     return { state, context }
   }

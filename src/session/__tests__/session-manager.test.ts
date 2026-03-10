@@ -1,9 +1,12 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest'
 import { SessionManager } from '../session-manager.js'
 import { MockSnapshotStorage, createTestSnapshot } from '../../__fixtures__/mock-storage-provider.js'
-import { HookRegistry, InitializedEvent, MessageAddedEvent, AfterInvocationEvent } from '../../hooks/index.js'
+import { InitializedEvent, MessageAddedEvent, AfterInvocationEvent, HookableEvent } from '../../hooks/index.js'
 import { Agent } from '../../agent/agent.js'
 import { Message, TextBlock } from '../../types/messages.js'
+import type { PluginAgent } from '../../plugins/plugin.js'
+import { ToolRegistry } from '../../registry/tool-registry.js'
+import type { HookableEventConstructor, HookCallback } from '../../hooks/types.js'
 
 // Test fixtures
 function createMockAgent(agentId = 'default'): Agent {
@@ -40,24 +43,58 @@ function createMockMessageEvent(agent: Agent) {
   return { agent, message: MOCK_MESSAGE }
 }
 
+type RegisteredHook = {
+  eventType: HookableEventConstructor<HookableEvent>
+  callback: HookCallback<HookableEvent>
+}
+
+function createMockPluginAgent(): { pluginAgent: PluginAgent; hooks: RegisteredHook[] } {
+  const hooks: RegisteredHook[] = []
+  const pluginAgent: PluginAgent = {
+    addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
+      hooks.push({
+        eventType: eventType as HookableEventConstructor<HookableEvent>,
+        callback: callback as HookCallback<HookableEvent>,
+      })
+      return () => {}
+    },
+    toolRegistry: new ToolRegistry(),
+  }
+  return { pluginAgent, hooks }
+}
+
+async function initPluginAndInvokeHook<T extends HookableEvent>(
+  sessionManager: SessionManager,
+  eventType: HookableEventConstructor<T>,
+  event: T
+): Promise<void> {
+  const { pluginAgent, hooks } = createMockPluginAgent()
+  sessionManager.initAgent(pluginAgent)
+  const hook = hooks.find((h) => h.eventType === eventType)
+  if (hook) {
+    await hook.callback(event)
+  }
+}
+
 describe('SessionManager', () => {
   let storage: MockSnapshotStorage
   let sessionManager: SessionManager
-  let registry: HookRegistry
   let mockAgent: Agent
 
   beforeEach(() => {
     storage = new MockSnapshotStorage()
     mockAgent = createMockAgent()
-    registry = new HookRegistry()
   })
 
   describe('constructor', () => {
     it('defaults saveLatestOn to invocation', async () => {
       sessionManager = new SessionManager({ sessionId: 'test-default', storage: { snapshot: storage } })
-      sessionManager.registerCallbacks(registry)
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await initPluginAndInvokeHook(
+        sessionManager,
+        AfterInvocationEvent,
+        new AfterInvocationEvent(createMockEvent(mockAgent))
+      )
 
       const snapshot = await storage.loadSnapshot({
         location: { sessionId: 'test-default', scope: 'agent', scopeId: 'default' },
@@ -168,9 +205,8 @@ describe('SessionManager', () => {
         sessionId: 'test-session',
         storage: { snapshot: storage },
       })
-      sessionManager.registerCallbacks(registry)
 
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
+      await initPluginAndInvokeHook(sessionManager, InitializedEvent, new InitializedEvent(createMockEvent(mockAgent)))
 
       expect(mockAgent.messages).toEqual(snapshot.data.messages)
     })
@@ -180,9 +216,10 @@ describe('SessionManager', () => {
         sessionId: 'new-session',
         storage: { snapshot: storage },
       })
-      sessionManager.registerCallbacks(registry)
 
-      await expect(registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))).resolves.not.toThrow()
+      await expect(
+        initPluginAndInvokeHook(sessionManager, InitializedEvent, new InitializedEvent(createMockEvent(mockAgent)))
+      ).resolves.not.toThrow()
     })
   })
 
@@ -197,9 +234,12 @@ describe('SessionManager', () => {
         storage: { snapshot: storage },
         saveLatestOn: 'message',
       })
-      sessionManager.registerCallbacks(registry)
 
-      await registry.invokeCallbacks(new MessageAddedEvent(createMockMessageEvent(mockAgent)))
+      await initPluginAndInvokeHook(
+        sessionManager,
+        MessageAddedEvent,
+        new MessageAddedEvent(createMockMessageEvent(mockAgent))
+      )
 
       const snapshot = await storage.loadSnapshot({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
@@ -213,10 +253,17 @@ describe('SessionManager', () => {
         storage: { snapshot: storage },
         saveLatestOn: 'invocation',
       })
-      sessionManager.registerCallbacks(registry)
 
-      await registry.invokeCallbacks(new MessageAddedEvent(createMockMessageEvent(mockAgent)))
+      // MessageAddedEvent is not registered when saveLatestOn is 'invocation'
+      // So we need to call initAgent and check that no hook is registered for MessageAddedEvent
+      const { pluginAgent, hooks } = createMockPluginAgent()
+      sessionManager.initAgent(pluginAgent)
 
+      // Verify MessageAddedEvent hook is not registered
+      const messageHook = hooks.find((h) => h.eventType === MessageAddedEvent)
+      expect(messageHook).toBeUndefined()
+
+      // Even if we try to invoke (nothing should happen)
       const snapshot = await storage.loadSnapshot({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
       })
@@ -235,10 +282,12 @@ describe('SessionManager', () => {
         storage: { snapshot: storage },
         saveLatestOn: 'invocation',
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await initPluginAndInvokeHook(
+        sessionManager,
+        AfterInvocationEvent,
+        new AfterInvocationEvent(createMockEvent(mockAgent))
+      )
 
       const snapshot = await storage.loadSnapshot({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
@@ -252,10 +301,12 @@ describe('SessionManager', () => {
         storage: { snapshot: storage },
         saveLatestOn: 'trigger',
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await initPluginAndInvokeHook(
+        sessionManager,
+        AfterInvocationEvent,
+        new AfterInvocationEvent(createMockEvent(mockAgent))
+      )
 
       const snapshot = await storage.loadSnapshot({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
@@ -276,10 +327,12 @@ describe('SessionManager', () => {
         saveLatestOn: 'trigger',
         snapshotTrigger: () => true,
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await initPluginAndInvokeHook(
+        sessionManager,
+        AfterInvocationEvent,
+        new AfterInvocationEvent(createMockEvent(mockAgent))
+      )
 
       const ids = await storage.listSnapshotIds({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
@@ -294,10 +347,12 @@ describe('SessionManager', () => {
         saveLatestOn: 'trigger',
         snapshotTrigger: () => false,
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await initPluginAndInvokeHook(
+        sessionManager,
+        AfterInvocationEvent,
+        new AfterInvocationEvent(createMockEvent(mockAgent))
+      )
 
       const ids = await storage.listSnapshotIds({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
@@ -313,17 +368,19 @@ describe('SessionManager', () => {
         saveLatestOn: 'trigger',
         snapshotTrigger: triggerSpy,
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await initPluginAndInvokeHook(
+        sessionManager,
+        AfterInvocationEvent,
+        new AfterInvocationEvent(createMockEvent(mockAgent))
+      )
 
       expect(triggerSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          agentData: {
+          agentData: expect.objectContaining({
             state: mockAgent.state,
             messages: mockAgent.messages,
-          },
+          }),
         })
       )
     })
@@ -335,10 +392,12 @@ describe('SessionManager', () => {
         saveLatestOn: 'trigger',
         snapshotTrigger: () => true,
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await initPluginAndInvokeHook(
+        sessionManager,
+        AfterInvocationEvent,
+        new AfterInvocationEvent(createMockEvent(mockAgent))
+      )
 
       const immutableIds = await storage.listSnapshotIds({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
@@ -358,17 +417,19 @@ describe('SessionManager', () => {
         saveLatestOn: 'trigger',
         snapshotTrigger: ({ agentData }) => agentData.messages.length >= 2,
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      const { pluginAgent, hooks } = createMockPluginAgent()
+      sessionManager.initAgent(pluginAgent)
+      const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
+
+      await afterInvocationHook?.callback(new AfterInvocationEvent(createMockEvent(mockAgent)))
       let ids = await storage.listSnapshotIds({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
       })
       expect(ids.length).toBe(0) // 0 messages — no snapshot
 
       mockAgent.messages.push(MOCK_MESSAGE, MOCK_MESSAGE)
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await afterInvocationHook?.callback(new AfterInvocationEvent(createMockEvent(mockAgent)))
       ids = await storage.listSnapshotIds({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
       })
@@ -382,17 +443,19 @@ describe('SessionManager', () => {
         saveLatestOn: 'trigger',
         snapshotTrigger: ({ agentData }) => (agentData.state as any).get('checkpoint') === true,
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
 
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      const { pluginAgent, hooks } = createMockPluginAgent()
+      sessionManager.initAgent(pluginAgent)
+      const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
+
+      await afterInvocationHook?.callback(new AfterInvocationEvent(createMockEvent(mockAgent)))
       let ids = await storage.listSnapshotIds({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
       })
       expect(ids.length).toBe(0) // state not set — no snapshot
 
       mockAgent.state.set('checkpoint', true)
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await afterInvocationHook?.callback(new AfterInvocationEvent(createMockEvent(mockAgent)))
       ids = await storage.listSnapshotIds({
         location: { sessionId: 'test-session', scope: 'agent', scopeId: 'test-agent' },
       })
@@ -408,12 +471,16 @@ describe('SessionManager', () => {
         saveLatestOn: 'invocation',
         snapshotTrigger: () => true,
       })
-      sessionManager.registerCallbacks(registry)
 
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      const { pluginAgent, hooks } = createMockPluginAgent()
+      sessionManager.initAgent(pluginAgent)
+      const initHook = hooks.find((h) => h.eventType === InitializedEvent)
+      const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
+
+      await initHook?.callback(new InitializedEvent(createMockEvent(mockAgent)))
+      await afterInvocationHook?.callback(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await afterInvocationHook?.callback(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await afterInvocationHook?.callback(new AfterInvocationEvent(createMockEvent(mockAgent)))
 
       const latest = await storage.loadSnapshot({
         location: { sessionId: 'lifecycle-test', scope: 'agent', scopeId: 'default' },
@@ -434,10 +501,15 @@ describe('SessionManager', () => {
         saveLatestOn: 'trigger',
         snapshotTrigger: ({ agentData }) => agentData.messages.length === 2,
       })
-      sessionManager.registerCallbacks(registry)
-      await registry.invokeCallbacks(new InitializedEvent(createMockEvent(mockAgent)))
+
+      const { pluginAgent, hooks } = createMockPluginAgent()
+      sessionManager.initAgent(pluginAgent)
+      const initHook = hooks.find((h) => h.eventType === InitializedEvent)
+      const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
+
+      await initHook?.callback(new InitializedEvent(createMockEvent(mockAgent)))
       mockAgent.messages.push(MOCK_MESSAGE, MOCK_MESSAGE)
-      await registry.invokeCallbacks(new AfterInvocationEvent(createMockEvent(mockAgent)))
+      await afterInvocationHook?.callback(new AfterInvocationEvent(createMockEvent(mockAgent)))
 
       const ids = await storage.listSnapshotIds({
         location: { sessionId: 'resume-test', scope: 'agent', scopeId: 'default' },
@@ -451,9 +523,12 @@ describe('SessionManager', () => {
         storage: { snapshot: storage },
         saveLatestOn: 'invocation',
       })
-      const newRegistry = new HookRegistry()
-      newSessionManager.registerCallbacks(newRegistry)
-      await newRegistry.invokeCallbacks(new InitializedEvent(createMockEvent(newAgent)))
+
+      const { pluginAgent: newPluginAgent, hooks: newHooks } = createMockPluginAgent()
+      newSessionManager.initAgent(newPluginAgent)
+      const newInitHook = newHooks.find((h) => h.eventType === InitializedEvent)
+
+      await newInitHook?.callback(new InitializedEvent(createMockEvent(newAgent)))
       await newSessionManager.restoreSnapshot({ target: newAgent, snapshotId: ids[0]! })
 
       expect(newAgent.messages).toEqual(mockAgent.messages)

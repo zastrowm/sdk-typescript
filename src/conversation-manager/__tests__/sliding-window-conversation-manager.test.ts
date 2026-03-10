@@ -1,16 +1,49 @@
 import { describe, it, expect, vi } from 'vitest'
 import { SlidingWindowConversationManager } from '../sliding-window-conversation-manager.js'
-import { ContextWindowOverflowError, Message, TextBlock, ToolUseBlock, ToolResultBlock } from '../../index.js'
-import { HookRegistryImplementation } from '../../hooks/registry.js'
+import {
+  ContextWindowOverflowError,
+  Message,
+  TextBlock,
+  ToolUseBlock,
+  ToolResultBlock,
+  HookableEvent,
+} from '../../index.js'
 import { AfterInvocationEvent, AfterModelCallEvent } from '../../hooks/events.js'
 import { createMockAgent } from '../../__fixtures__/agent-helpers.js'
 import type { Agent } from '../../agent/agent.js'
+import { ToolRegistry } from '../../registry/tool-registry.js'
+import type { PluginAgent } from '../../plugins/plugin.js'
+import type { HookableEventConstructor, HookCallback } from '../../hooks/types.js'
+
+type RegisteredHook = {
+  eventType: HookableEventConstructor<HookableEvent>
+  callback: HookCallback<HookableEvent>
+}
+
+function createMockPluginAgent(): { pluginAgent: PluginAgent; hooks: RegisteredHook[] } {
+  const hooks: RegisteredHook[] = []
+  const pluginAgent: PluginAgent = {
+    addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
+      hooks.push({
+        eventType: eventType as HookableEventConstructor<HookableEvent>,
+        callback: callback as HookCallback<HookableEvent>,
+      })
+      return () => {}
+    },
+    toolRegistry: new ToolRegistry(),
+  }
+  return { pluginAgent, hooks }
+}
 
 // Helper to trigger sliding window management through hooks
 async function triggerSlidingWindow(manager: SlidingWindowConversationManager, agent: Agent): Promise<void> {
-  const registry = new HookRegistryImplementation()
-  registry.addHook(manager)
-  await registry.invokeCallbacks(new AfterInvocationEvent({ agent }))
+  const { pluginAgent, hooks } = createMockPluginAgent()
+  manager.initAgent(pluginAgent)
+
+  const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
+  if (afterInvocationHook) {
+    await afterInvocationHook.callback(new AfterInvocationEvent({ agent }))
+  }
 }
 
 // Helper to trigger context overflow handling through hooks
@@ -19,9 +52,15 @@ async function triggerContextOverflow(
   agent: Agent,
   error: Error
 ): Promise<{ retry?: boolean }> {
-  const registry = new HookRegistryImplementation()
-  registry.addHook(manager)
-  return await registry.invokeCallbacks(new AfterModelCallEvent({ agent, error }))
+  const { pluginAgent, hooks } = createMockPluginAgent()
+  manager.initAgent(pluginAgent)
+
+  const afterModelCallHook = hooks.find((h) => h.eventType === AfterModelCallEvent)
+  const event = new AfterModelCallEvent({ agent, error })
+  if (afterModelCallHook) {
+    await afterModelCallHook.callback(event)
+  }
+  return event
 }
 
 describe('SlidingWindowConversationManager', () => {
