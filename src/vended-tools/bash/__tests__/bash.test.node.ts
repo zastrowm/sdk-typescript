@@ -3,23 +3,23 @@ import { bash } from '../index.js'
 import { BashTimeoutError, BashSessionError, type BashOutput } from '../index.js'
 import type { ToolContext } from '../../../index.js'
 import { AppState } from '../../../app-state.js'
-import { ToolRegistry } from '../../../registry/tool-registry.js'
+import { createMockAgent } from '../../../__fixtures__/agent-helpers.js'
 import { realpathSync } from 'fs'
 
 // Skip tests on Windows (bash not available)
 describe.skipIf(process.platform === 'win32')('bash tool', () => {
   // Helper to create fresh context
   const createFreshContext = (): { state: AppState; context: ToolContext } => {
-    const state = new AppState({})
+    const agent = createMockAgent()
     const context: ToolContext = {
       toolUse: {
         name: 'bash',
         toolUseId: 'test-id',
         input: {},
       },
-      agent: { state, messages: [], toolRegistry: new ToolRegistry(), addHook: () => () => {} },
+      agent,
     }
-    return { state, context }
+    return { state: agent.state, context }
   }
 
   afterEach(() => {

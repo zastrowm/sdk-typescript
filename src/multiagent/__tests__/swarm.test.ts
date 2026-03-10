@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Agent } from '../../agent/agent.js'
 import { MockMessageModel } from '../../__fixtures__/mock-message-model.js'
 import { collectGenerator } from '../../__fixtures__/model-test-helpers.js'
-import type { MultiAgentPlugin } from '../plugin.js'
+import { MultiAgentPlugin } from '../plugin.js'
 import type { MultiAgentBase } from '../base.js'
 import { BeforeNodeCallEvent, MultiAgentInitializedEvent } from '../events.js'
 import type { JSONValue } from '../../types/json.js'
@@ -177,15 +177,14 @@ describe('Swarm', () => {
     })
 
     it('returns cancelled result with default message when cancel is true', async () => {
-      // TODO: refine MultiAgentPlugin interface
-      const provider: MultiAgentPlugin = {
-        name: 'test-cancel-true',
+      const provider = new (class extends MultiAgentPlugin {
+        readonly name = 'test-cancel-true'
         initMultiAgent(orchestrator: MultiAgentBase): void {
           orchestrator.addHook(BeforeNodeCallEvent, (event: BeforeNodeCallEvent) => {
             event.cancel = true
           })
-        },
-      }
+        }
+      })()
 
       const swarm = new Swarm({
         nodes: [createFinalAgent('a', 'hi')],
@@ -204,15 +203,14 @@ describe('Swarm', () => {
     })
 
     it('returns cancelled result with custom message when cancel is a string', async () => {
-      // TODO: refine MultiAgentPlugin interface
-      const provider: MultiAgentPlugin = {
-        name: 'test-cancel-string',
+      const provider = new (class extends MultiAgentPlugin {
+        readonly name = 'test-cancel-string'
         initMultiAgent(orchestrator: MultiAgentBase): void {
           orchestrator.addHook(BeforeNodeCallEvent, (event: BeforeNodeCallEvent) => {
             event.cancel = 'agent not ready'
           })
-        },
-      }
+        }
+      })()
 
       const swarm = new Swarm({
         nodes: [createFinalAgent('a', 'hi')],
@@ -246,15 +244,14 @@ describe('Swarm', () => {
 
     it('calls initialize only once across invocations', async () => {
       let callCount = 0
-      // TODO: refine MultiAgentPlugin interface
-      const provider: MultiAgentPlugin = {
-        name: 'test-init-count',
+      const provider = new (class extends MultiAgentPlugin {
+        readonly name = 'test-init-count'
         initMultiAgent(orchestrator: MultiAgentBase): void {
           orchestrator.addHook(MultiAgentInitializedEvent, () => {
             callCount++
           })
-        },
-      }
+        }
+      })()
 
       const swarm = new Swarm({
         nodes: [createFinalAgent('a', 'hi')],

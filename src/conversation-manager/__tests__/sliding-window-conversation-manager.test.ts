@@ -37,10 +37,8 @@ async function triggerSlidingWindow(manager: SlidingWindowConversationManager, a
   const { pluginAgent, hooks } = createMockAgentData()
   manager.initAgent(pluginAgent)
 
-  const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
-  if (afterInvocationHook) {
-    await afterInvocationHook.callback(new AfterInvocationEvent({ agent }))
-  }
+  const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)!
+  await afterInvocationHook.callback(new AfterInvocationEvent({ agent }))
 }
 
 // Helper to trigger context overflow handling through hooks

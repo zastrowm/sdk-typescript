@@ -4,7 +4,6 @@ import { MockSnapshotStorage, createTestSnapshot } from '../../__fixtures__/mock
 import { InitializedEvent, MessageAddedEvent, AfterInvocationEvent, HookableEvent } from '../../hooks/index.js'
 import { Agent } from '../../agent/agent.js'
 import { Message, TextBlock } from '../../types/messages.js'
-import { ToolRegistry } from '../../registry/tool-registry.js'
 import type { HookableEventConstructor, HookCallback } from '../../hooks/types.js'
 import { createMockAgent as createMockAgentHelper } from '../../__fixtures__/agent-helpers.js'
 
