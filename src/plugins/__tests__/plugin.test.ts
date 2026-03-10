@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { Plugin, type PluginAgent } from '../plugin.js'
+import { Plugin } from '../plugin.js'
 import { BeforeInvocationEvent, type HookableEvent } from '../../hooks/events.js'
 import { ToolRegistry } from '../../registry/tool-registry.js'
 import type { HookableEventConstructor, HookCallback, HookCleanup } from '../../hooks/types.js'
+import type { AgentData } from '../../types/agent.js'
 
 /**
  * Concrete implementation of Plugin for testing purposes.
@@ -14,7 +15,7 @@ class TestPlugin extends Plugin {
     return 'test-plugin'
   }
 
-  override initAgent(agent: PluginAgent): void {
+  override initAgent(agent: AgentData): void {
     agent.addHook(BeforeInvocationEvent, () => {
       // No-op for testing
     })
@@ -49,7 +50,7 @@ class InitializablePlugin extends Plugin {
     return 'initializable-plugin'
   }
 
-  override initAgent(_agent: PluginAgent): void {
+  override initAgent(_agent: AgentData): void {
     this.initialized = true
   }
 }
@@ -74,7 +75,7 @@ describe('Plugin', () => {
         eventType: HookableEventConstructor<HookableEvent>
         callback: HookCallback<HookableEvent>
       }> = []
-      const mockAgent: PluginAgent = {
+      const mockAgent = {
         addHook: <T extends HookableEvent>(
           eventType: HookableEventConstructor<T>,
           callback: HookCallback<T>
@@ -86,7 +87,7 @@ describe('Plugin', () => {
           return () => {}
         },
         toolRegistry: new ToolRegistry(),
-      }
+      } as unknown as AgentData
 
       plugin.initAgent(mockAgent)
 
@@ -96,10 +97,10 @@ describe('Plugin', () => {
 
     it('has a default empty implementation', () => {
       const plugin = new CustomNamePlugin('test')
-      const mockAgent: PluginAgent = {
+      const mockAgent = {
         addHook: () => () => {},
         toolRegistry: new ToolRegistry(),
-      }
+      } as unknown as AgentData
 
       // Should not throw
       const result = plugin.initAgent(mockAgent)
@@ -108,10 +109,10 @@ describe('Plugin', () => {
 
     it('can be overridden for custom initialization', () => {
       const plugin = new InitializablePlugin()
-      const mockAgent: PluginAgent = {
+      const mockAgent = {
         addHook: () => () => {},
         toolRegistry: new ToolRegistry(),
-      }
+      } as unknown as AgentData
 
       expect(plugin.initialized).toBe(false)
 

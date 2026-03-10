@@ -7,7 +7,8 @@
 
 import { ContextWindowOverflowError } from '../errors.js'
 import { Message, TextBlock, ToolResultBlock } from '../types/messages.js'
-import { Plugin, type PluginAgent } from '../plugins/plugin.js'
+import { Plugin } from '../plugins/plugin.js'
+import type { AgentData } from '../types/agent.js'
 import { AfterInvocationEvent, AfterModelCallEvent } from '../hooks/events.js'
 
 /**
@@ -70,7 +71,7 @@ export class SlidingWindowConversationManager extends Plugin {
    *
    * @param agent - The agent to register hooks with
    */
-  public override initAgent(agent: PluginAgent): void {
+  public override initAgent(agent: AgentData): void {
     // Apply sliding window management after each invocation
     agent.addHook(AfterInvocationEvent, (event) => {
       this.applyManagement(event.agent.messages)

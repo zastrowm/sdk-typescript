@@ -5,7 +5,8 @@
  * plugins that have been initialized with an agent instance.
  */
 
-import type { Plugin, PluginAgent } from './plugin.js'
+import type { Plugin } from './plugin.js'
+import type { AgentData } from '../types/agent.js'
 
 /**
  * Registry for managing plugins attached to an agent.
@@ -38,7 +39,7 @@ export class PluginRegistry {
    * @param agent - The agent instance to initialize the plugin with
    * @throws Error if a plugin with the same name is already registered
    */
-  async addAndInit(plugin: Plugin, agent: PluginAgent): Promise<void> {
+  async addAndInit(plugin: Plugin, agent: AgentData): Promise<void> {
     if (this._plugins.has(plugin.name)) {
       throw new Error(`plugin_name=<${plugin.name}> | plugin already registered`)
     }

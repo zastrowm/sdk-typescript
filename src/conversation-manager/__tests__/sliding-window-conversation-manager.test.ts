@@ -11,8 +11,6 @@ import {
 import { AfterInvocationEvent, AfterModelCallEvent } from '../../hooks/events.js'
 import { createMockAgent } from '../../__fixtures__/agent-helpers.js'
 import type { Agent } from '../../agent/agent.js'
-import { ToolRegistry } from '../../registry/tool-registry.js'
-import type { PluginAgent } from '../../plugins/plugin.js'
 import type { HookableEventConstructor, HookCallback } from '../../hooks/types.js'
 
 type RegisteredHook = {
@@ -20,24 +18,23 @@ type RegisteredHook = {
   callback: HookCallback<HookableEvent>
 }
 
-function createMockPluginAgent(): { pluginAgent: PluginAgent; hooks: RegisteredHook[] } {
+function createMockAgentData(): { pluginAgent: Agent; hooks: RegisteredHook[] } {
   const hooks: RegisteredHook[] = []
-  const pluginAgent: PluginAgent = {
-    addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
-      hooks.push({
-        eventType: eventType as HookableEventConstructor<HookableEvent>,
-        callback: callback as HookCallback<HookableEvent>,
-      })
-      return () => {}
+  const pluginAgent = createMockAgent({
+    extra: {
+      addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
+        hooks.push({
+          eventType: eventType as HookableEventConstructor<HookableEvent>,
+          callback: callback as HookCallback<HookableEvent>,
+        })
+        return () => {}
+      },
     },
-    toolRegistry: new ToolRegistry(),
-  }
+  })
   return { pluginAgent, hooks }
 }
-
-// Helper to trigger sliding window management through hooks
 async function triggerSlidingWindow(manager: SlidingWindowConversationManager, agent: Agent): Promise<void> {
-  const { pluginAgent, hooks } = createMockPluginAgent()
+  const { pluginAgent, hooks } = createMockAgentData()
   manager.initAgent(pluginAgent)
 
   const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
@@ -52,7 +49,7 @@ async function triggerContextOverflow(
   agent: Agent,
   error: Error
 ): Promise<{ retry?: boolean }> {
-  const { pluginAgent, hooks } = createMockPluginAgent()
+  const { pluginAgent, hooks } = createMockAgentData()
   manager.initAgent(pluginAgent)
 
   const afterModelCallHook = hooks.find((h) => h.eventType === AfterModelCallEvent)

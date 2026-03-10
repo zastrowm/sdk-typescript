@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { PluginRegistry } from '../registry.js'
-import { Plugin, type PluginAgent } from '../plugin.js'
+import { Plugin } from '../plugin.js'
 import { BeforeInvocationEvent, type HookableEvent } from '../../hooks/events.js'
 import { ToolRegistry } from '../../registry/tool-registry.js'
 import type { Tool } from '../../tools/tool.js'
@@ -23,7 +23,7 @@ class TestPlugin extends Plugin {
     return this._name
   }
 
-  override initAgent(agent: PluginAgent): void {
+  override initAgent(agent: AgentData): void {
     agent.addHook(BeforeInvocationEvent, () => {
       this.hookRegistered = true
     })
@@ -44,7 +44,7 @@ class InitializableTestPlugin extends Plugin {
     return this._name
   }
 
-  override initAgent(_agent: PluginAgent): void {
+  override initAgent(_agent: AgentData): void {
     this.initialized = true
   }
 }
@@ -74,7 +74,7 @@ class ToolProviderPlugin extends Plugin {
 
 describe('PluginRegistry', () => {
   let registry: PluginRegistry
-  let mockAgent: PluginAgent
+  let mockAgent: AgentData
   let toolRegistry: ToolRegistry
   let registeredHooks: Array<{
     eventType: HookableEventConstructor<HookableEvent>
@@ -96,7 +96,7 @@ describe('PluginRegistry', () => {
         return () => {}
       },
       toolRegistry,
-    }
+    } as unknown as AgentData
     registry = new PluginRegistry()
   })
 
@@ -155,7 +155,7 @@ describe('PluginRegistry', () => {
 
       await registry.addAndInit(plugin, mockAgent)
 
-      expect(toolRegistry.get(mockTool)).toBe(mockTool)
+      expect(toolRegistry.get(mockTool.name)).toBe(mockTool)
     })
 
     it('handles async initAgent', async () => {
@@ -166,7 +166,7 @@ describe('PluginRegistry', () => {
           return 'async-plugin'
         }
 
-        override async initAgent(_agent: PluginAgent): Promise<void> {
+        override async initAgent(_agent: AgentData): Promise<void> {
           await vi.waitFor(() => Promise.resolve())
           this.initialized = true
         }

@@ -5,30 +5,8 @@
  * add behavior changes to agents through hook registration and custom initialization.
  */
 
-import type { HookableEvent } from '../hooks/events.js'
-import type { HookCallback, HookableEventConstructor, HookCleanup } from '../hooks/types.js'
 import type { Tool } from '../tools/tool.js'
-import type { ToolRegistry } from '../registry/tool-registry.js'
-
-/**
- * Interface representing the agent capabilities available to plugins.
- * Plugins receive this interface in initAgent to register hooks and access agent data.
- */
-export interface PluginAgent {
-  /**
-   * Register a hook callback for a specific event type.
-   *
-   * @param eventType - The event class constructor to register the callback for
-   * @param callback - The callback function to invoke when the event occurs
-   * @returns Cleanup function that removes the callback when invoked
-   */
-  addHook<T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>): HookCleanup
-
-  /**
-   * The tool registry for registering tools with the agent.
-   */
-  readonly toolRegistry: ToolRegistry
-}
+import type { AgentData } from '../types/agent.js'
 
 /**
  * Abstract base class for objects that extend agent functionality.
@@ -44,7 +22,7 @@ export interface PluginAgent {
  *     return 'logging-plugin'
  *   }
  *
- *   initAgent(agent: PluginAgent): void {
+ *   override initAgent(agent: AgentData): void {
  *     agent.addHook(BeforeInvocationEvent, (event) => {
  *       console.log('Agent invocation started')
  *     })
@@ -64,7 +42,7 @@ export interface PluginAgent {
  *     return 'my-tool-plugin'
  *   }
  *
- *   getTools(): Tool[] {
+ *   override getTools(): Tool[] {
  *     return [myTool]
  *   }
  * }
@@ -83,15 +61,15 @@ export abstract class Plugin {
    * Initialize the plugin with the agent instance.
    *
    * Override this method to register hooks and perform custom initialization.
-   *
-   * The default implementation registers tools from {@link getTools}.
+   * When overriding, call `super.initAgent(agent)` to ensure tools from
+   * {@link getTools} are registered automatically.
    *
    * @param agent - The agent instance this plugin is being attached to
    */
-  initAgent(agent: PluginAgent): void | Promise<void> {
+  initAgent(agent: AgentData): void | Promise<void> {
     const tools = this.getTools()
     if (tools.length > 0) {
-      agent.toolRegistry.addAll(tools)
+      agent.toolRegistry.add(tools)
     }
   }
 

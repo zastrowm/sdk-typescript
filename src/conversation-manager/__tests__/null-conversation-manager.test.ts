@@ -4,8 +4,6 @@ import { Message, TextBlock } from '../../index.js'
 import { AfterModelCallEvent, HookableEvent } from '../../hooks/events.js'
 import { ContextWindowOverflowError } from '../../errors.js'
 import { createMockAgent } from '../../__fixtures__/agent-helpers.js'
-import { ToolRegistry } from '../../registry/tool-registry.js'
-import type { PluginAgent } from '../../plugins/plugin.js'
 import type { HookableEventConstructor, HookCallback } from '../../hooks/types.js'
 
 describe('NullConversationManager', () => {
@@ -24,16 +22,17 @@ describe('NullConversationManager', () => {
         eventType: HookableEventConstructor<HookableEvent>
         callback: HookCallback<HookableEvent>
       }> = []
-      const pluginAgent: PluginAgent = {
-        addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
-          registeredHooks.push({
-            eventType: eventType as HookableEventConstructor<HookableEvent>,
-            callback: callback as HookCallback<HookableEvent>,
-          })
-          return () => {}
+      const pluginAgent = createMockAgent({
+        extra: {
+          addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
+            registeredHooks.push({
+              eventType: eventType as HookableEventConstructor<HookableEvent>,
+              callback: callback as HookCallback<HookableEvent>,
+            })
+            return () => {}
+          },
         },
-        toolRegistry: new ToolRegistry(),
-      }
+      })
 
       manager.initAgent(pluginAgent)
 
@@ -55,16 +54,17 @@ describe('NullConversationManager', () => {
         eventType: HookableEventConstructor<HookableEvent>
         callback: HookCallback<HookableEvent>
       }> = []
-      const pluginAgent: PluginAgent = {
-        addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
-          registeredHooks.push({
-            eventType: eventType as HookableEventConstructor<HookableEvent>,
-            callback: callback as HookCallback<HookableEvent>,
-          })
-          return () => {}
+      const pluginAgent = createMockAgent({
+        extra: {
+          addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
+            registeredHooks.push({
+              eventType: eventType as HookableEventConstructor<HookableEvent>,
+              callback: callback as HookCallback<HookableEvent>,
+            })
+            return () => {}
+          },
         },
-        toolRegistry: new ToolRegistry(),
-      }
+      })
 
       manager.initAgent(pluginAgent)
 

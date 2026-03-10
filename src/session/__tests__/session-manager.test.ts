@@ -4,9 +4,9 @@ import { MockSnapshotStorage, createTestSnapshot } from '../../__fixtures__/mock
 import { InitializedEvent, MessageAddedEvent, AfterInvocationEvent, HookableEvent } from '../../hooks/index.js'
 import { Agent } from '../../agent/agent.js'
 import { Message, TextBlock } from '../../types/messages.js'
-import type { PluginAgent } from '../../plugins/plugin.js'
 import { ToolRegistry } from '../../registry/tool-registry.js'
 import type { HookableEventConstructor, HookCallback } from '../../hooks/types.js'
+import { createMockAgent as createMockAgentHelper } from '../../__fixtures__/agent-helpers.js'
 
 // Test fixtures
 function createMockAgent(agentId = 'default'): Agent {
@@ -48,18 +48,19 @@ type RegisteredHook = {
   callback: HookCallback<HookableEvent>
 }
 
-function createMockPluginAgent(): { pluginAgent: PluginAgent; hooks: RegisteredHook[] } {
+function createMockAgentData(): { pluginAgent: Agent; hooks: RegisteredHook[] } {
   const hooks: RegisteredHook[] = []
-  const pluginAgent: PluginAgent = {
-    addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
-      hooks.push({
-        eventType: eventType as HookableEventConstructor<HookableEvent>,
-        callback: callback as HookCallback<HookableEvent>,
-      })
-      return () => {}
+  const pluginAgent = createMockAgentHelper({
+    extra: {
+      addHook: <T extends HookableEvent>(eventType: HookableEventConstructor<T>, callback: HookCallback<T>) => {
+        hooks.push({
+          eventType: eventType as HookableEventConstructor<HookableEvent>,
+          callback: callback as HookCallback<HookableEvent>,
+        })
+        return () => {}
+      },
     },
-    toolRegistry: new ToolRegistry(),
-  }
+  })
   return { pluginAgent, hooks }
 }
 
@@ -68,7 +69,7 @@ async function initPluginAndInvokeHook<T extends HookableEvent>(
   eventType: HookableEventConstructor<T>,
   event: T
 ): Promise<void> {
-  const { pluginAgent, hooks } = createMockPluginAgent()
+  const { pluginAgent, hooks } = createMockAgentData()
   sessionManager.initAgent(pluginAgent)
   const hook = hooks.find((h) => h.eventType === eventType)
   if (hook) {
@@ -256,7 +257,7 @@ describe('SessionManager', () => {
 
       // MessageAddedEvent is not registered when saveLatestOn is 'invocation'
       // So we need to call initAgent and check that no hook is registered for MessageAddedEvent
-      const { pluginAgent, hooks } = createMockPluginAgent()
+      const { pluginAgent, hooks } = createMockAgentData()
       sessionManager.initAgent(pluginAgent)
 
       // Verify MessageAddedEvent hook is not registered
@@ -418,7 +419,7 @@ describe('SessionManager', () => {
         snapshotTrigger: ({ agentData }) => agentData.messages.length >= 2,
       })
 
-      const { pluginAgent, hooks } = createMockPluginAgent()
+      const { pluginAgent, hooks } = createMockAgentData()
       sessionManager.initAgent(pluginAgent)
       const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
 
@@ -444,7 +445,7 @@ describe('SessionManager', () => {
         snapshotTrigger: ({ agentData }) => (agentData.state as any).get('checkpoint') === true,
       })
 
-      const { pluginAgent, hooks } = createMockPluginAgent()
+      const { pluginAgent, hooks } = createMockAgentData()
       sessionManager.initAgent(pluginAgent)
       const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
 
@@ -472,7 +473,7 @@ describe('SessionManager', () => {
         snapshotTrigger: () => true,
       })
 
-      const { pluginAgent, hooks } = createMockPluginAgent()
+      const { pluginAgent, hooks } = createMockAgentData()
       sessionManager.initAgent(pluginAgent)
       const initHook = hooks.find((h) => h.eventType === InitializedEvent)
       const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
@@ -502,7 +503,7 @@ describe('SessionManager', () => {
         snapshotTrigger: ({ agentData }) => agentData.messages.length === 2,
       })
 
-      const { pluginAgent, hooks } = createMockPluginAgent()
+      const { pluginAgent, hooks } = createMockAgentData()
       sessionManager.initAgent(pluginAgent)
       const initHook = hooks.find((h) => h.eventType === InitializedEvent)
       const afterInvocationHook = hooks.find((h) => h.eventType === AfterInvocationEvent)
@@ -524,8 +525,8 @@ describe('SessionManager', () => {
         saveLatestOn: 'invocation',
       })
 
-      const { pluginAgent: newPluginAgent, hooks: newHooks } = createMockPluginAgent()
-      newSessionManager.initAgent(newPluginAgent)
+      const { pluginAgent: newAgentData, hooks: newHooks } = createMockAgentData()
+      newSessionManager.initAgent(newAgentData)
       const newInitHook = newHooks.find((h) => h.eventType === InitializedEvent)
 
       await newInitHook?.callback(new InitializedEvent(createMockEvent(newAgent)))

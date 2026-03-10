@@ -26,6 +26,10 @@ export interface MockAgentData {
    * Optional tool registry for the agent.
    */
   toolRegistry?: ToolRegistry
+  /**
+   * Additional properties to spread onto the mock agent.
+   */
+  extra?: Partial<Agent>
 }
 
 /**
@@ -41,6 +45,7 @@ export function createMockAgent(data?: MockAgentData): Agent {
     state: new AppState(data?.state ?? {}),
     toolRegistry: data?.toolRegistry ?? new ToolRegistry(),
     addHook: () => () => {},
+    ...data?.extra,
   } as unknown as Agent
 }
 

@@ -26,7 +26,7 @@ import { ToolRegistry } from '../registry/tool-registry.js'
 import { AppState } from '../app-state.js'
 import type { AgentData } from '../types/agent.js'
 import { AgentPrinter, getDefaultAppender, type Printer } from './printer.js'
-import { Plugin, type PluginAgent } from '../plugins/plugin.js'
+import { Plugin } from '../plugins/plugin.js'
 import { PluginRegistry } from '../plugins/registry.js'
 import { SlidingWindowConversationManager } from '../conversation-manager/sliding-window-conversation-manager.js'
 import { HookRegistryImplementation } from '../hooks/registry.js'
@@ -179,7 +179,7 @@ const DEFAULT_AGENT_ID = 'default'
  * The Agent is responsible for managing the lifecycle of tools and clients
  * and invoking the core decision-making loop.
  */
-export class Agent implements AgentData, PluginAgent {
+export class Agent implements AgentData {
   /**
    * The conversation history of messages between user and assistant.
    */
@@ -189,10 +189,7 @@ export class Agent implements AgentData, PluginAgent {
    * State is not passed to the model during inference.
    */
   public readonly state: AppState
-  /**
-   * Conversation manager for handling message history and context overflow.
-   */
-  public readonly conversationManager: Plugin
+  private readonly _conversationManager: Plugin
 
   /**
    * The model provider used by the agent for inference.
@@ -242,7 +239,7 @@ export class Agent implements AgentData, PluginAgent {
     // Initialize public fields
     this.messages = (config?.messages ?? []).map((msg) => (msg instanceof Message ? msg : Message.fromMessageData(msg)))
     this.state = new AppState(config?.state)
-    this.conversationManager = config?.conversationManager ?? new SlidingWindowConversationManager({ windowSize: 40 })
+    this._conversationManager = config?.conversationManager ?? new SlidingWindowConversationManager({ windowSize: 40 })
     this.name = config?.name ?? DEFAULT_AGENT_NAME
     this.agentId = config?.agentId ?? DEFAULT_AGENT_ID
     if (config?.description !== undefined) this.description = config.description
@@ -265,7 +262,7 @@ export class Agent implements AgentData, PluginAgent {
 
     // Store plugins to be initialized during initialize()
     this._pendingPlugins = [
-      this.conversationManager,
+      this._conversationManager,
       ...(config?.plugins ?? []),
       ...(config?.sessionManager ? [config.sessionManager] : []),
     ]

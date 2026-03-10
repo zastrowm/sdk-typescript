@@ -1,6 +1,7 @@
 import type { SnapshotStorage, SnapshotLocation } from './storage.js'
 import type { SnapshotTriggerCallback } from './types.js'
-import { Plugin, type PluginAgent } from '../plugins/plugin.js'
+import { Plugin } from '../plugins/plugin.js'
+import type { AgentData } from '../types/agent.js'
 import { AfterInvocationEvent, InitializedEvent, MessageAddedEvent } from '../hooks/events.js'
 import { v7 as uuidV7 } from 'uuid'
 import type { Agent } from '../agent/agent.js'
@@ -74,7 +75,7 @@ export class SessionManager extends Plugin {
   }
 
   /** Initializes the plugin by registering lifecycle hook callbacks. */
-  public override initAgent(agent: PluginAgent): void {
+  public override initAgent(agent: AgentData): void {
     agent.addHook(InitializedEvent, async (event) => {
       await this._onAgentInitialized(event)
     })
