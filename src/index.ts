@@ -233,6 +233,9 @@ export type { Scope, Snapshot } from './agent/snapshot.js'
 // Telemetry
 export * as telemetry from './telemetry/index.js'
 
+// Local Metrics
+export { AgentMetrics } from './telemetry/meter.js'
+
 // Multi-agent orchestration
 export { Graph } from './multiagent/index.js'
 export { Swarm } from './multiagent/index.js'
