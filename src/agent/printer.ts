@@ -1,10 +1,12 @@
-import type { AgentStreamEvent } from '../types/agent.js'
 import type {
   ModelStreamEvent,
   ModelContentBlockDeltaEventData,
   ModelContentBlockStartEventData,
 } from '../models/streaming.js'
-import type { ToolResultEvent } from '../hooks/events.js'
+import type { ToolResultBlock } from '../types/messages.js'
+import type { Plugin } from '../plugins/plugin.js'
+import type { AgentData } from '../types/agent.js'
+import { ModelStreamUpdateEvent, ToolResultEvent } from '../hooks/events.js'
 
 /**
  * Creates a default appender function for the current environment.
@@ -21,32 +23,25 @@ export function getDefaultAppender(): (text: string) => void {
 }
 
 /**
- * Interface for printing agent activity to a destination.
- * Implementations can output to stdout, console, HTML elements, etc.
- */
-export interface Printer {
-  /**
-   * Write content to the output destination.
-   * @param content - The content to write
-   */
-  write(content: string): void
-
-  /**
-   * Process a streaming event from the agent.
-   * @param event - The event to process
-   */
-  processEvent(event: AgentStreamEvent): void
-}
-
-/**
- * Default implementation of the Printer interface.
+ * Plugin for printing agent activity to a destination.
  * Outputs text, reasoning, and tool execution activity to the configured appender.
+ *
+ * As a Plugin, it registers callbacks for:
+ * - ModelStreamUpdateEvent: Handles streaming text and reasoning output
+ * - ToolResultEvent: Handles tool completion status output
  */
-export class AgentPrinter implements Printer {
+export class AgentPrinter implements Plugin {
   private readonly _appender: (text: string) => void
   private _inReasoningBlock: boolean = false
   private _toolCount: number = 0
   private _needReasoningIndent: boolean = false
+
+  /**
+   * Unique identifier for this plugin.
+   */
+  get name(): string {
+    return 'strands:printer'
+  }
 
   /**
    * Creates a new AgentPrinter.
@@ -57,32 +52,30 @@ export class AgentPrinter implements Printer {
   }
 
   /**
+   * Initialize the plugin by registering hooks with the agent.
+   *
+   * Registers:
+   * - ModelStreamUpdateEvent callback to handle streaming text and reasoning output
+   * - ToolResultEvent callback to handle tool completion status output
+   *
+   * @param agent - The agent to register hooks with
+   */
+  public initAgent(agent: AgentData): void {
+    agent.addHook(ModelStreamUpdateEvent, (event) => {
+      this.handleModelStreamEvent(event.event)
+    })
+
+    agent.addHook(ToolResultEvent, (event) => {
+      this.handleToolResultBlock(event.result)
+    })
+  }
+
+  /**
    * Write content to the output destination.
    * @param content - The content to write
    */
   public write(content: string): void {
     this._appender(content)
-  }
-
-  /**
-   * Process a streaming event from the agent.
-   * Handles text deltas, reasoning content, and tool execution events.
-   * @param event - The event to process
-   */
-  public processEvent(event: AgentStreamEvent): void {
-    switch (event.type) {
-      case 'modelStreamUpdateEvent':
-        this.handleModelStreamEvent(event.event)
-        break
-
-      case 'toolResultEvent':
-        this.handleToolResult(event)
-        break
-
-      // Ignore other event types
-      default:
-        break
-    }
   }
 
   /**
@@ -188,11 +181,12 @@ export class AgentPrinter implements Printer {
   /**
    * Handle tool result events.
    * Outputs completion status.
+   * @param result - The tool result block
    */
-  private handleToolResult(event: ToolResultEvent): void {
-    if (event.result.status === 'success') {
+  private handleToolResultBlock(result: ToolResultBlock): void {
+    if (result.status === 'success') {
       this.write('✓ Tool completed\n')
-    } else if (event.result.status === 'error') {
+    } else if (result.status === 'error') {
       this.write('✗ Tool failed\n')
     }
   }

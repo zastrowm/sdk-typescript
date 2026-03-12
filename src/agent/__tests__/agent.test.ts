@@ -469,9 +469,8 @@ describe('Agent', () => {
       const outputs: string[] = []
       const mockAppender = (text: string) => outputs.push(text)
 
-      // Create agent with custom printer for testing
-      const agent = new Agent({ model, printer: false })
-      ;(agent as any)._printer = new AgentPrinter(mockAppender)
+      // Create agent with custom printer plugin for testing
+      const agent = new Agent({ model, printer: false, plugins: [new AgentPrinter(mockAppender)] })
 
       await collectGenerator(agent.stream('Test'))
 
@@ -480,20 +479,49 @@ describe('Agent', () => {
       expect(allOutput).toContain('Hello world')
     })
 
-    it('does not create printer when printer is false', () => {
+    it('does not create printer when printer is false', async () => {
       const model = new MockMessageModel().addTurn({ type: 'textBlock', text: 'Hello' })
-      const agent = new Agent({ model, printer: false })
 
-      expect(agent).toBeDefined()
-      expect((agent as any)._printer).toBeUndefined()
+      // Capture any output that would happen if printer was active
+      const originalStdout = process.stdout.write
+      const outputs: string[] = []
+      process.stdout.write = ((text: string) => {
+        outputs.push(text)
+        return true
+      }) as typeof process.stdout.write
+
+      try {
+        const agent = new Agent({ model, printer: false })
+        await collectGenerator(agent.stream('Test'))
+
+        // With printer disabled, no text should be output to stdout
+        expect(outputs.filter((o) => o.includes('Hello'))).toEqual([])
+      } finally {
+        process.stdout.write = originalStdout
+      }
     })
 
-    it('defaults to printer=true when not specified', () => {
+    it('defaults to printer=true when not specified', async () => {
       const model = new MockMessageModel().addTurn({ type: 'textBlock', text: 'Hello' })
-      const agent = new Agent({ model })
 
-      expect(agent).toBeDefined()
-      expect((agent as any)._printer).toBeDefined()
+      // Capture stdout to verify printer is active by default
+      const originalStdout = process.stdout.write
+      const outputs: string[] = []
+      process.stdout.write = ((text: string) => {
+        outputs.push(text)
+        return true
+      }) as typeof process.stdout.write
+
+      try {
+        const agent = new Agent({ model })
+        await collectGenerator(agent.stream('Test'))
+
+        // With default printer enabled, text should be output
+        const allOutput = outputs.join('')
+        expect(allOutput).toContain('Hello')
+      } finally {
+        process.stdout.write = originalStdout
+      }
     })
 
     it('agent works correctly with printer disabled', async () => {
