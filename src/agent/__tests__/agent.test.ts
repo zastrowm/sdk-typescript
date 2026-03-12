@@ -483,12 +483,11 @@ describe('Agent', () => {
       const model = new MockMessageModel().addTurn({ type: 'textBlock', text: 'Hello' })
 
       // Capture any output that would happen if printer was active
-      const originalStdout = process.stdout.write
       const outputs: string[] = []
-      process.stdout.write = ((text: string) => {
-        outputs.push(text)
+      const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation((text) => {
+        outputs.push(String(text))
         return true
-      }) as typeof process.stdout.write
+      })
 
       try {
         const agent = new Agent({ model, printer: false })
@@ -497,7 +496,7 @@ describe('Agent', () => {
         // With printer disabled, no text should be output to stdout
         expect(outputs.filter((o) => o.includes('Hello'))).toEqual([])
       } finally {
-        process.stdout.write = originalStdout
+        writeSpy.mockRestore()
       }
     })
 
@@ -505,12 +504,11 @@ describe('Agent', () => {
       const model = new MockMessageModel().addTurn({ type: 'textBlock', text: 'Hello' })
 
       // Capture stdout to verify printer is active by default
-      const originalStdout = process.stdout.write
       const outputs: string[] = []
-      process.stdout.write = ((text: string) => {
-        outputs.push(text)
+      const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation((text) => {
+        outputs.push(String(text))
         return true
-      }) as typeof process.stdout.write
+      })
 
       try {
         const agent = new Agent({ model })
@@ -520,7 +518,7 @@ describe('Agent', () => {
         const allOutput = outputs.join('')
         expect(allOutput).toContain('Hello')
       } finally {
-        process.stdout.write = originalStdout
+        writeSpy.mockRestore()
       }
     })
 
