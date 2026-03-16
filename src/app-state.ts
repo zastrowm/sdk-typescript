@@ -1,5 +1,5 @@
 import { deepCopy, deepCopyWithValidation, type JSONValue } from './types/json.js'
-import type { StateSerializable } from './types/serializable.js'
+import { loadStateFromJSON, stateToJSON, type StateSerializable } from './types/serializable.js'
 
 /**
  * App state provides key-value storage outside conversation context.
@@ -141,19 +141,21 @@ export class AppState implements StateSerializable {
 
   /**
    * Returns the serialized state as JSON value.
+   * This is an internal method accessed via symbol.
    *
    * @returns Deep copy of all state
    */
-  toJSON(): JSONValue {
+  [stateToJSON](): JSONValue {
     return deepCopy(this._state) as JSONValue
   }
 
   /**
    * Loads state from a previously serialized JSON value.
+   * This is an internal method accessed via symbol.
    *
    * @param json - The serialized state to load
    */
-  loadStateFromJson(json: JSONValue): void {
+  [loadStateFromJSON](json: JSONValue): void {
     if (json !== null && typeof json === 'object' && !Array.isArray(json)) {
       this._state = deepCopy(json) as Record<string, JSONValue>
     } else {
