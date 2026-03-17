@@ -25,7 +25,7 @@ import { ToolRegistry } from '../registry/tool-registry.js'
 import { AppState } from '../app-state.js'
 import type { AgentData } from '../types/agent.js'
 import type { AgentBase } from './agent-base.js'
-import { AgentPrinter, getDefaultAppender, type Printer } from './printer.js'
+import { AgentPrinter, getDefaultAppender } from './printer.js'
 import type { Plugin } from '../plugins/plugin.js'
 import { PluginRegistry } from '../plugins/registry.js'
 import { SlidingWindowConversationManager } from '../conversation-manager/sliding-window-conversation-manager.js'
@@ -226,7 +226,6 @@ export class Agent implements AgentData, AgentBase {
   private _mcpClients: McpClient[]
   private _initialized: boolean
   private _isInvoking: boolean = false
-  private _printer?: Printer
   private _structuredOutputSchema?: z.ZodSchema | undefined
   /** Tracer instance for creating and managing OpenTelemetry spans. */
   private _tracer: Tracer
@@ -259,21 +258,19 @@ export class Agent implements AgentData, AgentBase {
     // Initialize hooks registry
     this._hooksRegistry = new HookRegistryImplementation()
 
+    // Create printer plugin if enabled (default: true)
+    const printerPlugin = (config?.printer ?? true) ? new AgentPrinter(getDefaultAppender()) : null
+
     // Initialize plugin registry with all plugins to be initialized during initialize()
     this._pluginRegistry = new PluginRegistry([
       this._conversationManager,
       ...(config?.plugins ?? []),
       ...(config?.sessionManager ? [config.sessionManager] : []),
+      ...(printerPlugin ? [printerPlugin] : []),
     ])
 
     if (config?.systemPrompt !== undefined) {
       this.systemPrompt = systemPromptFromData(config.systemPrompt)
-    }
-
-    // Create printer if printer is enabled (default: true)
-    const printer = config?.printer ?? true
-    if (printer) {
-      this._printer = new AgentPrinter(getDefaultAppender())
     }
 
     // Store structured output schema
@@ -442,7 +439,6 @@ export class Agent implements AgentData, AgentBase {
         await this._hooksRegistry.invokeCallbacks(event)
       }
 
-      this._printer?.processEvent(event)
       yield event
       result = await streamGenerator.next()
     }
@@ -450,7 +446,6 @@ export class Agent implements AgentData, AgentBase {
     // Yield final result as last event
     const agentResultEvent = new AgentResultEvent({ agent: this, result: result.value })
     await this._hooksRegistry.invokeCallbacks(agentResultEvent)
-    this._printer?.processEvent(agentResultEvent)
     yield agentResultEvent
 
     return result.value
