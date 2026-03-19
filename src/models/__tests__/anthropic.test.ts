@@ -42,7 +42,6 @@ vi.mock('@anthropic-ai/sdk', () => {
 describe('AnthropicModel', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.restoreAllMocks()
     if (isNode) {
       vi.stubEnv('ANTHROPIC_API_KEY', 'sk-ant-test-env')
     }
