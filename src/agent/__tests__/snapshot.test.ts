@@ -199,7 +199,7 @@ describe('Snapshot API', () => {
       expect(agent.systemPrompt).toBe('Restored system prompt')
     })
 
-    it('leaves systemPrompt unchanged when snapshot has null systemPrompt', () => {
+    it('clears systemPrompt when snapshot has null systemPrompt (agent had no system prompt at snapshot time)', () => {
       agent.systemPrompt = 'Original prompt'
 
       const snapshot: Snapshot = {
@@ -212,8 +212,57 @@ describe('Snapshot API', () => {
 
       loadSnapshot(agent, snapshot)
 
-      // systemPrompt should remain unchanged since snapshot had null
+      // null in snapshot means the agent had no system prompt — should be cleared
+      expect(agent.systemPrompt).toBeUndefined()
+    })
+
+    it('leaves systemPrompt unchanged when systemPrompt key is absent from snapshot', () => {
+      agent.systemPrompt = 'Original prompt'
+
+      const snapshot: Snapshot = {
+        scope: 'agent',
+        schemaVersion: '1.0',
+        createdAt: createTimestamp(),
+        data: { messages: [] }, // systemPrompt key not present at all
+        appData: {},
+      }
+
+      loadSnapshot(agent, snapshot)
+
+      // absent key means field was not snapshotted — agent prompt should be untouched
       expect(agent.systemPrompt).toBe('Original prompt')
+    })
+
+    it('leaves messages unchanged when messages key is absent from snapshot', () => {
+      agent.messages.push(new Message({ role: 'user', content: [new TextBlock('Existing')] }))
+
+      const snapshot: Snapshot = {
+        scope: 'agent',
+        schemaVersion: '1.0',
+        createdAt: createTimestamp(),
+        data: { state: { key: 'val' } }, // messages key not present
+        appData: {},
+      }
+
+      loadSnapshot(agent, snapshot)
+
+      expect(agent.messages).toHaveLength(1)
+    })
+
+    it('leaves state unchanged when state key is absent from snapshot', () => {
+      agent.appState.set('existing', 'value')
+
+      const snapshot: Snapshot = {
+        scope: 'agent',
+        schemaVersion: '1.0',
+        createdAt: createTimestamp(),
+        data: { messages: [] }, // state key not present
+        appData: {},
+      }
+
+      loadSnapshot(agent, snapshot)
+
+      expect(agent.appState.get('existing')).toBe('value')
     })
   })
 

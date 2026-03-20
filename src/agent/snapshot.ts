@@ -167,22 +167,27 @@ export function loadSnapshot(agent: Agent, snapshot: Snapshot): void {
     )
   }
 
-  const { messages, state, systemPrompt } = snapshot.data
-
-  if (messages !== undefined) {
+  if ('messages' in snapshot.data) {
+    const messages = snapshot.data.messages
     agent.messages.length = 0
     for (const msgData of messages as unknown as MessageData[]) {
       agent.messages.push(Message.fromJSON(msgData))
     }
   }
 
-  if (state !== undefined) {
-    loadStateSerializable(agent.appState, state)
+  if ('state' in snapshot.data) {
+    loadStateSerializable(agent.appState, snapshot.data.state)
   }
 
-  // Only restore systemPrompt if explicitly present and non-null in the snapshot
-  if (systemPrompt !== undefined && systemPrompt !== null) {
-    agent.systemPrompt = systemPromptFromData(systemPrompt as SystemPromptData)
+  // Use key-presence check to distinguish "field absent" (leave unchanged) from
+  // "field present as null" (agent had no system prompt — clear it).
+  if ('systemPrompt' in snapshot.data) {
+    const systemPrompt = snapshot.data.systemPrompt
+    if (systemPrompt !== null) {
+      agent.systemPrompt = systemPromptFromData(systemPrompt as SystemPromptData)
+    } else {
+      delete agent.systemPrompt
+    }
   }
 }
 
