@@ -279,6 +279,22 @@ export { AgentTrace } from './telemetry/tracer.js'
 // Local Metrics
 export { AgentMetrics } from './telemetry/meter.js'
 
+// Middleware system
+export { createStage, InvokeModelStage, ExecuteToolStage, AgentStreamStage } from './middleware/index.js'
+export type {
+  Stage,
+  MiddlewareHandler,
+  MiddlewareNext,
+  HandlerOf,
+  NextOf,
+  InvokeModelContext,
+  InvokeModelResult,
+  ExecuteToolContext,
+  ExecuteToolResult,
+  AgentStreamContext,
+  AgentStreamResult,
+} from './middleware/index.js'
+
 // Multi-agent orchestration
 export { Graph } from './multiagent/index.js'
 export { Swarm } from './multiagent/index.js'
