@@ -15,7 +15,13 @@ export { StateStore } from './state-store.js'
 export { AgentResult } from './types/agent.js'
 export type { AgentConfig, ToolList, ToolExecutorStrategy } from './agent/agent.js'
 export type { AgentAsToolOptions } from './agent/agent-as-tool.js'
+export type { ToolCaller, ToolCallerProxy, ToolHandle, DirectToolCallOptions } from './agent/tool-caller.js'
 export type { InvocationState, InvokeArgs, InvokeOptions, LocalAgent } from './types/agent.js'
+
+// Snapshot types
+export { SNAPSHOT_SCHEMA_VERSION } from './types/snapshot.js'
+export type { Scope, Snapshot } from './types/snapshot.js'
+export type { TakeSnapshotOptions, SnapshotField, SnapshotPreset } from './agent/snapshot.js'
 
 // Error types
 // Note: CancelledError is intentionally not exported — it is an internal
@@ -29,10 +35,11 @@ export {
   ModelThrottledError,
   ToolValidationError,
   StructuredOutputError,
+  ToolNotFoundError,
 } from './errors.js'
 
 // Interrupt system
-export type { Interrupt } from './interrupt.js'
+export type { Interrupt, InterruptSource } from './interrupt.js'
 export type { InterruptParams, InterruptResponse, InterruptResponseContentData } from './types/interrupt.js'
 export { InterruptResponseContent } from './types/interrupt.js'
 
@@ -178,6 +185,8 @@ export type {
   BedrockModelOptions,
   BedrockGuardrailConfig,
   BedrockGuardrailRedactionConfig,
+  BedrockCacheConfig,
+  BedrockCacheTTL,
 } from './models/bedrock.js'
 
 // Agent streaming event types
@@ -204,6 +213,7 @@ export {
   ToolResultEvent,
   ToolStreamUpdateEvent,
   AgentResultEvent,
+  InterruptEvent,
   ModelStreamUpdateEvent,
 } from './hooks/index.js'
 export type {
@@ -217,6 +227,10 @@ export type {
 
 // Plugin system
 export type { Plugin } from './plugins/index.js'
+
+// Intervention system
+export { InterventionHandler, InterventionActions } from './interventions/index.js'
+export type { OnError } from './interventions/index.js'
 
 // Retry
 export {
@@ -258,7 +272,15 @@ export { configureLogging } from './logging/logger.js'
 export type { Logger } from './logging/types.js'
 
 // MCP Client types and implementations
-export { type McpClientConfig, type McpTransport, type TasksConfig, type McpConnectionState, McpClient } from './mcp.js'
+export {
+  type McpClientConfig,
+  type McpClientCredentials,
+  type McpTransport,
+  type McpCallToolOptions,
+  type TasksConfig,
+  type McpConnectionState,
+  McpClient,
+} from './mcp.js'
 export type { ElicitationCallback, ElicitationContext } from './types/elicitation.js'
 
 // Session management
@@ -271,7 +293,6 @@ export type {
 export type { SnapshotManifest, SnapshotTriggerCallback, SnapshotTriggerParams } from './session/types.js'
 export type { SessionStorage, SnapshotStorage, SnapshotLocation } from './session/storage.js'
 export { FileStorage } from './session/file-storage.js'
-export type { Scope, Snapshot } from './types/snapshot.js'
 
 // Local Traces
 export { AgentTrace } from './telemetry/tracer.js'

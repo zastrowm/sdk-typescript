@@ -36,6 +36,8 @@ import { ToolRegistry } from '../registry/tool-registry.js'
 import { StateStore } from '../state-store.js'
 import { AgentPrinter, getDefaultAppender, type Printer } from './printer.js'
 import type { Plugin } from '../plugins/plugin.js'
+import type { InterventionHandler } from '../interventions/handler.js'
+import { InterventionRegistry } from '../interventions/registry.js'
 import { PluginRegistry } from '../plugins/registry.js'
 import { SlidingWindowConversationManager } from '../conversation-manager/sliding-window-conversation-manager.js'
 import { NullConversationManager } from '../conversation-manager/null-conversation-manager.js'
@@ -60,11 +62,14 @@ import {
   ToolResultEvent,
   AgentResultEvent,
   ToolStreamUpdateEvent,
+  InterruptEvent,
   type ModelStopData,
 } from '../hooks/events.js'
 import { StructuredOutputTool, STRUCTURED_OUTPUT_TOOL_NAME } from '../tools/structured-output-tool.js'
 import { AgentAsTool } from './agent-as-tool.js'
 import type { AgentAsToolOptions } from './agent-as-tool.js'
+import { ToolCaller } from './tool-caller.js'
+import type { ToolCallerProxy } from './tool-caller.js'
 
 import type { z } from 'zod'
 import { SessionManager } from '../session/session-manager.js'
@@ -79,6 +84,9 @@ import { warnOnDuplicateRetryStrategyTypes } from '../retry/retry-strategy.js'
 import { InterruptError, InterruptState, interruptFromAgent } from '../interrupt.js'
 import type { InterruptParams } from '../types/interrupt.js'
 import { isInterruptResponseContent, type InterruptResponseContent } from '../types/interrupt.js'
+import { takeSnapshot as takeSnapshotInternal, loadSnapshot as loadSnapshotInternal } from './snapshot.js'
+import type { TakeSnapshotOptions } from './snapshot.js'
+import type { Snapshot } from '../types/snapshot.js'
 
 /**
  * Recursive type definition for nested tool arrays.
@@ -177,6 +185,10 @@ export type AgentConfig = {
    * - `null` or `[]`: retries are explicitly disabled; failures propagate to the caller.
    */
   retryStrategy?: RetryStrategy | RetryStrategy[] | null
+  /**
+   * Intervention handlers evaluated in registration order at each lifecycle point.
+   */
+  interventions?: InterventionHandler[]
   /**
    * Zod schema for structured output validation.
    */
@@ -277,6 +289,7 @@ export class Agent implements LocalAgent, InvokableAgent {
 
   private readonly _hooksRegistry: HookRegistryImplementation
   private readonly _pluginRegistry: PluginRegistry
+  private readonly _interventionRegistry: InterventionRegistry
   private _toolRegistry: ToolRegistry
   private _mcpClients: McpClient[]
   private _initialized: boolean
@@ -293,6 +306,8 @@ export class Agent implements LocalAgent, InvokableAgent {
   _interruptState: InterruptState
   /** Strategy for executing tool calls from a single assistant turn. */
   private readonly _toolExecutor: ToolExecutorStrategy
+  /** Direct tool caller — created via {@link ToolCaller.create} factory. */
+  private readonly _toolCaller: ToolCallerProxy
 
   /**
    * Creates an instance of the Agent.
@@ -333,6 +348,8 @@ export class Agent implements LocalAgent, InvokableAgent {
 
     // Initialize hooks registry
     this._hooksRegistry = new HookRegistryImplementation()
+
+    this._interventionRegistry = new InterventionRegistry(config?.interventions ?? [], this._hooksRegistry)
 
     // `undefined` (omitted) → install the default; `null`/`[]` → explicit opt-out.
     const retryStrategies: RetryStrategy[] =
@@ -384,6 +401,11 @@ export class Agent implements LocalAgent, InvokableAgent {
     this._interruptState = new InterruptState()
 
     this._toolExecutor = config?.toolExecutor ?? 'concurrent'
+    // Pass a private helper into ToolCaller so message append + hook firing
+    // remains an internal concern of Agent (not exposed as a public method).
+    this._toolCaller = ToolCaller.create(this, (message, invocationState) =>
+      this._appendMessageAndFireHooks(message, invocationState)
+    )
 
     this._initialized = false
   }
@@ -426,6 +448,10 @@ export class Agent implements LocalAgent, InvokableAgent {
       this._mcpClients.map(async (client) => {
         const tools = await client.listTools()
         this._toolRegistry.add(tools)
+        client.onToolsChanged = (oldTools, newTools): void => {
+          oldTools.forEach((name) => this._toolRegistry.remove(name))
+          this._toolRegistry.addOrReplace(newTools)
+        }
       })
     )
 
@@ -477,6 +503,34 @@ export class Agent implements LocalAgent, InvokableAgent {
    */
   get toolRegistry(): ToolRegistry {
     return this._toolRegistry
+  }
+
+  /**
+   * Whether the agent is currently processing an invocation.
+   */
+  get isInvoking(): boolean {
+    return this._isInvoking
+  }
+
+  /**
+   * Direct tool calling accessor.
+   *
+   * Returns a proxy where each property is a {@link ToolHandle} with
+   * `.invoke()` and `.stream()` methods:
+   * ```typescript
+   * const result = await agent.tool.calculator!.invoke({ a: 5, b: 3 })
+   *
+   * for await (const event of agent.tool.calculator!.stream({ a: 5, b: 3 })) {
+   *   console.log('progress:', event)
+   * }
+   * ```
+   *
+   * Supports underscore-to-hyphen and case-insensitive name resolution.
+   * Results are recorded in message history by default (pass
+   * `{ recordDirectToolCall: false }` to skip).
+   */
+  get tool(): ToolCallerProxy {
+    return this._toolCaller
   }
 
   /**
@@ -712,6 +766,69 @@ export class Agent implements LocalAgent, InvokableAgent {
   }
 
   /**
+   * Captures a point-in-time snapshot of the agent's current state.
+   *
+   * Use snapshots to checkpoint agent state for later restoration, enabling
+   * use cases like undo/redo, branching conversations, and session persistence.
+   *
+   * Fields are selected via a preset/include/exclude model:
+   * 1. Start with preset fields (e.g. `'session'` captures all fields)
+   * 2. Add any `include` fields
+   * 3. Remove any `exclude` fields
+   *
+   * @param options - Controls which fields to capture and optional app data to store
+   * @returns A {@link Snapshot} containing the captured agent state
+   * @throws Error if no fields would be included after applying options
+   *
+   * @example
+   * ```typescript
+   * // Capture all session-relevant state
+   * const snapshot = agent.takeSnapshot({ preset: 'session' })
+   *
+   * // Capture only messages and state
+   * const partial = agent.takeSnapshot({ include: ['messages', 'state'] })
+   *
+   * // Capture session state but exclude interrupts
+   * const noInterrupts = agent.takeSnapshot({ preset: 'session', exclude: ['interrupts'] })
+   *
+   * // Attach application-owned metadata
+   * const withMeta = agent.takeSnapshot({ preset: 'session', appData: { userId: 'u-123' } })
+   * ```
+   */
+  public takeSnapshot(options: TakeSnapshotOptions): Snapshot {
+    return takeSnapshotInternal(this, options)
+  }
+
+  /**
+   * Restores agent state from a previously captured snapshot.
+   *
+   * Only fields present in `snapshot.data` are restored; absent fields are left
+   * unchanged. This allows partial snapshots to update specific aspects of state
+   * without affecting others.
+   *
+   * @param snapshot - The snapshot to restore from
+   * @throws Error if `snapshot.schemaVersion` is incompatible or scope is wrong
+   *
+   * @example
+   * ```typescript
+   * // Save and restore a conversation checkpoint
+   * const checkpoint = agent.takeSnapshot({ preset: 'session' })
+   *
+   * // ... agent continues processing ...
+   *
+   * // Restore to the checkpoint
+   * agent.loadSnapshot(checkpoint)
+   *
+   * // Restore from a JSON-serialized snapshot (e.g. from storage)
+   * const stored = JSON.parse(savedSnapshotJson)
+   * agent.loadSnapshot(stored)
+   * ```
+   */
+  public loadSnapshot(snapshot: Snapshot): void {
+    loadSnapshotInternal(this, snapshot)
+  }
+
+  /**
    * Invokes hook callbacks and printer for a stream event.
    *
    * @param event - The event to process
@@ -840,26 +957,30 @@ export class Agent implements LocalAgent, InvokableAgent {
             const modelResult = yield* this._invokeModel(invocationState, structuredOutputChoice)
 
             if (modelResult.stopReason !== 'toolUse') {
-              // If structured output is required, force it
-              if (structuredOutputTool) {
-                if (structuredOutputChoice) {
-                  throw new StructuredOutputError(
-                    'The model failed to invoke the structured output tool even after it was forced.'
-                  )
-                }
-
-                structuredOutputChoice = { tool: { name: STRUCTURED_OUTPUT_TOOL_NAME } }
+              // Schema set, we already forced, and the model still refused.
+              // Throw before closing the span so the cycle span records the error.
+              if (structuredOutputTool && structuredOutputChoice) {
+                throw new StructuredOutputError(
+                  'The model failed to invoke the structured output tool even after it was forced.'
+                )
               }
 
               this._meter.endCycle(cycleStartTime)
               this._tracer.endAgentLoopSpan(cycleSpan)
 
-              yield this._appendMessage(modelResult.message, invocationState)
-
-              if (structuredOutputChoice) {
+              // Schema set, model ignored the tool — drop the response and force the tool next cycle.
+              // Appending the plain-text turn here would leave the conversation ending on an
+              // assistant message, which providers like Bedrock reject as assistant prefill.
+              if (structuredOutputTool) {
+                structuredOutputChoice = { tool: { name: STRUCTURED_OUTPUT_TOOL_NAME } }
+                logger.debug(
+                  'structured output schema set but model responded with plain text; forcing tool use on next cycle'
+                )
                 continue
               }
 
+              // Normal end of turn.
+              yield this._appendMessage(modelResult.message, invocationState)
               result = new AgentResult({
                 stopReason: modelResult.stopReason,
                 lastMessage: modelResult.message,
@@ -1000,6 +1121,12 @@ export class Agent implements LocalAgent, InvokableAgent {
         return result
       }
       if (error instanceof InterruptError) {
+        // Fan out one event per interrupt. Each event exposes `interrupt.source` so
+        // consumers can filter by origin (tool callback vs hook callback) without
+        // subscribing to separate event types.
+        for (const interrupt of error.interrupts) {
+          yield new InterruptEvent({ agent: this, interrupt, invocationState })
+        }
         result = this._createInterruptResult(invocationState)
         return result
       }
@@ -1800,7 +1927,7 @@ export class Agent implements LocalAgent, InvokableAgent {
           agent: this,
           invocationState,
           interrupt: <T = JSONValue>(params: InterruptParams): T => {
-            return interruptFromAgent<T>(this, `tool:${toolUseBlock.toolUseId}:${params.name}`, params)
+            return interruptFromAgent<T>(this, `tool:${toolUseBlock.toolUseId}:${params.name}`, params, 'tool')
           },
         }
 
@@ -1968,6 +2095,18 @@ export class Agent implements LocalAgent, InvokableAgent {
     }
 
     return estimate
+  }
+
+  /**
+   * Appends a message to the conversation history and fires MessageAddedEvent hooks.
+   *
+   * Used by {@link ToolCaller} (via the helper passed to `ToolCaller.create`) for
+   * direct tool calls that cannot yield events into the agent stream. This stays
+   * private — callers outside the agent should never directly mutate messages.
+   */
+  private async _appendMessageAndFireHooks(message: Message, invocationState: InvocationState = {}): Promise<void> {
+    this.messages.push(message)
+    await this._hooksRegistry.invokeCallbacks(new MessageAddedEvent({ agent: this, message, invocationState }))
   }
 
   /**

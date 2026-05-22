@@ -538,6 +538,15 @@ export interface CachePointBlockData {
    * The cache type. Currently only 'default' is supported.
    */
   cacheType: 'default'
+
+  /**
+   * Optional TTL for the cache entry. When omitted, the provider's default TTL is used.
+   *
+   * The accepted value space is provider-specific. For example, the Bedrock provider only
+   * accepts the values defined by `BedrockCacheTTL` (`'5m'` and `'1h'`). Other providers
+   * may accept different values or ignore this field.
+   */
+  ttl?: string
 }
 
 /**
@@ -555,8 +564,17 @@ export class CachePointBlock implements CachePointBlockData, JSONSerializable<{ 
    */
   readonly cacheType: 'default'
 
+  /**
+   * Optional TTL for the cache entry. See {@link CachePointBlockData.ttl} for the
+   * provider-specific value space.
+   */
+  readonly ttl?: string
+
   constructor(data: CachePointBlockData) {
     this.cacheType = data.cacheType
+    if (data.ttl !== undefined) {
+      this.ttl = data.ttl
+    }
   }
 
   /**
@@ -567,6 +585,7 @@ export class CachePointBlock implements CachePointBlockData, JSONSerializable<{ 
     return {
       cachePoint: {
         cacheType: this.cacheType,
+        ...(this.ttl !== undefined && { ttl: this.ttl }),
       },
     }
   }
@@ -639,6 +658,8 @@ export class JsonBlock implements JsonBlockData, JSONSerializable<JsonBlockData>
  * - `guardrailIntervened` - A guardrail policy stopped generation
  * - `interrupt` - Agent execution was interrupted for human input
  * - `maxTokens` - Maximum token limit was reached
+ * - `pauseTurn` - Model paused a long-running turn; the response should be sent back to continue
+ * - `refusal` - A streaming classifier intervened to handle a potential policy violation
  * - `stopSequence` - A stop sequence was encountered
  * - `toolUse` - Model wants to use a tool
  * - `modelContextWindowExceeded` - Input exceeded the model's context window
@@ -650,6 +671,8 @@ export type StopReason =
   | 'guardrailIntervened'
   | 'interrupt'
   | 'maxTokens'
+  | 'pauseTurn'
+  | 'refusal'
   | 'stopSequence'
   | 'toolUse'
   | 'modelContextWindowExceeded'

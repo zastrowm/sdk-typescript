@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { ToolRegistry } from '../tool-registry.js'
-import { ToolValidationError } from '../../errors.js'
+import { ToolNotFoundError, ToolValidationError } from '../../errors.js'
 import type { Tool, ToolStreamGenerator } from '../../tools/tool.js'
 import { ToolStreamEvent } from '../../tools/tool.js'
 import { ToolResultBlock } from '../../types/messages.js'
@@ -46,6 +46,14 @@ describe('ToolRegistry', () => {
       expect(() => registry.add(createMockTool({ name: 'duplicate' }))).toThrow(ToolValidationError)
       expect(() => registry.add(createMockTool({ name: 'duplicate' }))).toThrow(
         "Tool with name 'duplicate' already registered"
+      )
+    })
+
+    it("throws ToolValidationError when a name differs only by '-' vs '_'", () => {
+      registry.add(createMockTool({ name: 'foo-bar' }))
+      expect(() => registry.add(createMockTool({ name: 'foo_bar' }))).toThrow(ToolValidationError)
+      expect(() => registry.add(createMockTool({ name: 'foo_bar' }))).toThrow(
+        "Tool name 'foo_bar' already exists as 'foo-bar'. Cannot add a duplicate tool which differs by a '-' or '_'"
       )
     })
 
@@ -110,6 +118,31 @@ describe('ToolRegistry', () => {
     })
   })
 
+  describe('addOrReplace', () => {
+    it('registers tools', () => {
+      const tool = createMockTool({ name: 'tool-1' })
+      registry.addOrReplace([tool])
+      expect(registry.get('tool-1')).toBe(tool)
+    })
+
+    it('replaces an existing tool with the same name', () => {
+      const original = createMockTool({ name: 'tool-1', description: 'original' })
+      const replacement = createMockTool({ name: 'tool-1', description: 'replacement' })
+      registry.add(original)
+      registry.addOrReplace([replacement])
+      expect(registry.get('tool-1')).toBe(replacement)
+    })
+
+    it('validates tool properties', () => {
+      expect(() => registry.addOrReplace([createMockTool({ name: 'invalid name!' })])).toThrow(ToolValidationError)
+    })
+
+    it("throws ToolValidationError when a new tool name differs only by '-' vs '_'", () => {
+      registry.add(createMockTool({ name: 'foo-bar' }))
+      expect(() => registry.addOrReplace([createMockTool({ name: 'foo_bar' })])).toThrow(ToolValidationError)
+    })
+  })
+
   describe('get', () => {
     it('retrieves a tool by name', () => {
       const tool = createMockTool({ name: 'find-me' })
@@ -119,6 +152,62 @@ describe('ToolRegistry', () => {
 
     it('returns undefined for a non-existent tool', () => {
       expect(registry.get('non-existent')).toBeUndefined()
+    })
+  })
+
+  describe('resolve', () => {
+    it('returns the tool for an exact name match', () => {
+      const tool = createMockTool({ name: 'my-tool' })
+      registry.add(tool)
+      expect(registry.resolve('my-tool')).toBe(tool)
+    })
+
+    it('resolves underscore-to-hyphen substitution', () => {
+      const tool = createMockTool({ name: 'my-tool' })
+      registry.add(tool)
+      expect(registry.resolve('my_tool')).toBe(tool)
+    })
+
+    it('resolves case-insensitively', () => {
+      const tool = createMockTool({ name: 'MyTool' })
+      registry.add(tool)
+      expect(registry.resolve('mytool')).toBe(tool)
+    })
+
+    it('prefers exact match over case-insensitive match', () => {
+      const exact = createMockTool({ name: 'mytool' })
+      const cased = createMockTool({ name: 'MYTOOL' })
+      // exact must come first because the validator forbids names that differ
+      // only by '-'/'_'; case-only diffs are allowed.
+      registry.add([exact, cased])
+      expect(registry.resolve('mytool')).toBe(exact)
+    })
+
+    it('prefers exact match over underscore-to-hyphen match', () => {
+      const exact = createMockTool({ name: 'my_tool' })
+      registry.add(exact)
+      // No hyphen variant present — exact is the only candidate.
+      expect(registry.resolve('my_tool')).toBe(exact)
+    })
+
+    it('throws ToolNotFoundError when no tool matches', () => {
+      registry.add(createMockTool({ name: 'existing-tool' }))
+      expect(() => registry.resolve('nonexistent')).toThrow(ToolNotFoundError)
+    })
+
+    it('attaches the requested name to the thrown ToolNotFoundError', () => {
+      try {
+        registry.resolve('missing')
+        throw new Error('expected resolve() to throw')
+      } catch (e) {
+        expect(e).toBeInstanceOf(ToolNotFoundError)
+        expect((e as ToolNotFoundError).toolName).toBe('missing')
+        expect((e as ToolNotFoundError).message).toBe("Tool 'missing' not found")
+      }
+    })
+
+    it('throws ToolNotFoundError when registry is empty', () => {
+      expect(() => registry.resolve('anything')).toThrow(ToolNotFoundError)
     })
   })
 

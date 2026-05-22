@@ -1,5 +1,5 @@
 import type { Tool } from '../tools/tool.js'
-import { ToolValidationError } from '../errors.js'
+import { ToolValidationError, ToolNotFoundError } from '../errors.js'
 
 /**
  * Registry for managing Tool instances with name-based CRUDL operations.
@@ -27,8 +27,28 @@ export class ToolRegistry {
   add(tool: Tool | Tool[]): void {
     const tools = Array.isArray(tool) ? tool : [tool]
     for (const t of tools) {
-      this._validate(t)
+      this._validateProperties(t)
+      if (this._tools.has(t.name)) {
+        throw new ToolValidationError(`Tool with name '${t.name}' already registered`)
+      }
+      this._checkNormalizedConflict(t.name)
       this._tools.set(t.name, t)
+    }
+  }
+
+  /**
+   * Registers one or more tools, replacing any existing tools with the same name.
+   *
+   * @param tools - Array of tools to register
+   * @throws ToolValidationError If a tool's properties are invalid
+   */
+  addOrReplace(newTools: Tool[]): void {
+    for (const tool of newTools) {
+      this._validateProperties(tool)
+      if (!this._tools.has(tool.name)) {
+        this._checkNormalizedConflict(tool.name)
+      }
+      this._tools.set(tool.name, tool)
     }
   }
 
@@ -40,6 +60,45 @@ export class ToolRegistry {
    */
   get(name: string): Tool | undefined {
     return this._tools.get(name)
+  }
+
+  /**
+   * Resolves a tool name using normalization strategies and returns the tool.
+   *
+   * Resolution order:
+   * 1. Exact match
+   * 2. Underscore-to-hyphen substitution (e.g. `my_tool` → `my-tool`)
+   * 3. Case-insensitive match
+   *
+   * @param name - The name to look up
+   * @returns The resolved tool
+   * @throws ToolNotFoundError if no tool with the given name exists
+   */
+  resolve(name: string): Tool {
+    // 1. Direct match
+    const exact = this._tools.get(name)
+    if (exact) {
+      return exact
+    }
+
+    const tools = this.list()
+
+    // 2. Underscore-to-hyphen normalization
+    if (name.includes('_')) {
+      const match = tools.find((t) => t.name.replace(/-/g, '_') === name)
+      if (match) {
+        return match
+      }
+    }
+
+    // 3. Case-insensitive match
+    const lowerName = name.toLowerCase()
+    const caseMatch = tools.find((t) => t.name.toLowerCase() === lowerName)
+    if (caseMatch) {
+      return caseMatch
+    }
+
+    throw new ToolNotFoundError(name)
   }
 
   /**
@@ -67,13 +126,7 @@ export class ToolRegistry {
     return Array.from(this._tools.values())
   }
 
-  /**
-   * Validates a tool before registration.
-   *
-   * @param tool - The tool to validate
-   * @throws ToolValidationError If the tool's properties are invalid or its name is already registered
-   */
-  private _validate(tool: Tool): void {
+  private _validateProperties(tool: Tool): void {
     if (typeof tool.name !== 'string') {
       throw new ToolValidationError('Tool name must be a string')
     }
@@ -92,9 +145,17 @@ export class ToolRegistry {
         throw new ToolValidationError('Tool description must be a non-empty string')
       }
     }
+  }
 
-    if (this._tools.has(tool.name)) {
-      throw new ToolValidationError(`Tool with name '${tool.name}' already registered`)
+  private _checkNormalizedConflict(name: string): void {
+    const normalized = name.replaceAll('-', '_')
+    for (const existing of this._tools.keys()) {
+      if (existing !== name && existing.replaceAll('-', '_') === normalized) {
+        throw new ToolValidationError(
+          `Tool name '${name}' already exists as '${existing}'.` +
+            " Cannot add a duplicate tool which differs by a '-' or '_'"
+        )
+      }
     }
   }
 }
