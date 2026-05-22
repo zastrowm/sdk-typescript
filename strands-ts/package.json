@@ -79,6 +79,14 @@
     "./vended-plugins/context-offloader": {
       "types": "./dist/src/vended-plugins/context-offloader/index.d.ts",
       "default": "./dist/src/vended-plugins/context-offloader/index.js"
+    },
+    "./vended-tools": {
+      "types": "./dist/src/vended-tools/index.d.ts",
+      "default": "./dist/src/vended-tools/index.js"
+    },
+    "./vended-plugins": {
+      "types": "./dist/src/vended-plugins/index.d.ts",
+      "default": "./dist/src/vended-plugins/index.js"
     }
   },
   "scripts": {

@@ -175,6 +175,7 @@ sdk-typescript/
 │   │   │   └── validation.ts
 │   │   │
 │   │   ├── vended-plugins/       # Optional vended plugins
+│   │   │   ├── index.ts          # Barrel export for all plugins
 │   │   │   ├── context-offloader/ # Context offloading plugin
 │   │   │   │   ├── __tests__/
 │   │   │   │   ├── plugin.ts
@@ -187,6 +188,7 @@ sdk-typescript/
 │   │   │       └── index.ts
 │   │   │
 │   │   ├── vended-tools/         # Optional vended tools
+│   │   │   ├── index.ts          # Barrel export for all tools
 │   │   │   ├── bash/
 │   │   │   ├── file-editor/
 │   │   │   ├── http-request/
