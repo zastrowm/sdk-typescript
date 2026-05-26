@@ -168,11 +168,27 @@ sdk-typescript/
 │   │   │   ├── elicitation.ts
 │   │   │   ├── interrupt.ts
 │   │   │   ├── json.ts
+│   │   │   ├── lifecycle-observer.ts
 │   │   │   ├── media.ts
 │   │   │   ├── messages.ts
 │   │   │   ├── serializable.ts
 │   │   │   ├── snapshot.ts
 │   │   │   └── validation.ts
+│   │   │
+│   │   ├── vended-interventions/ # Optional vended intervention handlers
+│   │   │   ├── hitl/             # Human-in-the-loop approval handler
+│   │   │   │   ├── __tests__/
+│   │   │   │   ├── hitl.ts
+│   │   │   │   └── index.ts
+│   │   │   └── steering/         # Steering handler base + LLM-driven steering
+│   │   │       ├── __tests__/
+│   │   │       ├── handlers/
+│   │   │       │   ├── handler.ts
+│   │   │       │   └── llm.ts
+│   │   │       ├── providers/
+│   │   │       │   ├── context-provider.ts
+│   │   │       │   └── tool-ledger.ts
+│   │   │       └── index.ts
 │   │   │
 │   │   ├── vended-plugins/       # Optional vended plugins
 │   │   │   ├── context-offloader/ # Context offloading plugin
@@ -196,6 +212,7 @@ sdk-typescript/
 │   │   ├── index.ts              # Main SDK entry point
 │   │   ├── interrupt.ts          # Interrupt handling
 │   │   ├── mcp.ts                # MCP client implementation
+│   │   ├── mcp-config.ts         # MCP config file parsing
 │   │   ├── mime.ts               # MIME type utilities
 │   │   └── state-store.ts        # State store implementation
 │   │
@@ -338,6 +355,7 @@ sdk-typescript/
 - **`strands-ts/src/telemetry/`**: OpenTelemetry tracing and metrics
 - **`strands-ts/src/tools/`**: Tool definitions, types, and structured output validation with Zod schemas
 - **`strands-ts/src/types/`**: Core type definitions used across the SDK
+- **`strands-ts/src/vended-interventions/`**: Optional vended intervention handlers (hitl, steering — not part of core SDK, independently importable)
 - **`strands-ts/src/vended-plugins/`**: Optional vended plugins (context-offloader, skills — not part of core SDK, independently importable)
 - **`strands-ts/src/vended-tools/`**: Optional vended tools (bash, file-editor, http-request, notebook)
 - **`strands-ts/generated/`**: Auto-generated WIT interface type declarations

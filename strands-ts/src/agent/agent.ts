@@ -38,6 +38,7 @@ import { AgentPrinter, getDefaultAppender, type Printer } from './printer.js'
 import type { Plugin } from '../plugins/plugin.js'
 import type { InterventionHandler } from '../interventions/handler.js'
 import { InterventionRegistry } from '../interventions/registry.js'
+import type { LifecycleObserver } from '../types/lifecycle-observer.js'
 import { PluginRegistry } from '../plugins/registry.js'
 import { SlidingWindowConversationManager } from '../conversation-manager/sliding-window-conversation-manager.js'
 import { NullConversationManager } from '../conversation-manager/null-conversation-manager.js'
@@ -457,28 +458,29 @@ export class Agent implements LocalAgent, InvokableAgent {
 
     await this._pluginRegistry.initialize(this)
 
+    for (const handler of this._interventionRegistry.handlers) {
+      const observer = handler as Partial<LifecycleObserver>
+      if (typeof observer.observeAgent === 'function') {
+        await observer.observeAgent(this)
+      }
+    }
+
     await this._hooksRegistry.invokeCallbacks(new InitializedEvent({ agent: this }))
 
     this._initialized = true
   }
 
   /**
-   * Acquires a lock to prevent concurrent invocations.
-   * Returns a Disposable that releases the lock when disposed.
+   * Acquires the invocation lock. Throws if an invocation is already in progress.
+   * Callers must release via try/finally with `this._isInvoking = false`.
    */
-  private acquireLock(): { [Symbol.dispose]: () => void } {
+  private acquireLock(): void {
     if (this._isInvoking) {
       throw new ConcurrentInvocationError(
         'Agent is already processing an invocation. Wait for the current invoke() or stream() call to complete before invoking again.'
       )
     }
     this._isInvoking = true
-
-    return {
-      [Symbol.dispose]: (): void => {
-        this._isInvoking = false
-      },
-    }
   }
 
   /**
@@ -646,93 +648,96 @@ export class Agent implements LocalAgent, InvokableAgent {
     args: InvokeArgs,
     options?: InvokeOptions
   ): AsyncGenerator<AgentStreamEvent, AgentResult, undefined> {
-    using _lock = this.acquireLock()
+    this.acquireLock()
+    try {
+      await this.initialize()
 
-    await this.initialize()
+      let currentArgs: InvokeArgs = args
 
-    let currentArgs: InvokeArgs = args
+      // Outer loop: re-enters _stream when a hook sets AfterInvocationEvent.resume.
+      // One invocation lock spans the whole resume chain.
+      while (true) {
+        // Fresh AbortController per invocation iteration, composed with any external signal.
+        this._abortController = new AbortController()
+        this._abortSignal = options?.cancelSignal
+          ? AbortSignal.any([this._abortController.signal, options.cancelSignal])
+          : this._abortController.signal
 
-    // Outer loop: re-enters _stream when a hook sets AfterInvocationEvent.resume.
-    // One invocation lock spans the whole resume chain.
-    while (true) {
-      // Fresh AbortController per invocation iteration, composed with any external signal.
-      this._abortController = new AbortController()
-      this._abortSignal = options?.cancelSignal
-        ? AbortSignal.any([this._abortController.signal, options.cancelSignal])
-        : this._abortController.signal
+        const streamGenerator = this._stream(currentArgs, options)
+        let caughtError: Error | undefined
+        let lastAfterInvocation: AfterInvocationEvent | undefined
+        let iterationResult: IteratorResult<AgentStreamEvent, AgentResult>
+        try {
+          iterationResult = await streamGenerator.next()
 
-      const streamGenerator = this._stream(currentArgs, options)
-      let caughtError: Error | undefined
-      let lastAfterInvocation: AfterInvocationEvent | undefined
-      let iterationResult: IteratorResult<AgentStreamEvent, AgentResult>
-      try {
-        iterationResult = await streamGenerator.next()
-
-        while (!iterationResult.done) {
-          try {
-            const processed = await this._invokeCallbacks(iterationResult.value)
-            if (processed instanceof AfterInvocationEvent) {
-              lastAfterInvocation = processed
-            }
-            yield processed
-            iterationResult = await streamGenerator.next()
-          } catch (error) {
-            // Throw interrupt errors back into _stream so executeTools can store the
-            // assistant message as pending execution state for resume.
-            if (error instanceof InterruptError) {
-              iterationResult = await streamGenerator.throw(error)
-            } else {
-              throw error
+          while (!iterationResult.done) {
+            try {
+              const processed = await this._invokeCallbacks(iterationResult.value)
+              if (processed instanceof AfterInvocationEvent) {
+                lastAfterInvocation = processed
+              }
+              yield processed
+              iterationResult = await streamGenerator.next()
+            } catch (error) {
+              // Throw interrupt errors back into _stream so executeTools can store the
+              // assistant message as pending execution state for resume.
+              if (error instanceof InterruptError) {
+                iterationResult = await streamGenerator.throw(error)
+              } else {
+                throw error
+              }
             }
           }
-        }
 
-        // Suppress AgentResultEvent for resumed iterations — only the final
-        // invocation in a resume chain reports an agent result.
-        if (lastAfterInvocation?.resume === undefined) {
-          yield await this._invokeCallbacks(
-            new AgentResultEvent({
-              agent: this,
-              result: iterationResult.value,
-              invocationState: iterationResult.value.invocationState,
-            })
-          )
-        }
-      } catch (error) {
-        caughtError = error as Error
-        throw error
-      } finally {
-        // Drain _stream() so cleanup hooks and printer still fire.
-        // Yield only on error (consumer may still be iterating); on a consumer
-        // break, yielding would suspend the generator and leak the lock.
-        let drainResult = await streamGenerator.return(undefined as never)
-        while (!drainResult.done) {
-          try {
-            if (caughtError) {
-              yield await this._invokeCallbacks(drainResult.value)
-            } else {
-              await this._invokeCallbacks(drainResult.value)
-            }
-          } catch (error) {
-            logger.warn(
-              `event_type=<${drainResult.value.type}>, error=<${error}> | error invoking callbacks during cleanup`
+          // Suppress AgentResultEvent for resumed iterations — only the final
+          // invocation in a resume chain reports an agent result.
+          if (lastAfterInvocation?.resume === undefined) {
+            yield await this._invokeCallbacks(
+              new AgentResultEvent({
+                agent: this,
+                result: iterationResult.value,
+                invocationState: iterationResult.value.invocationState,
+              })
             )
           }
-          drainResult = await streamGenerator.next()
+        } catch (error) {
+          caughtError = error as Error
+          throw error
+        } finally {
+          // Drain _stream() so cleanup hooks and printer still fire.
+          // Yield only on error (consumer may still be iterating); on a consumer
+          // break, yielding would suspend the generator and leak the lock.
+          let drainResult = await streamGenerator.return(undefined as never)
+          while (!drainResult.done) {
+            try {
+              if (caughtError) {
+                yield await this._invokeCallbacks(drainResult.value)
+              } else {
+                await this._invokeCallbacks(drainResult.value)
+              }
+            } catch (error) {
+              logger.warn(
+                `event_type=<${drainResult.value.type}>, error=<${error}> | error invoking callbacks during cleanup`
+              )
+            }
+            drainResult = await streamGenerator.next()
+          }
+
+          // Reset controller and signal for next iteration / invocation
+          this._abortController = new AbortController()
+          this._abortSignal = this._abortController.signal
         }
 
-        // Reset controller and signal for next iteration / invocation
-        this._abortController = new AbortController()
-        this._abortSignal = this._abortController.signal
-      }
+        // Resume only on a clean invocation — errors propagate above.
+        if (lastAfterInvocation?.resume !== undefined) {
+          currentArgs = lastAfterInvocation.resume
+          continue
+        }
 
-      // Resume only on a clean invocation — errors propagate above.
-      if (lastAfterInvocation?.resume !== undefined) {
-        currentArgs = lastAfterInvocation.resume
-        continue
+        return iterationResult.value
       }
-
-      return iterationResult.value
+    } finally {
+      this._isInvoking = false
     }
   }
 
